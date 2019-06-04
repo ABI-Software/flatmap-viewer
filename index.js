@@ -43,6 +43,7 @@ function loadMap(mapId, htmlElementId)
 
     map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
     map.dragRotate.disable();
+    map.touchZoomRotate.disableRotation();
 
     var inspect = new MapboxInspect({
         popup: new mapboxgl.Popup({
