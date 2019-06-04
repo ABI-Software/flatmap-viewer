@@ -49,7 +49,8 @@ function loadMap(mapId, htmlElementId)
         }
     });
 
-    map.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
+    map.dragRotate.disable();
 
     var inspect = new MapboxInspect({
         popup: new mapboxgl.Popup({
