@@ -12,6 +12,7 @@
   "author": "David Brooks",
   "license": "MIT",
   "dependencies": {
+    "@mapbox/mapbox-gl-draw": "^1.1.2",
     "broadcast-channel": "^2.1.12",
     "mapbox-gl": "^1.0.0",
     "mapbox-gl-inspect": "^1.3.1"
