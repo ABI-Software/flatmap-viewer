@@ -28,25 +28,17 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl-inspect/dist/mapbox-gl-inspect.css';
 import MapboxInspect from 'mapbox-gl-inspect';
 
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+
 //==============================================================================
 
 function loadMap(mapId, htmlElementId)
 {
     const map = new mapboxgl.Map({
+        style: `/${mapId}/`,
         container: htmlElementId,
         hash: true,
-        style: {
-            version: 8,
-            sources: {
-                vectorSource: {
-                    type: 'vector',
-                    url: `/${mapId}/`
-                }
-            },
-            zoom: 7,
-            center: [1.35, 1.95],
-            layers: []
-        }
     });
 
     map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
@@ -61,6 +53,7 @@ function loadMap(mapId, htmlElementId)
         //showInspectButton: true
     });
     map.addControl(inspect);
+
 }
 
 //==============================================================================

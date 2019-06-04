@@ -1,443 +1,503 @@
 {
-    "tiles": ["http://localhost:8000/spine/mvtiles/{z}/{x}/{y}"],
-    "name": "hires/mvtiles/spine.mbtiles",
-    "format": "pbf",
-    "basename": "spine.mbtiles",
-    "id": "spine",
-    "description": "hires/mvtiles/spine.mbtiles",
-    "version": "2",
-    "minzoom": 0,
-    "maxzoom": 14,
-    "center": [1.2854, 2.778451, 14],
-    "bounds": [0.052109, 0.082254, 2.696683, 3.650601],
-    "type": "overlay",
-    "generator": "tippecanoe v1.34.0",
-    "generator_options": "tippecanoe -o hires/mvtiles/spine.mbtiles '--projection=EPSG:3857' --no-tile-compression --force ./hires/features/body01.json ./hires/features/body02.json ./hires/features/body03.json ./hires/features/body04.json ./hires/features/body05.json ./hires/features/body06.json ./hires/features/body07.json ./hires/features/body08.json ./hires/features/body09.json ./hires/features/body10.json ./hires/features/body11.json ./hires/features/body12.json ./hires/features/body13.json ./hires/features/body14.json",
-    "vector_layers": [
+    "version": 8,
+    "sources":
     {
-        "id": "body01",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
+        "vectorSource":
         {
-            "id": "String",
-            "svgPathId": "String"
+            "type": "vector",
+            "tiles": ["http://localhost:8000/spine/mvtiles/{z}/{x}/{y}"],
+            "name": "hires/mvtiles/spine.mbtiles",
+            "format": "pbf",
+            "basename": "spine.mbtiles",
+            "id": "spine",
+            "description": "hires/mvtiles/spine.mbtiles",
+            "version": "2",
+            "minzoom": 0,
+            "maxzoom": 14,
+            "center": [1.2854, 2.778451, 14],
+            "bounds": [0.052109, 0.082254, 2.696683, 3.650601],
+            "generator": "tippecanoe v1.34.0",
+            "generator_options": "tippecanoe -o hires/mvtiles/spine.mbtiles '--projection=EPSG:3857' --no-tile-compression --force ./hires/features/body01.json ./hires/features/body02.json ./hires/features/body03.json ./hires/features/body04.json ./hires/features/body05.json ./hires/features/body06.json ./hires/features/body07.json ./hires/features/body08.json ./hires/features/body09.json ./hires/features/body10.json ./hires/features/body11.json ./hires/features/body12.json ./hires/features/body13.json ./hires/features/body14.json",
+            "vector_layers": [
+            {
+                "id": "body01",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body02",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body03",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body04",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body05",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body06",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body07",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body08",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body09",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body10",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body11",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body12",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body13",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            },
+            {
+                "id": "body14",
+                "description": "",
+                "minzoom": 0,
+                "maxzoom": 14,
+                "fields":
+                {
+                    "id": "String",
+                    "svgPathId": "String"
+                }
+            }],
+            "tilestats":
+            {
+                "layerCount": 14,
+                "layers": [
+                {
+                    "layer": "body01",
+                    "count": 3,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 3,
+                        "type": "string",
+                        "values": ["body01/path44", "body01/path46", "body01/path48"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 3,
+                        "type": "string",
+                        "values": ["path44", "path46", "path48"]
+                    }]
+                },
+                {
+                    "layer": "body02",
+                    "count": 6,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 6,
+                        "type": "string",
+                        "values": ["body02/path34", "body02/path36", "body02/path38", "body02/path40", "body02/path42", "body02/path44"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 6,
+                        "type": "string",
+                        "values": ["path34", "path36", "path38", "path40", "path42", "path44"]
+                    }]
+                },
+                {
+                    "layer": "body03",
+                    "count": 27,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 27,
+                        "type": "string",
+                        "values": ["body03/path102", "body03/path104", "body03/path110", "body03/path116", "body03/path118", "body03/path120", "body03/path122", "body03/path124", "body03/path126", "body03/path128", "body03/path130", "body03/path134", "body03/path136", "body03/path138", "body03/path140", "body03/path142", "body03/path144", "body03/path146", "body03/path148", "body03/path34", "body03/path40", "body03/path46", "body03/path52", "body03/path58", "body03/path62", "body03/path64", "body03/path90"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 27,
+                        "type": "string",
+                        "values": ["path102", "path104", "path110", "path116", "path118", "path120", "path122", "path124", "path126", "path128", "path130", "path134", "path136", "path138", "path140", "path142", "path144", "path146", "path148", "path34", "path40", "path46", "path52", "path58", "path62", "path64", "path90"]
+                    }]
+                },
+                {
+                    "layer": "body04",
+                    "count": 3,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 3,
+                        "type": "string",
+                        "values": ["body04/path34", "body04/path40", "body04/path56"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 3,
+                        "type": "string",
+                        "values": ["path34", "path40", "path56"]
+                    }]
+                },
+                {
+                    "layer": "body05",
+                    "count": 12,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 12,
+                        "type": "string",
+                        "values": ["body05/path34", "body05/path36", "body05/path38", "body05/path40", "body05/path42", "body05/path44", "body05/path46", "body05/path48", "body05/path50", "body05/path52", "body05/path54", "body05/path56"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 12,
+                        "type": "string",
+                        "values": ["path34", "path36", "path38", "path40", "path42", "path44", "path46", "path48", "path50", "path52", "path54", "path56"]
+                    }]
+                },
+                {
+                    "layer": "body06",
+                    "count": 5,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 5,
+                        "type": "string",
+                        "values": ["body06/path44", "body06/path56", "body06/path68", "body06/path80", "body06/path92"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 5,
+                        "type": "string",
+                        "values": ["path44", "path56", "path68", "path80", "path92"]
+                    }]
+                },
+                {
+                    "layer": "body07",
+                    "count": 9,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 9,
+                        "type": "string",
+                        "values": ["body07/path134", "body07/path146", "body07/path148", "body07/path164", "body07/path34", "body07/path40", "body07/path56", "body07/path68", "body07/path70"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 9,
+                        "type": "string",
+                        "values": ["path134", "path146", "path148", "path164", "path34", "path40", "path56", "path68", "path70"]
+                    }]
+                },
+                {
+                    "layer": "body08",
+                    "count": 1,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 1,
+                        "type": "string",
+                        "values": ["body08/path44"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 1,
+                        "type": "string",
+                        "values": ["path44"]
+                    }]
+                },
+                {
+                    "layer": "body09",
+                    "count": 34,
+                    "geometry": "LineString",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 34,
+                        "type": "string",
+                        "values": ["body09/path100", "body09/path104", "body09/path108", "body09/path112", "body09/path116", "body09/path120", "body09/path124", "body09/path128", "body09/path132", "body09/path136", "body09/path140", "body09/path144", "body09/path148", "body09/path152", "body09/path156", "body09/path160", "body09/path164", "body09/path168", "body09/path172", "body09/path176", "body09/path180", "body09/path184", "body09/path188", "body09/path192", "body09/path44", "body09/path46", "body09/path52", "body09/path58", "body09/path64", "body09/path80", "body09/path84", "body09/path88", "body09/path92", "body09/path96"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 34,
+                        "type": "string",
+                        "values": ["path100", "path104", "path108", "path112", "path116", "path120", "path124", "path128", "path132", "path136", "path140", "path144", "path148", "path152", "path156", "path160", "path164", "path168", "path172", "path176", "path180", "path184", "path188", "path192", "path44", "path46", "path52", "path58", "path64", "path80", "path84", "path88", "path92", "path96"]
+                    }]
+                },
+                {
+                    "layer": "body10",
+                    "count": 20,
+                    "geometry": "LineString",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 20,
+                        "type": "string",
+                        "values": ["body10/path102", "body10/path106", "body10/path110", "body10/path114", "body10/path118", "body10/path122", "body10/path126", "body10/path130", "body10/path34", "body10/path50", "body10/path54", "body10/path58", "body10/path70", "body10/path74", "body10/path78", "body10/path82", "body10/path86", "body10/path90", "body10/path94", "body10/path98"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 20,
+                        "type": "string",
+                        "values": ["path102", "path106", "path110", "path114", "path118", "path122", "path126", "path130", "path34", "path50", "path54", "path58", "path70", "path74", "path78", "path82", "path86", "path90", "path94", "path98"]
+                    }]
+                },
+                {
+                    "layer": "body11",
+                    "count": 5,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 5,
+                        "type": "string",
+                        "values": ["body11/path100", "body11/path156", "body11/path202", "body11/path248", "body11/path44"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 5,
+                        "type": "string",
+                        "values": ["path100", "path156", "path202", "path248", "path44"]
+                    }]
+                },
+                {
+                    "layer": "body12",
+                    "count": 876,
+                    "geometry": "LineString",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 876,
+                        "type": "string",
+                        "values": ["body12/path10030", "body12/path10076", "body12/path10080", "body12/path10084", "body12/path10088", "body12/path10092", "body12/path10096", "body12/path10100", "body12/path10104", "body12/path10108", "body12/path10112", "body12/path10116", "body12/path10120", "body12/path10122", "body12/path10126", "body12/path10128", "body12/path10130", "body12/path10132", "body12/path10134", "body12/path10196", "body12/path10252", "body12/path10298", "body12/path10354", "body12/path1036", "body12/path10410", "body12/path10456", "body12/path10460", "body12/path10464", "body12/path10468", "body12/path10472", "body12/path10476", "body12/path10480", "body12/path10484", "body12/path10488", "body12/path10492", "body12/path10496", "body12/path10500", "body12/path10502", "body12/path10506", "body12/path10508", "body12/path10510", "body12/path10512", "body12/path10514", "body12/path10540", "body12/path10544", "body12/path10548", "body12/path10552", "body12/path10554", "body12/path10556", "body12/path10558", "body12/path10560", "body12/path10564", "body12/path10568", "body12/path10572", "body12/path10574", "body12/path10576", "body12/path10632", "body12/path10688", "body12/path10744", "body12/path10800", "body12/path10856", "body12/path10912", "body12/path10916", "body12/path1092", "body12/path10920", "body12/path10924", "body12/path10928", "body12/path10932", "body12/path10936", "body12/path10940", "body12/path10944", "body12/path10948", "body12/path10952", "body12/path10956", "body12/path10958", "body12/path10962", "body12/path10964", "body12/path10968", "body12/path10970", "body12/path10972", "body12/path10974", "body12/path10976", "body12/path11038", "body12/path11094", "body12/path11150", "body12/path11206", "body12/path11262", "body12/path11318", "body12/path11322", "body12/path11326", "body12/path11330", "body12/path11334", "body12/path11338", "body12/path11342", "body12/path11346", "body12/path11350", "body12/path11354", "body12/path11358", "body12/path11362", "body12/path11364"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 876,
+                        "type": "string",
+                        "values": ["path10030", "path10076", "path10080", "path10084", "path10088", "path10092", "path10096", "path10100", "path10104", "path10108", "path10112", "path10116", "path10120", "path10122", "path10126", "path10128", "path10130", "path10132", "path10134", "path10196", "path10252", "path10298", "path10354", "path1036", "path10410", "path10456", "path10460", "path10464", "path10468", "path10472", "path10476", "path10480", "path10484", "path10488", "path10492", "path10496", "path10500", "path10502", "path10506", "path10508", "path10510", "path10512", "path10514", "path10540", "path10544", "path10548", "path10552", "path10554", "path10556", "path10558", "path10560", "path10564", "path10568", "path10572", "path10574", "path10576", "path10632", "path10688", "path10744", "path10800", "path10856", "path10912", "path10916", "path1092", "path10920", "path10924", "path10928", "path10932", "path10936", "path10940", "path10944", "path10948", "path10952", "path10956", "path10958", "path10962", "path10964", "path10968", "path10970", "path10972", "path10974", "path10976", "path11038", "path11094", "path11150", "path11206", "path11262", "path11318", "path11322", "path11326", "path11330", "path11334", "path11338", "path11342", "path11346", "path11350", "path11354", "path11358", "path11362", "path11364"]
+                    }]
+                },
+                {
+                    "layer": "body13",
+                    "count": 47,
+                    "geometry": "Polygon",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 47,
+                        "type": "string",
+                        "values": ["body13/path100", "body13/path372", "body13/path378", "body13/path382", "body13/path386", "body13/path388", "body13/path392", "body13/path396", "body13/path398", "body13/path402", "body13/path404", "body13/path412", "body13/path414", "body13/path422", "body13/path424", "body13/path430", "body13/path436", "body13/path44", "body13/path444", "body13/path446", "body13/path450", "body13/path452", "body13/path460", "body13/path462", "body13/path466", "body13/path470", "body13/path472", "body13/path480", "body13/path482", "body13/path486", "body13/path488", "body13/path494", "body13/path500", "body13/path504", "body13/path572", "body13/path578", "body13/path582", "body13/path584", "body13/path590", "body13/path596", "body13/path602", "body13/path608", "body13/path614", "body13/path620", "body13/path626", "body13/path630", "body13/path632"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 47,
+                        "type": "string",
+                        "values": ["path100", "path372", "path378", "path382", "path386", "path388", "path392", "path396", "path398", "path402", "path404", "path412", "path414", "path422", "path424", "path430", "path436", "path44", "path444", "path446", "path450", "path452", "path460", "path462", "path466", "path470", "path472", "path480", "path482", "path486", "path488", "path494", "path500", "path504", "path572", "path578", "path582", "path584", "path590", "path596", "path602", "path608", "path614", "path620", "path626", "path630", "path632"]
+                    }]
+                },
+                {
+                    "layer": "body14",
+                    "count": 115,
+                    "geometry": "LineString",
+                    "attributeCount": 2,
+                    "attributes": [
+                    {
+                        "attribute": "id",
+                        "count": 115,
+                        "type": "string",
+                        "values": ["body14/path100", "body14/path104", "body14/path108", "body14/path112", "body14/path116", "body14/path120", "body14/path124", "body14/path128", "body14/path132", "body14/path136", "body14/path140", "body14/path144", "body14/path148", "body14/path152", "body14/path156", "body14/path308", "body14/path314", "body14/path320", "body14/path326", "body14/path332", "body14/path338", "body14/path344", "body14/path350", "body14/path356", "body14/path36", "body14/path362", "body14/path368", "body14/path374", "body14/path380", "body14/path386", "body14/path392", "body14/path398", "body14/path40", "body14/path404", "body14/path410", "body14/path416", "body14/path422", "body14/path428", "body14/path434", "body14/path44", "body14/path440", "body14/path446", "body14/path452", "body14/path458", "body14/path464", "body14/path470", "body14/path476", "body14/path48", "body14/path482", "body14/path488", "body14/path494", "body14/path500", "body14/path506", "body14/path512", "body14/path518", "body14/path52", "body14/path524", "body14/path530", "body14/path536", "body14/path542", "body14/path548", "body14/path554", "body14/path56", "body14/path560", "body14/path566", "body14/path572", "body14/path578", "body14/path584", "body14/path590", "body14/path596", "body14/path60", "body14/path602", "body14/path610", "body14/path614", "body14/path618", "body14/path622", "body14/path626", "body14/path630", "body14/path634", "body14/path638", "body14/path64", "body14/path642", "body14/path646", "body14/path650", "body14/path654", "body14/path658", "body14/path662", "body14/path666", "body14/path670", "body14/path674", "body14/path678", "body14/path68", "body14/path682", "body14/path686", "body14/path690", "body14/path694", "body14/path698", "body14/path702", "body14/path706", "body14/path710"]
+                    },
+                    {
+                        "attribute": "svgPathId",
+                        "count": 115,
+                        "type": "string",
+                        "values": ["path100", "path104", "path108", "path112", "path116", "path120", "path124", "path128", "path132", "path136", "path140", "path144", "path148", "path152", "path156", "path308", "path314", "path320", "path326", "path332", "path338", "path344", "path350", "path356", "path36", "path362", "path368", "path374", "path380", "path386", "path392", "path398", "path40", "path404", "path410", "path416", "path422", "path428", "path434", "path44", "path440", "path446", "path452", "path458", "path464", "path470", "path476", "path48", "path482", "path488", "path494", "path500", "path506", "path512", "path518", "path52", "path524", "path530", "path536", "path542", "path548", "path554", "path56", "path560", "path566", "path572", "path578", "path584", "path590", "path596", "path60", "path602", "path610", "path614", "path618", "path622", "path626", "path630", "path634", "path638", "path64", "path642", "path646", "path650", "path654", "path658", "path662", "path666", "path670", "path674", "path678", "path68", "path682", "path686", "path690", "path694", "path698", "path702", "path706", "path710"]
+                    }]
+                }]
+            },
+            "tilejson": "2.0.0"
+        }
+    },
+    "zoom": 7,
+    "center": [1.35, 1.95],
+    "layers": [
+    {
+        "id": "body13-fill",
+        "source": "vectorSource",
+        "source-layer": "body13",
+        "type": "fill",
+        "filter": [
+            "==",
+            "$type",
+            "Polygon"
+        ],
+        "paint":
+        {
+            "fill-color": "#c0c0c0",
+            "fill-outline-color": "#f0f",
+            "fill-opacity": 0.7
         }
     },
     {
-        "id": "body02",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
+        "id": "body12-fill",
+        "source": "vectorSource",
+        "source-layer": "body12",
+        "type": "fill",
+        "filter": [
+            "==",
+            "$type",
+            "Polygon"
+        ],
+        "paint":
         {
-            "id": "String",
-            "svgPathId": "String"
+            "fill-color": "#c0c000",
+            "fill-outline-color": "#f0f",
+            "fill-opacity": 0.7
         }
     },
     {
-        "id": "body03",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
+        "id": "body12-line",
+        "source": "vectorSource",
+        "source-layer": "body12",
+        "filter": [
+            "==",
+            "$type",
+            "LineString"
+        ],
+        "type": "line",
+        "paint":
         {
-            "id": "String",
-            "svgPathId": "String"
+            "line-color": "#f00",
+            "line-width": 1
         }
-    },
-    {
-        "id": "body04",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body05",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body06",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body07",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body08",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body09",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body10",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body11",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body12",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body13",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    },
-    {
-        "id": "body14",
-        "description": "",
-        "minzoom": 0,
-        "maxzoom": 14,
-        "fields":
-        {
-            "id": "String",
-            "svgPathId": "String"
-        }
-    }],
-    "tilestats":
-    {
-        "layerCount": 14,
-        "layers": [
-        {
-            "layer": "body01",
-            "count": 3,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 3,
-                "type": "string",
-                "values": ["body01/path44", "body01/path46", "body01/path48"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 3,
-                "type": "string",
-                "values": ["path44", "path46", "path48"]
-            }]
-        },
-        {
-            "layer": "body02",
-            "count": 6,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 6,
-                "type": "string",
-                "values": ["body02/path34", "body02/path36", "body02/path38", "body02/path40", "body02/path42", "body02/path44"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 6,
-                "type": "string",
-                "values": ["path34", "path36", "path38", "path40", "path42", "path44"]
-            }]
-        },
-        {
-            "layer": "body03",
-            "count": 27,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 27,
-                "type": "string",
-                "values": ["body03/path102", "body03/path104", "body03/path110", "body03/path116", "body03/path118", "body03/path120", "body03/path122", "body03/path124", "body03/path126", "body03/path128", "body03/path130", "body03/path134", "body03/path136", "body03/path138", "body03/path140", "body03/path142", "body03/path144", "body03/path146", "body03/path148", "body03/path34", "body03/path40", "body03/path46", "body03/path52", "body03/path58", "body03/path62", "body03/path64", "body03/path90"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 27,
-                "type": "string",
-                "values": ["path102", "path104", "path110", "path116", "path118", "path120", "path122", "path124", "path126", "path128", "path130", "path134", "path136", "path138", "path140", "path142", "path144", "path146", "path148", "path34", "path40", "path46", "path52", "path58", "path62", "path64", "path90"]
-            }]
-        },
-        {
-            "layer": "body04",
-            "count": 3,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 3,
-                "type": "string",
-                "values": ["body04/path34", "body04/path40", "body04/path56"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 3,
-                "type": "string",
-                "values": ["path34", "path40", "path56"]
-            }]
-        },
-        {
-            "layer": "body05",
-            "count": 12,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 12,
-                "type": "string",
-                "values": ["body05/path34", "body05/path36", "body05/path38", "body05/path40", "body05/path42", "body05/path44", "body05/path46", "body05/path48", "body05/path50", "body05/path52", "body05/path54", "body05/path56"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 12,
-                "type": "string",
-                "values": ["path34", "path36", "path38", "path40", "path42", "path44", "path46", "path48", "path50", "path52", "path54", "path56"]
-            }]
-        },
-        {
-            "layer": "body06",
-            "count": 5,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 5,
-                "type": "string",
-                "values": ["body06/path44", "body06/path56", "body06/path68", "body06/path80", "body06/path92"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 5,
-                "type": "string",
-                "values": ["path44", "path56", "path68", "path80", "path92"]
-            }]
-        },
-        {
-            "layer": "body07",
-            "count": 9,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 9,
-                "type": "string",
-                "values": ["body07/path134", "body07/path146", "body07/path148", "body07/path164", "body07/path34", "body07/path40", "body07/path56", "body07/path68", "body07/path70"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 9,
-                "type": "string",
-                "values": ["path134", "path146", "path148", "path164", "path34", "path40", "path56", "path68", "path70"]
-            }]
-        },
-        {
-            "layer": "body08",
-            "count": 1,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 1,
-                "type": "string",
-                "values": ["body08/path44"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 1,
-                "type": "string",
-                "values": ["path44"]
-            }]
-        },
-        {
-            "layer": "body09",
-            "count": 34,
-            "geometry": "LineString",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 34,
-                "type": "string",
-                "values": ["body09/path100", "body09/path104", "body09/path108", "body09/path112", "body09/path116", "body09/path120", "body09/path124", "body09/path128", "body09/path132", "body09/path136", "body09/path140", "body09/path144", "body09/path148", "body09/path152", "body09/path156", "body09/path160", "body09/path164", "body09/path168", "body09/path172", "body09/path176", "body09/path180", "body09/path184", "body09/path188", "body09/path192", "body09/path44", "body09/path46", "body09/path52", "body09/path58", "body09/path64", "body09/path80", "body09/path84", "body09/path88", "body09/path92", "body09/path96"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 34,
-                "type": "string",
-                "values": ["path100", "path104", "path108", "path112", "path116", "path120", "path124", "path128", "path132", "path136", "path140", "path144", "path148", "path152", "path156", "path160", "path164", "path168", "path172", "path176", "path180", "path184", "path188", "path192", "path44", "path46", "path52", "path58", "path64", "path80", "path84", "path88", "path92", "path96"]
-            }]
-        },
-        {
-            "layer": "body10",
-            "count": 20,
-            "geometry": "LineString",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 20,
-                "type": "string",
-                "values": ["body10/path102", "body10/path106", "body10/path110", "body10/path114", "body10/path118", "body10/path122", "body10/path126", "body10/path130", "body10/path34", "body10/path50", "body10/path54", "body10/path58", "body10/path70", "body10/path74", "body10/path78", "body10/path82", "body10/path86", "body10/path90", "body10/path94", "body10/path98"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 20,
-                "type": "string",
-                "values": ["path102", "path106", "path110", "path114", "path118", "path122", "path126", "path130", "path34", "path50", "path54", "path58", "path70", "path74", "path78", "path82", "path86", "path90", "path94", "path98"]
-            }]
-        },
-        {
-            "layer": "body11",
-            "count": 5,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 5,
-                "type": "string",
-                "values": ["body11/path100", "body11/path156", "body11/path202", "body11/path248", "body11/path44"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 5,
-                "type": "string",
-                "values": ["path100", "path156", "path202", "path248", "path44"]
-            }]
-        },
-        {
-            "layer": "body12",
-            "count": 876,
-            "geometry": "LineString",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 876,
-                "type": "string",
-                "values": ["body12/path10030", "body12/path10076", "body12/path10080", "body12/path10084", "body12/path10088", "body12/path10092", "body12/path10096", "body12/path10100", "body12/path10104", "body12/path10108", "body12/path10112", "body12/path10116", "body12/path10120", "body12/path10122", "body12/path10126", "body12/path10128", "body12/path10130", "body12/path10132", "body12/path10134", "body12/path10196", "body12/path10252", "body12/path10298", "body12/path10354", "body12/path1036", "body12/path10410", "body12/path10456", "body12/path10460", "body12/path10464", "body12/path10468", "body12/path10472", "body12/path10476", "body12/path10480", "body12/path10484", "body12/path10488", "body12/path10492", "body12/path10496", "body12/path10500", "body12/path10502", "body12/path10506", "body12/path10508", "body12/path10510", "body12/path10512", "body12/path10514", "body12/path10540", "body12/path10544", "body12/path10548", "body12/path10552", "body12/path10554", "body12/path10556", "body12/path10558", "body12/path10560", "body12/path10564", "body12/path10568", "body12/path10572", "body12/path10574", "body12/path10576", "body12/path10632", "body12/path10688", "body12/path10744", "body12/path10800", "body12/path10856", "body12/path10912", "body12/path10916", "body12/path1092", "body12/path10920", "body12/path10924", "body12/path10928", "body12/path10932", "body12/path10936", "body12/path10940", "body12/path10944", "body12/path10948", "body12/path10952", "body12/path10956", "body12/path10958", "body12/path10962", "body12/path10964", "body12/path10968", "body12/path10970", "body12/path10972", "body12/path10974", "body12/path10976", "body12/path11038", "body12/path11094", "body12/path11150", "body12/path11206", "body12/path11262", "body12/path11318", "body12/path11322", "body12/path11326", "body12/path11330", "body12/path11334", "body12/path11338", "body12/path11342", "body12/path11346", "body12/path11350", "body12/path11354", "body12/path11358", "body12/path11362", "body12/path11364"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 876,
-                "type": "string",
-                "values": ["path10030", "path10076", "path10080", "path10084", "path10088", "path10092", "path10096", "path10100", "path10104", "path10108", "path10112", "path10116", "path10120", "path10122", "path10126", "path10128", "path10130", "path10132", "path10134", "path10196", "path10252", "path10298", "path10354", "path1036", "path10410", "path10456", "path10460", "path10464", "path10468", "path10472", "path10476", "path10480", "path10484", "path10488", "path10492", "path10496", "path10500", "path10502", "path10506", "path10508", "path10510", "path10512", "path10514", "path10540", "path10544", "path10548", "path10552", "path10554", "path10556", "path10558", "path10560", "path10564", "path10568", "path10572", "path10574", "path10576", "path10632", "path10688", "path10744", "path10800", "path10856", "path10912", "path10916", "path1092", "path10920", "path10924", "path10928", "path10932", "path10936", "path10940", "path10944", "path10948", "path10952", "path10956", "path10958", "path10962", "path10964", "path10968", "path10970", "path10972", "path10974", "path10976", "path11038", "path11094", "path11150", "path11206", "path11262", "path11318", "path11322", "path11326", "path11330", "path11334", "path11338", "path11342", "path11346", "path11350", "path11354", "path11358", "path11362", "path11364"]
-            }]
-        },
-        {
-            "layer": "body13",
-            "count": 47,
-            "geometry": "Polygon",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 47,
-                "type": "string",
-                "values": ["body13/path100", "body13/path372", "body13/path378", "body13/path382", "body13/path386", "body13/path388", "body13/path392", "body13/path396", "body13/path398", "body13/path402", "body13/path404", "body13/path412", "body13/path414", "body13/path422", "body13/path424", "body13/path430", "body13/path436", "body13/path44", "body13/path444", "body13/path446", "body13/path450", "body13/path452", "body13/path460", "body13/path462", "body13/path466", "body13/path470", "body13/path472", "body13/path480", "body13/path482", "body13/path486", "body13/path488", "body13/path494", "body13/path500", "body13/path504", "body13/path572", "body13/path578", "body13/path582", "body13/path584", "body13/path590", "body13/path596", "body13/path602", "body13/path608", "body13/path614", "body13/path620", "body13/path626", "body13/path630", "body13/path632"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 47,
-                "type": "string",
-                "values": ["path100", "path372", "path378", "path382", "path386", "path388", "path392", "path396", "path398", "path402", "path404", "path412", "path414", "path422", "path424", "path430", "path436", "path44", "path444", "path446", "path450", "path452", "path460", "path462", "path466", "path470", "path472", "path480", "path482", "path486", "path488", "path494", "path500", "path504", "path572", "path578", "path582", "path584", "path590", "path596", "path602", "path608", "path614", "path620", "path626", "path630", "path632"]
-            }]
-        },
-        {
-            "layer": "body14",
-            "count": 115,
-            "geometry": "LineString",
-            "attributeCount": 2,
-            "attributes": [
-            {
-                "attribute": "id",
-                "count": 115,
-                "type": "string",
-                "values": ["body14/path100", "body14/path104", "body14/path108", "body14/path112", "body14/path116", "body14/path120", "body14/path124", "body14/path128", "body14/path132", "body14/path136", "body14/path140", "body14/path144", "body14/path148", "body14/path152", "body14/path156", "body14/path308", "body14/path314", "body14/path320", "body14/path326", "body14/path332", "body14/path338", "body14/path344", "body14/path350", "body14/path356", "body14/path36", "body14/path362", "body14/path368", "body14/path374", "body14/path380", "body14/path386", "body14/path392", "body14/path398", "body14/path40", "body14/path404", "body14/path410", "body14/path416", "body14/path422", "body14/path428", "body14/path434", "body14/path44", "body14/path440", "body14/path446", "body14/path452", "body14/path458", "body14/path464", "body14/path470", "body14/path476", "body14/path48", "body14/path482", "body14/path488", "body14/path494", "body14/path500", "body14/path506", "body14/path512", "body14/path518", "body14/path52", "body14/path524", "body14/path530", "body14/path536", "body14/path542", "body14/path548", "body14/path554", "body14/path56", "body14/path560", "body14/path566", "body14/path572", "body14/path578", "body14/path584", "body14/path590", "body14/path596", "body14/path60", "body14/path602", "body14/path610", "body14/path614", "body14/path618", "body14/path622", "body14/path626", "body14/path630", "body14/path634", "body14/path638", "body14/path64", "body14/path642", "body14/path646", "body14/path650", "body14/path654", "body14/path658", "body14/path662", "body14/path666", "body14/path670", "body14/path674", "body14/path678", "body14/path68", "body14/path682", "body14/path686", "body14/path690", "body14/path694", "body14/path698", "body14/path702", "body14/path706", "body14/path710"]
-            },
-            {
-                "attribute": "svgPathId",
-                "count": 115,
-                "type": "string",
-                "values": ["path100", "path104", "path108", "path112", "path116", "path120", "path124", "path128", "path132", "path136", "path140", "path144", "path148", "path152", "path156", "path308", "path314", "path320", "path326", "path332", "path338", "path344", "path350", "path356", "path36", "path362", "path368", "path374", "path380", "path386", "path392", "path398", "path40", "path404", "path410", "path416", "path422", "path428", "path434", "path44", "path440", "path446", "path452", "path458", "path464", "path470", "path476", "path48", "path482", "path488", "path494", "path500", "path506", "path512", "path518", "path52", "path524", "path530", "path536", "path542", "path548", "path554", "path56", "path560", "path566", "path572", "path578", "path584", "path590", "path596", "path60", "path602", "path610", "path614", "path618", "path622", "path626", "path630", "path634", "path638", "path64", "path642", "path646", "path650", "path654", "path658", "path662", "path666", "path670", "path674", "path678", "path68", "path682", "path686", "path690", "path694", "path698", "path702", "path706", "path710"]
-            }]
-        }]
-    },
-    "tilejson": "2.0.0"
+    }]
 }
