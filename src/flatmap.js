@@ -52,6 +52,8 @@ export class FlatMap
         this._map.dragRotate.disable();
         this._map.touchZoomRotate.disableRotation();
 
+        this._map.addControl(new mapboxgl.FullscreenControl());
+
         this._tooltip = new ToolTip(this._map);
     }
 }
