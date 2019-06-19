@@ -22,16 +22,38 @@ limitations under the License.
 
 //==============================================================================
 
-import {FlatMap} from './src/flatmap.js';
-import './static/flatmaps.css';
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
-function loadMap(mapId, htmlElementId)
-{
-    return new FlatMap(mapId, htmlElementId);
-}
+import {ToolTip} from './tooltip.js'
 
-window.loadMap = loadMap;
+//==============================================================================
+
+export class FlatMap
+{
+    constructor(mapId, htmlElementId)
+    {
+        this._map = new mapboxgl.Map({
+            style: `/${mapId}/`,
+            container: htmlElementId,
+            hash: true
+        });
+
+        /*
+        this._map.addControl(new mapboxgl.AttributionControl({
+            compact: true,
+            customAttribution: "\u00a9 Auckland Bioengineering Institute"
+        }));
+        */
+
+        this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
+        this._map.dragRotate.disable();
+        this._map.touchZoomRotate.disableRotation();
+
+        this._tooltip = new ToolTip(this._map);
+    }
+}
 
 //==============================================================================
