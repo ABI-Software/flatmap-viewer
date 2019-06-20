@@ -1,5 +1,5 @@
 .cache/
 dist/
-docs/
+docs/_build/
 node_modules
 out/
