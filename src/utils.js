@@ -22,12 +22,46 @@ limitations under the License.
 
 //==============================================================================
 
-import {loadMap} from './src/flatmap.js';
-
-import './static/flatmaps.css';
+export function absoluteUrl(relativePath)
+{
+    const url = new URL(relativePath, window.location.href);
+    return url.href;
+}
 
 //==============================================================================
 
-window.loadMap = loadMap;
+export class List extends Array {
+    constructor(iterable=null) {
+        super();
+        if (iterable !== null)
+            this.extend(iterable);
+    }
+
+    append(element) {
+        super.push(element);
+        return this;
+    }
+
+    contains(element) {
+        return (super.indexOf(element) >= 0);
+    }
+
+    extend(other) {
+        if (this === other) {
+            throw new Error('Cannot extend a list with itself...');
+        } else {
+            for (let element of other) {
+                super.push(element);
+            }
+        }
+        return this;
+    }
+
+    slice(start, end)
+    //===============
+    {
+        return new List(Array(...this).slice(start, end));
+    }
+}
 
 //==============================================================================

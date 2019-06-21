@@ -27,16 +27,50 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
+import {ImageLayer} from './styling.js';
+import {LayerManager} from './layers.js';
 import {ToolTip} from './tooltip.js'
+import * as utils from './utils.js';
 
 //==============================================================================
 
-export class FlatMap
+function addUrlBase(url)
 {
-    constructor(mapId, htmlElementId)
+    if (url.startsWith('/')) {
+        return `${window.location.origin}${url}`;
+    } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        console.log(`Invalid URL (${url}) in map's sources`);
+    }
+    return url;
+}
+
+//==============================================================================
+
+class FlatMap
+{
+    constructor(htmlElementId, mapStyle, options)
     {
+        // Set base of URLs in map's sources
+
+        for (const [id, source] of Object.entries(mapStyle.sources)) {
+            if (source.url) {
+                source.url = addUrlBase(source.url);
+            }
+            if (source.tiles) {
+                const tiles = []
+                for (const tileUrl of source.tiles) {
+                    tiles.push(addUrlBase(tileUrl));
+                }
+                source.tiles = tiles;
+            }
+        }
+
+        this._hasBackground = ('background' in mapStyle.sources);
+
+        this._options = options;
+
         this._map = new mapboxgl.Map({
-            style: `/${mapId}/`,
+            style: mapStyle,
             container: htmlElementId,
             hash: true
         });
@@ -48,14 +82,88 @@ export class FlatMap
         }));
         */
 
+        if ('maxzoom' in options.metadata) {
+            this._map.setMaxZoom(Number(options.metadata.maxzoom));
+        }
+
+        this._map.addControl(new mapboxgl.FullscreenControl());
+
         this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
         this._map.dragRotate.disable();
         this._map.touchZoomRotate.disableRotation();
 
-        this._map.addControl(new mapboxgl.FullscreenControl());
 
         this._tooltip = new ToolTip(this._map);
+
+        // Load map layers when all sources have loaded
+
+        this._layerManager = new LayerManager(this._map)
+
+        this._map.on('load', this.loadLayers_.bind(this));
     }
+
+    loadLayers_()
+    //===========
+    {
+        // Add a background layer if we have one
+
+        if (this._hasBackground && this._map.isSourceLoaded('background')) {
+            this._map.addLayer(ImageLayer.style('background', 'background'));
+        }
+
+        // Add map's layers
+
+        for (const layer of this._options.layers) {
+            this._layerManager.addLayer(layer);
+        }
+
+    }
+}
+
+//==============================================================================
+
+function showError(htmlElementId, error)
+{
+    const container = document.getElementById(htmlElementId);
+    container.style = 'text-align: center; color: red;';
+    container.innerHTML = `<h3>${error}</h3`;
+}
+
+//==============================================================================
+
+export async function loadMap(mapId, htmlElementId)
+{
+    const getIndex = await fetch(utils.absoluteUrl(`${mapId}/`), {
+        headers: { "Accept": "application/json; charset=utf-8" },
+        method: 'GET'
+    });
+
+    if (!getIndex.ok) {
+        showError(htmlElementId, `Missing index file for map '${mapId}'`);
+        return null;
+    }
+
+    const options = await getIndex.json();
+    if (mapId !== options.id) {
+        showError(htmlElementId, `Map '${mapId}' has wrong ID in index`);
+        return null;
+    }
+
+    const getStyle = await fetch(utils.absoluteUrl(`${mapId}/style`), {
+        headers: { "Accept": "application/json; charset=utf-8" },
+        method: 'GET'
+    });
+
+    if (!getStyle.ok) {
+        showError(htmlElementId, `Missing style file for map '${mapId}'`);
+        return null;
+    }
+
+    const mapStyle = await getStyle.json();
+
+    return new FlatMap(htmlElementId,
+                       mapStyle,
+                       options);
 }
 
 //==============================================================================
