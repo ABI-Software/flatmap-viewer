@@ -23,16 +23,14 @@ limitations under the License.
 //==============================================================================
 
 const PAINT_STYLES = {
-    'image-opacity': 0.1,
+    'image-opacity': 1,
     'fill-color': '#fff',
     'fill-opacity': 0.7,
-    'fill-outline-color': '#f0f',  // ??
-    'fill-outline-width': 1,       // ??
-    'border-stroke-color': '#0f0',
-    'border-stroke-opacity': 0.7,
-    'border-stroke-width': 0.25,
+    'border-stroke-color': '#808',
+    'border-stroke-opacity': 0.1,
+    'border-stroke-width': 0.15,
     'line-stroke-color': '#f00',
-    'line-stroke-opacity': 1,
+    'line-stroke-opacity': 0.1,
     'line-stroke-width': 0.5
 };
 
@@ -40,14 +38,14 @@ const PAINT_STYLES = {
 
 class LineWidth
 {
-    static scale(width)   // width at zoom 4
+    static scale(width)   // width at zoom 0
     {
         return [
             "interpolate",
             ["exponential", 2],
             ["zoom"],
-            0, width/16,
-            10, width*64
+            0, width,
+            7, width*128
         ];
     }
 }
@@ -70,8 +68,12 @@ class FeatureFillLayer
             ],
             'paint': {
                 'fill-color': PAINT_STYLES['fill-color'],
-                'fill-outline-color': PAINT_STYLES['fill-outline-color'],
-                'fill-opacity': PAINT_STYLES['fill-opacity']
+                'fill-opacity': [
+                    "case",
+                    [ "has", "feature-id" ],
+                    0,
+                    PAINT_STYLES['fill-opacity']
+                ]
             }
         };
     }
@@ -95,7 +97,12 @@ class FeatureBorderLayer
             ],
             'paint': {
                 'line-color': PAINT_STYLES['border-stroke-color'],
-                'line-opacity': PAINT_STYLES['border-stroke-opacity'],
+                'line-opacity': [
+                    "case",
+                    [ "has", "feature-id" ],
+                    1,
+                    PAINT_STYLES['border-stroke-opacity']
+                ],
                 'line-width': LineWidth.scale(PAINT_STYLES['border-stroke-width'])
             }
         };
@@ -145,14 +152,14 @@ export class FeatureLayer
 
 export class ImageLayer
 {
-    static style(source_id, layer_id, opacity=PAINT_STYLES['image-opacity'])
+    static style(source_id, layer_id)
     {
         return {
             'id': `${layer_id}-image`,
             'source': source_id,
             'type': 'raster',
             'paint': {
-                'raster-opacity': opacity   // depends on 'highlight'
+                'raster-opacity': PAINT_STYLES['image-opacity']
             }
         };
     }
