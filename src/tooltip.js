@@ -44,7 +44,6 @@ function valueToString(value)
 function describeProperty(name, value)
 {
     return `<div class="flatmap-property">
-  <div class="flatmap-property-name">${name}</div>
   <div class="flatmap-property-value">${valueToString(value)}</div>
 </div>`;
 }
@@ -52,8 +51,6 @@ function describeProperty(name, value)
 function describeFeature(feature)
 {
     const html = [];
-    html.push(`<div class="flatmap-layer">${feature.layer['source-layer'] || feature.layer.source}</div>`);
-    html.push(describeProperty('$type', feature.geometry.type));
     for (const [name, value] of Object.entries(feature.properties)) {
         html.push(describeProperty(name, value));
     }
@@ -64,9 +61,9 @@ function describeFeatures(features)
 {
     const html = [];
     html.push('<div class="flatmap-features">');
-    for (const feature of features) {
-        html.push(describeFeature(feature));
-    }
+    //for (const feature of features) {
+        html.push(describeFeature(features[0]));
+    //}
     html.push('</div>');
     return html.join('\n');
 }
@@ -89,7 +86,7 @@ export class ToolTip
 
     mouseMoveEvent_(e)
     {
-        const features = this._map.queryRenderedFeatures(e.point);
+        const features = this._map.queryRenderedFeatures(e.point).filter(f => 'feature-id' in f.properties);
 
         this._map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
