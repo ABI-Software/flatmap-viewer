@@ -37,7 +37,11 @@ import * as utils from './utils.js';
 function addUrlBase(url)
 {
     if (url.startsWith('/')) {
-        return `${window.location.origin}${url}`;
+        if (window.location.pathname.endsWith('/')) {
+            return `${window.location.origin}${window.location.pathname}${url.substr(1)}`;
+        } else {
+            return `${window.location.origin}${window.location.pathname}${url}`;
+        }
     } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
         console.log(`Invalid URL (${url}) in map's sources`);
     }
