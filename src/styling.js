@@ -23,12 +23,12 @@ limitations under the License.
 //==============================================================================
 
 const PAINT_STYLES = {
-    'image-opacity': 1,
+    'image-opacity': 0.5,
     'fill-color': '#fff',
-    'fill-opacity': 0.7,
-    'border-stroke-color': '#808',
+    'fill-opacity': 0.4,
+    'border-stroke-color': 'blue',
     'border-stroke-opacity': 0.1,
-    'border-stroke-width': 0.15,
+    'border-stroke-width': 0.5,
     'line-stroke-color': '#f00',
     'line-stroke-opacity': 0.1,
     'line-stroke-width': 0.5
