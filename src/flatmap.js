@@ -137,7 +137,7 @@ function showError(htmlElementId, error)
 
 export async function loadMap(mapId, htmlElementId)
 {
-    const getIndex = await fetch(utils.absoluteUrl(`${mapId}/`), {
+    const getIndex = await fetch(utils.makeUrlAbsolute(`${mapId}/`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
@@ -153,7 +153,7 @@ export async function loadMap(mapId, htmlElementId)
         return null;
     }
 
-    const getStyle = await fetch(utils.absoluteUrl(`${mapId}/style`), {
+    const getStyle = await fetch(utils.makeUrlAbsolute(`${mapId}/style`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });

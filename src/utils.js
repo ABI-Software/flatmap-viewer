@@ -22,9 +22,11 @@ limitations under the License.
 
 //==============================================================================
 
-export function absoluteUrl(relativePath)
+export function makeUrlAbsolute(relativePath)
 {
-    const url = new URL(relativePath, window.location.href);
+    const base = window.location.pathname.endsWith('/') ? window.location.pathname
+                                                        : (window.location.pathname + '/');
+    const url = new URL(relativePath, window.location.origin + base);
     return url.href;
 }
 

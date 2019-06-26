@@ -74,14 +74,14 @@ export class LayerManager
     static tileUrl_(mapId, source, coord, ratio, proj)
     //================================================
     {
-        return utils.absoluteUrl(`${mapId}/tiles/${source}/${coord[0]}/${coord[1]}/${-coord[2] - 1}`)
+        return utils.makeUrlAbsolute(`${mapId}/tiles/${source}/${coord[0]}/${coord[1]}/${-coord[2] - 1}`)
     }
 
     featureUrl_(source=null)
     //======================
     {
         return (source === null) ? null
-                                 : utils.absoluteUrl(`${this._map.id}/features/${source}`);
+                                 : utils.makeUrlAbsolute(`${this._map.id}/features/${source}`);
     }
 
     lower(layerId)
