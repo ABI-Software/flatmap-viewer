@@ -52,8 +52,10 @@ function addUrlBase(url)
 
 class FlatMap
 {
-    constructor(htmlElementId, mapStyle, options)
+    constructor(htmlElementId, mapId, mapStyle, options)
     {
+        this._id = mapId;
+
         // Set base of URLs in map's sources
 
         for (const [id, source] of Object.entries(mapStyle.sources)) {
@@ -104,6 +106,12 @@ class FlatMap
         this._layerManager = new LayerManager(this._map)
 
         this._map.on('load', this.loadLayers_.bind(this));
+    }
+
+    get id()
+    //======
+    {
+        return this._id;
     }
 
     loadLayers_()
@@ -165,9 +173,7 @@ export async function loadMap(mapId, htmlElementId)
 
     const mapStyle = await getStyle.json();
 
-    return new FlatMap(htmlElementId,
-                       mapStyle,
-                       options);
+    return new FlatMap(htmlElementId, mapId, mapStyle, options);
 }
 
 //==============================================================================
