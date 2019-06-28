@@ -29,7 +29,8 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 import {ImageLayer} from './styling.js';
 import {LayerManager} from './layers.js';
-import {ToolTip} from './tooltip.js'
+import {UserInteractions} from './interactions.js';
+
 import * as utils from './utils.js';
 
 //==============================================================================
@@ -99,7 +100,7 @@ class FlatMap
         this._map.touchZoomRotate.disableRotation();
 
 
-        this._tooltip = new ToolTip(this._map);
+        this._userInteractions = new UserInteractions(this._map);
 
         // Load map layers when all sources have loaded
 

@@ -75,25 +75,18 @@ export class ToolTip
     constructor(map)
     {
         this._map = map;
-
         this._popup = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: false
         });
-
-        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
     }
 
-    mouseMoveEvent_(e)
+    update(features, position)
     {
-        const features = this._map.queryRenderedFeatures(e.point).filter(f => 'feature-id' in f.properties);
-
-        this._map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
-
         if (!features.length) {
             this._popup.remove();
         } else {
-            this._popup.setLngLat(e.lngLat);
+            this._popup.setLngLat(position);
             this._popup.setHTML(`<div class="flatmap-popup">${describeFeatures(features)}</div>`);
             this._popup.addTo(this._map);
         }
