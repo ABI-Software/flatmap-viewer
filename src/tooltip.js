@@ -61,9 +61,7 @@ function describeFeatures(features)
 {
     const html = [];
     html.push('<div class="flatmap-features">');
-    //for (const feature of features) {
-        html.push(describeFeature(features[0]));
-    //}
+    html.push(describeFeature(features[0]));    // Tooltip is just for the uppermost feature
     html.push('</div>');
     return html.join('\n');
 }
