@@ -129,7 +129,14 @@ class FlatMap
         for (const layer of this._options.layers) {
             this._layerManager.addLayer(layer);
         }
+    }
 
+    resize()
+    //======
+    {
+        // Resize our map
+
+        this._map.resize();
     }
 }
 
