@@ -22,7 +22,6 @@ limitations under the License.
 
 //==============================================================================
 
-const ATTRIBUTION_ABI = '© <a href="https://www.auckland.ac.nz/en/abi.html">Auckland Bioengineering Institute</a>';
 import * as style from './styling.js';
 import * as utils from './utils.js';
 
