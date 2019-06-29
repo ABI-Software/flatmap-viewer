@@ -23,7 +23,7 @@ limitations under the License.
 //==============================================================================
 
 export const PAINT_STYLES = {
-    'background-opacity': 0.1,
+    'background-opacity': 0.2,
     'fill-color': '#fff',
     'fill-opacity': 0,
     'border-stroke-color': 'blue',
