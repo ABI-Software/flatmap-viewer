@@ -27,7 +27,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
-import {ImageLayer} from './styling.js';
 import {LayerManager} from './layers.js';
 import {UserInteractions} from './interactions.js';
 
@@ -100,13 +99,13 @@ class FlatMap
         this._map.touchZoomRotate.disableRotation();
 
 
-        this._userInteractions = new UserInteractions(this._map);
+        // Finish initialisation when all sources have loaded
 
-        // Load map layers when all sources have loaded
+        this._layerManager = null;
 
-        this._layerManager = new LayerManager(this._map)
+        this._userInteracions = null;
 
-        this._map.on('load', this.loadLayers_.bind(this));
+        this._map.on('load', this.finalise_.bind(this));
     }
 
     get id()
@@ -115,20 +114,50 @@ class FlatMap
         return this._id;
     }
 
-    loadLayers_()
-    //===========
+    get activeLayerId()
+    //=================
     {
+        return this._layerManager.activeLayerId;
+    }
+
+    get layers()
+    //==========
+    {
+        return this._options.layers;
+    }
+
+    get map()
+    //=======
+    {
+        return this._map;
+    }
+
+    get layerManager()
+    //================
+    {
+        return this._layerManager;
+    }
+
+    finalise_()
+    //=========
+    {
+        // Manage our layers
+
+        this._layerManager = new LayerManager(this)
+
         // Add a background layer if we have one
 
-        if (this._hasBackground && this._map.isSourceLoaded('background')) {
-            this._map.addLayer(ImageLayer.style('background', 'background'));
+        if (this._hasBackground) {
+            this._layerManager.addBackgroundLayer();
         }
 
-        // Add map's layers
+        // Add the map's layers
 
-        for (const layer of this._options.layers) {
+        for (const layer of this.layers) {
             this._layerManager.addLayer(layer);
         }
+
+        this._userInteractions = new UserInteractions(this);
     }
 
     resize()

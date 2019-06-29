@@ -23,46 +23,117 @@ limitations under the License.
 //==============================================================================
 
 const ATTRIBUTION_ABI = '© <a href="https://www.auckland.ac.nz/en/abi.html">Auckland Bioengineering Institute</a>';
+import * as style from './styling.js';
+import * as utils from './utils.js';
 
 //==============================================================================
 
-import {FeatureLayer, ImageLayer} from './styling.js';
-//import {LayerSwitcher} from './layerswitcher.js';
-import * as utils from './utils.js';
+const FEATURE_SOURCE_ID = 'features';
+
+//==============================================================================
+
+class MapFeatureLayer
+{
+    constructor(map, sourceLayerId)
+    {
+        this._map = map;
+        this._id = sourceLayerId;
+
+        const backgroundId = `${sourceLayerId}-background`;
+        if (this._map.isSourceLoaded(backgroundId)) {
+            this._backgroundLayerId = backgroundId;
+            this._map.addLayer(style.ImageLayer.style(this._backgroundLayerId, `${sourceLayerId}-background`));
+        } else {
+            this._backgroundLayerId = null;
+        }
+        this._fillLayerId = `${sourceLayerId}-fill`;
+        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, sourceLayerId));
+        this._borderLayerId = `${sourceLayerId}-border`;
+        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, sourceLayerId));
+        this._lineLayerId = `${sourceLayerId}-line`;
+        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, sourceLayerId));
+
+        this._topLayerId = (this._backgroundLayerId !== null) ? this._backgroundLayerId
+                                                              : this._fillLayerId;
+    }
+
+    get id()
+    //======
+    {
+        return this._id;
+    }
+
+    activate()
+    //========
+    {
+        if (this._backgroundLayerId !== null) {
+            this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 1);
+        }
+        this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
+                                   style.FeatureBorderLayer.lineOpacity(true));
+        this._map.setPaintProperty(this._borderLayerId, 'line-width',
+                                   style.FeatureBorderLayer.lineWidth(true));
+    }
+
+    deactivate()
+    //==========
+    {
+        if (this._backgroundLayerId !== null) {
+            this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 0);
+        }
+        this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
+                                   style.FeatureBorderLayer.lineOpacity());
+        this._map.setPaintProperty(this._borderLayerId, 'line-width',
+                                   style.FeatureBorderLayer.lineWidth());
+    }
+
+    move(beforeLayer)
+    //===============
+    {
+        const beforeTopLayerId = beforeLayer ? beforeLayer._topLayerId : undefined;
+
+        if (this._backgroundLayerId !== null) {
+            this._map.moveLayer(this._backgroundLayerId, beforeTopLayerId);
+        }
+        this._map.moveLayer(this._fillLayerId, beforeTopLayerId);
+        this._map.moveLayer(this._borderLayerId, beforeTopLayerId);
+        this._map.moveLayer(this._lineLayerId, beforeTopLayerId);
+    }
+}
 
 //==============================================================================
 
 export class LayerManager
 {
-    constructor(map, switcher=false)
+    constructor(flatmap, switcher=false)
     {
-        this._map = map;
+        this._flatmap = flatmap;
+        this._map = flatmap.map;
         this._layers = new Map;
+        this._activeLayer = null;
+    }
 
-        // Add a layer switcher if option set
+    get activeLayerId()
+    //=================
+    {
+        return this._activeLayer ? this._activeLayer.id : '';
+    }
 
-        if (switcher) {
-            this._layerSwitcher = new LayerSwitcher({tipLabel: "Layers"});
-            map.addControl(this._layerSwitcher);
+    addBackgroundLayer()
+    //==================
+    {
+        if (this._map.isSourceLoaded('background')) {
+            this._map.addLayer(style.ImageLayer.style('background', 'background',
+                                                      style.PAINT_STYLES['background-opacity']));
         }
     }
 
     addLayer(layerId)
     //===============
     {
-        const layerStyles = new utils.List;
+        const featureLayer = new MapFeatureLayer(this._map, layerId);
 
-        if (this._map.isSourceLoaded(`${layerId}-background`)) {
-            layerStyles.append(ImageLayer.style(`${layerId}-background`, layerId));
-        }
-
-        layerStyles.extend(FeatureLayer.styles('features', layerId));
-
-        for (const style of layerStyles) {
-            this._map.addLayer(style)
-        }
-
-        this._layers.set(layerId, layerStyles);
+        this._layers.set(layerId, featureLayer);
     }
 
     get layers()
@@ -71,56 +142,50 @@ export class LayerManager
         return this._layers;
     }
 
-    static tileUrl_(mapId, source, coord, ratio, proj)
-    //================================================
+    activate(layerId)
+    //===============
     {
-        return utils.makeUrlAbsolute(`${mapId}/tiles/${source}/${coord[0]}/${coord[1]}/${-coord[2] - 1}`)
+        if (this._activeLayer === null
+         || this._activeLayer.id !== layerId) {
+            if (layerId === '') {
+                this._activeLayer.deactivate();
+                this._activeLayer = null;
+            } else {
+                const layer = this._layers.get(layerId);
+                if (layer !== undefined) {
+                    if (this._activeLayer !== null) {
+                        this._activeLayer.deactivate();
+                    }
+                    layer.activate();
+                    this._activeLayer = layer;
+                }
+            }
+        }
     }
 
-    featureUrl_(source=null)
-    //======================
+    makeUppermost(layerId)
+    //====================
     {
-        return (source === null) ? null
-                                 : utils.makeUrlAbsolute(`${this._map.id}/features/${source}`);
+        // position before top layer
     }
+
+    makeLowest(layerId)
+    //=================
+    {
+        // position after bottom layer (before == undefined)
+    }
+
 
     lower(layerId)
     //============
     {
-        /*
-        const i = this._layers.findIndex(l => (l === layer));
-        if (i > 0) {
-            this._layers[i] = this._layers[i-1];
-            this._layers[i-1] = layer;
-            const featureLayer = this._featureLayerCollection.removeAt(i);
-            this._featureLayerCollection.insertAt(i-1, featureLayer);
-            const tileLayer = this._imageTileLayerCollection.removeAt(i);
-            this._imageTileLayerCollection.insertAt(i-1, tileLayer);
-            // Redraw map and switcher panel
-            this._map.render();
-            this._layerSwitcher.renderPanel();
-        }
-        */
+        // position before second layer underneath...
     }
 
     raise(layerId)
     //============
     {
-        /*
-        const numLayers = this._featureLayerCollection.getLength();
-        const i = this._layers.findIndex(l => (l === layer));
-        if (i >= 0 && i < (numLayers-1)) {
-            this._layers[i] = this._layers[i+1];
-            this._layers[i+1] = layer;
-            const featureLayer = this._featureLayerCollection.removeAt(i);
-            this._featureLayerCollection.insertAt(i+1, featureLayer);
-            const tileLayer = this._imageTileLayerCollection.removeAt(i);
-            this._imageTileLayerCollection.insertAt(i+1, tileLayer);
-            // Redraw map and switcher panel
-            this._map.render();
-            this._layerSwitcher.renderPanel();
-        }
-        */
+        // position before layer above...
     }
 }
 

@@ -39,15 +39,14 @@ export class MessagePasser
         this._channel.addEventListener('message', callback);
     }
 
-    broadcast(feature, action, data='')
+    broadcast(action, resource, data={})
     {
-        console.log('Sending', action, feature.properties);
+        console.log('Sending', action, resource, data);
 
         this._channel.postMessage({
             "sender": this._id,
-            "resource": feature.properties['feature-id'],
-            "models": feature.properties['models'] || '',
             "action": action,
+            "resource": resource,
             "data": data
         });
     }

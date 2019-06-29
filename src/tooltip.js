@@ -27,6 +27,7 @@ import mapboxgl from 'mapbox-gl';
 //==============================================================================
 
 function valueToString(value)
+//===========================
 {
     if (typeof value === 'undefined' || value === null){
         return value;
@@ -42,13 +43,15 @@ function valueToString(value)
 }
 
 function describeProperty(name, value)
+//====================================
 {
-    return `<div class="flatmap-property">
-  <div class="flatmap-property-value">${valueToString(value)}</div>
+    return `<div class="features-property">
+  <div class="features-property-value">${valueToString(value)}</div>
 </div>`;
 }
 
 function describeFeature(feature)
+//===============================
 {
     const html = [];
     for (const [name, value] of Object.entries(feature.properties)) {
@@ -57,37 +60,32 @@ function describeFeature(feature)
     return html.join('\n');
 }
 
-function describeFeatures(features)
-{
-    const html = [];
-    html.push('<div class="flatmap-features">');
-    html.push(describeFeature(features[0]));    // Tooltip is just for the uppermost feature
-    html.push('</div>');
-    return html.join('\n');
-}
-
 //==============================================================================
 
 export class ToolTip
 {
-    constructor(map)
+    constructor(flatmap)
     {
-        this._map = map;
+        this._flatmap = flatmap;
+        this._map = flatmap.map;
         this._popup = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: false
         });
     }
 
-    update(features, position)
+    hide()
+    //====
     {
-        if (!features.length) {
-            this._popup.remove();
-        } else {
-            this._popup.setLngLat(position);
-            this._popup.setHTML(`<div class="flatmap-popup">${describeFeatures(features)}</div>`);
-            this._popup.addTo(this._map);
-        }
+        this._popup.remove();
+    }
+
+    show(feature, position)
+    //=====================
+    {
+        this._popup.setLngLat(position);
+        this._popup.setHTML(`<div class="features-tooltip">${describeFeature(feature)}</div>`);
+        this._popup.addTo(this._map);
     }
 }
 

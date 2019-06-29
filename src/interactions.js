@@ -23,23 +23,25 @@ limitations under the License.
 //==============================================================================
 
 import {MessagePasser} from './messages.js';
+import {LayerSwitcher} from './layerswitcher.js'
 import {ToolTip} from './tooltip.js'
 
 //==============================================================================
 
 export class UserInteractions
 {
-    constructor(map)
+    constructor(flatmap)
     {
-        this._map = map;
+        this._flatmap = flatmap;
+        this._map = flatmap.map;
 
-        this._highlightedFeatures = [];
-        this._selectedFeature = null;
-        this._enabled = false;
+        this._highlightedFeature = null;
+
+        this._map.addControl(new LayerSwitcher(flatmap, 'Select organ system'));
 
         // Display a tooltip at the mouse pointer
 
-        this._tooltip = new ToolTip(map);
+        this._tooltip = new ToolTip(flatmap);
 
         // Setup callbacks
         //NB. Can be restricted to a layer...
@@ -49,41 +51,37 @@ export class UserInteractions
 
         // Pass messages with other applications
 
-        this._messagePasser = new MessagePasser(map.id, json => this.process(json));
+        this._messagePasser = new MessagePasser(flatmap.id, json => this.processMessage_(json));
     }
 
-    disable()
-    //=======
+    processMessage_(msg)
+    //==================
     {
-        this._selectedFeature = null;
-        this.clearStyle_();
-        this._enabled = false;
-    }
+        console.log(this._flatmap.id, 'received', msg);
+        if (msg.action === 'activate-layer') {
+            this._flatmap.layerManager.activate(msg.resource);
 
-    enable()
-    //======
-    {
-        this._enabled = true;
-    }
-
-    clearStyle_()
-    //===========
-    {
-    }
-
-    process(remote)
-    //=============
-    {
-        console.log(this._map.id, 'received', remote);
-        if (remote.action === 'select') {
-            // remote.type has class of resource
-            // features = this._map.getFeaturesByType(remote.type);
-            // highlight features (==> unhighlight others)
-            // What about zooming to 1.4*features.extent() (20% margin all around)??
-            // Activate (and raise to top??) feature.layer() ??
         }
     }
 
+    highlightFeature_(feature)
+    //========================
+    {
+        this.unhighlightFeatures_(false);
+        this._map.setFeatureState(feature, { "highlighted": true })
+        this._highlightedFeature = feature;
+    }
+
+    unhighlightFeatures_(reset=true)
+    //==============================
+    {
+        if (this._highlightedFeature !== null) {
+            this._map.removeFeatureState(this._highlightedFeature, "highlighted");
+            if (reset) {
+                this._highlightedFeature = null;
+            }
+        }
+    }
 
     mouseMoveEvent_(e)
     //================
@@ -96,7 +94,17 @@ export class UserInteractions
         const features = this._map.queryRenderedFeatures(e.point).filter(f => 'feature-id' in f.properties);
         this._map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
-        this._tooltip.update(features, e.lngLat);
+        // Highlight top feature but only if in active layer...
+
+        for (const feature of features) {
+            if (this._flatmap.activeLayerId === feature.sourceLayer) {
+                this.highlightFeature_(feature);
+                this._tooltip.show(feature, e.lngLat);
+                return;
+            }
+        }
+        this.unhighlightFeatures_();
+        this._tooltip.hide();
     }
 
 
@@ -105,8 +113,11 @@ export class UserInteractions
     {
         const features = this._map.queryRenderedFeatures(e.point).filter(f => 'feature-id' in f.properties);
 
-        if (features.length) {
-            this._messagePasser.broadcast(features[0], 'select');
+        for (const feature of features) {
+            if (this._flatmap.activeLayerId === feature.sourceLayer) {
+                this._messagePasser.broadcast('select', feature.properties['feature-id'], feature.properties);
+                return;
+            }
         }
     }
 
