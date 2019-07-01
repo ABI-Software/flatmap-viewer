@@ -89,6 +89,8 @@ class FlatMap
         }));
         */
 
+        this._map.setRenderWorldCopies(false);
+
         if ('maxzoom' in options) {
             this._map.setMaxZoom(options.maxzoom);
         }
