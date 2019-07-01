@@ -52,9 +52,10 @@ function addUrlBase(url)
 
 class FlatMap
 {
-    constructor(htmlElementId, mapId, mapStyle, options)
+    constructor(htmlElementId, mapId, mapStyle, options, annotations)
     {
         this._id = mapId;
+        this._annotations = annotations;
 
         // Set base of URLs in map's sources
 
@@ -88,8 +89,8 @@ class FlatMap
         }));
         */
 
-        if ('maxzoom' in options.metadata) {
-            this._map.setMaxZoom(Number(options.metadata.maxzoom));
+        if ('maxzoom' in options) {
+            this._map.setMaxZoom(options.maxzoom);
         }
 
         this._map.addControl(new mapboxgl.FullscreenControl());
@@ -120,6 +121,12 @@ class FlatMap
         return this._layerManager.activeLayerId;
     }
 
+    get annotations()
+    //===============
+    {
+        return this._annotations;
+    }
+
     get layers()
     //==========
     {
@@ -136,6 +143,18 @@ class FlatMap
     //================
     {
         return this._layerManager;
+    }
+
+    annotationAbout(featureId)
+    //========================
+    {
+        return this._annotations[featureId];
+    }
+
+    hasAnnotationAbout(featureId)
+    //===========================
+    {
+        return featureId in this._annotations;
     }
 
     finalise_()
@@ -210,7 +229,19 @@ export async function loadMap(mapId, htmlElementId)
 
     const mapStyle = await getStyle.json();
 
-    return new FlatMap(htmlElementId, mapId, mapStyle, options);
+    const getAnnotations = await fetch(utils.makeUrlAbsolute(`${mapId}/annotations`), {
+        headers: { "Accept": "application/json; charset=utf-8" },
+        method: 'GET'
+    });
+
+    if (!getAnnotations.ok) {
+        showError(htmlElementId, `Missing annotations for map '${mapId}'`);
+        return null;
+    }
+
+    const annotations = await getAnnotations.json();
+
+    return new FlatMap(htmlElementId, mapId, mapStyle, options, annotations);
 }
 
 //==============================================================================

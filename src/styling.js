@@ -43,7 +43,7 @@ class LineWidth
             "let", "linewidth", [
                 'case',
                 ['boolean', ['feature-state', 'highlighted'], false], 2*width,
-                ['has', 'feature-id'], width,
+                ['boolean', ['feature-state', 'annotated'], false], width,
                 0
             ],
             ["interpolate",
@@ -110,7 +110,7 @@ export class FeatureBorderLayer
             return [
                 'case',
                 ['boolean', ['feature-state', 'highlighted'], false], 1,
-                ['has', 'feature-id'], 1,
+                ['boolean', ['feature-state', 'annotated'], false], 1,
                 0
             ];
         } else {

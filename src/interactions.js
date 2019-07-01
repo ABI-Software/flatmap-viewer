@@ -28,6 +28,23 @@ import {ToolTip} from './tooltip.js'
 
 //==============================================================================
 
+function domFeatureDescription(annotation)
+{
+    const tooltipElement = document.createElement('div');
+    tooltipElement.className = 'flatmap-feature-tooltip';
+
+    for (const value of annotation.annotation.split(/\s+/)) {
+        const valueElement = document.createElement('div');
+        valueElement.className = 'flatmap-feature-property';
+        valueElement.textContent = value;
+        tooltipElement.appendChild(valueElement);
+    }
+
+    return tooltipElement;
+}
+
+//==============================================================================
+
 export class UserInteractions
 {
     constructor(flatmap)
@@ -36,6 +53,15 @@ export class UserInteractions
         this._map = flatmap.map;
 
         this._highlightedFeature = null;
+
+        for (const [id, annotation] of Object.entries(flatmap.annotations)) {
+            const feature = {
+                id: id.split('-')[1],
+                source: "features",
+                sourceLayer: annotation.layer
+            }
+            this._map.setFeatureState(feature, { "annotated": true });
+        }
 
         this._map.addControl(new LayerSwitcher(flatmap, 'Select organ system'));
 
@@ -46,8 +72,8 @@ export class UserInteractions
         // Setup callbacks
         //NB. Can be restricted to a layer...
 
-        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
         this._map.on('click', this.clickEvent_.bind(this));
+        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
 
         // Pass messages with other applications
 
@@ -83,39 +109,52 @@ export class UserInteractions
         }
     }
 
+    activeFeatures_(e)
+    //================
+    {
+        const activeLayerId = this._flatmap.activeLayerId;
+        return this._map.queryRenderedFeatures(e.point).filter(f => {
+            return activeLayerId === f.sourceLayer
+                && 'id' in f.properties;
+            }
+        );
+    }
+
     mouseMoveEvent_(e)
     //================
     {
         // Highlight feature
         // Show tooltip
         //
-        // Only in active layer ??
 
-        const features = this._map.queryRenderedFeatures(e.point).filter(f => 'feature-id' in f.properties);
-        this._map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+        const features = this.activeFeatures_(e);
 
-        // Highlight top feature but only if in active layer...
+        // Highlight top feature but only in active layer...
 
         for (const feature of features) {
-            if (this._flatmap.activeLayerId === feature.sourceLayer) {
+            if (this._flatmap.hasAnnotationAbout(feature.properties.id)) {
+                const annotation = this._flatmap.annotationAbout(feature.properties.id);
                 this.highlightFeature_(feature);
-                this._tooltip.show(feature, e.lngLat);
+                this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
+                this._map.getCanvas().style.cursor = 'pointer';
                 return;
             }
         }
-        this.unhighlightFeatures_();
+        this._map.getCanvas().style.cursor = '';
         this._tooltip.hide();
+        this.unhighlightFeatures_();
     }
 
 
     clickEvent_(e)
     //============
     {
-        const features = this._map.queryRenderedFeatures(e.point).filter(f => 'feature-id' in f.properties);
+        const features = this.activeFeatures_(e);
 
         for (const feature of features) {
-            if (this._flatmap.activeLayerId === feature.sourceLayer) {
-                this._messagePasser.broadcast('select', feature.properties['feature-id'], feature.properties);
+            if (this._flatmap.hasAnnotationAbout(feature.properties.id)) {
+                const annotation = this._flatmap.annotationAbout(feature.properties.id);
+                this._messagePasser.broadcast('select', feature.properties.id, annotation);
                 return;
             }
         }
