@@ -127,12 +127,13 @@ export class LayerManager
         }
     }
 
-    addLayer(layerId)
-    //===============
+    addLayer(layer)
+    //=============
     {
-        const featureLayer = new MapFeatureLayer(this._map, layerId);
+        const featureLayer = new MapFeatureLayer(this._map, layer.id);
+        // layer.description
 
-        this._layers.set(layerId, featureLayer);
+        this._layers.set(layer.id, featureLayer);
     }
 
     get layers()

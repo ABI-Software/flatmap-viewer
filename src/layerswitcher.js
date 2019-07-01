@@ -57,7 +57,7 @@ export class LayerSwitcher
 
         const features = this._map.getSource('features');
         const featureDescriptions = new Map();
-        for (const layer of features.vectorLayers) {
+        for (const layer of this._flatmap.layers) {
             featureDescriptions.set(layer.id, layer.description);
         }
 
@@ -65,7 +65,10 @@ export class LayerSwitcher
         selector.onchange = this.selectionChanged_.bind(this);
         selector.appendChild(newOption('', `${this._prompt}:`));
         for (const layer of this._flatmap.layers) {
-            selector.appendChild(newOption(layer, featureDescriptions.get(layer)));
+            const description = featureDescriptions.get(layer.id);
+            if (description !== '') {
+                selector.appendChild(newOption(layer.id, description));
+            }
         }
 
         this._container.appendChild(selector);
@@ -88,9 +91,18 @@ export class LayerSwitcher
     processMessage_(msg)
     //==================
     {
-        console.log(this._flatmap.id, 'layerSwitcher', msg);
         if (msg.action === 'activate-layer') {
             // change selected status of option with ID === msg.resource
+            for (const option of this._container.children[0].children) {
+                if (option.value === msg.resource) {
+                    if (option.selected) {
+                        break;   // No change
+                    }
+                    option.selected = true;
+                } else if (option.selected) {
+                    option.selected = false;
+                }
+            }
         }
     }
 
