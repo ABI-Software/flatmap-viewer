@@ -95,7 +95,9 @@ class FlatMap
             this._map.setMaxZoom(options.maxzoom);
         }
 
-        this._map.addControl(new mapboxgl.FullscreenControl());
+        if (options.fullscreenControl !== false) {
+            this._map.addControl(new mapboxgl.FullscreenControl());
+        }
 
         this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
         this._map.dragRotate.disable();
@@ -201,7 +203,7 @@ function showError(htmlElementId, error)
 
 //==============================================================================
 
-export async function loadMap(mapId, htmlElementId)
+export async function loadMap(mapId, htmlElementId, options={})
 {
     const getIndex = await fetch(utils.makeUrlAbsolute(`${mapId}/`), {
         headers: { "Accept": "application/json; charset=utf-8" },
@@ -213,10 +215,14 @@ export async function loadMap(mapId, htmlElementId)
         return null;
     }
 
-    const options = await getIndex.json();
-    if (mapId !== options.id) {
+    const mapOptions = await getIndex.json();
+    if (mapId !== mapOptions.id) {
         showError(htmlElementId, `Map '${mapId}' has wrong ID in index`);
         return null;
+    }
+
+    for (const [name, value] of Object.entries(options)) {
+        mapOptions[name] = value;
     }
 
     const getStyle = await fetch(utils.makeUrlAbsolute(`${mapId}/style`), {
@@ -243,7 +249,7 @@ export async function loadMap(mapId, htmlElementId)
 
     const annotations = await getAnnotations.json();
 
-    return new FlatMap(htmlElementId, mapId, mapStyle, options, annotations);
+    return new FlatMap(htmlElementId, mapId, mapStyle, mapOptions, annotations);
 }
 
 //==============================================================================
