@@ -189,24 +189,23 @@ export class UserInteractions
         for (const feature of features) {
             if (this.annotating || this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const id = feature.properties.id;
-
-
                 this.highlightFeature_(feature);
                 this._tooltip.hide();
                 this._modal = true;
-
-                this._contextMenu.show(e.lngLat, [
-                    { id: id,
-                      prompt: 'Query',
-                      action: this.query_.bind(this)
-                    },
-                    '-',
-                    { id: id,
-                      prompt: 'Annotate',
-                      action: this.annotate_.bind(this)
-                    }
-                ]);
-
+                const items = [{
+                    id: id,
+                    prompt: 'Query',
+                    action: this.query_.bind(this)
+                }];
+                if (this.annotating) {
+                    items.push('-');
+                    items.push({
+                        id: id,
+                        prompt: 'Annotate',
+                        action: this.annotate_.bind(this)
+                    });
+                }
+                this._contextMenu.show(e.lngLat, items);
                 return;
             }
         }
