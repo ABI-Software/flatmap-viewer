@@ -63,7 +63,7 @@ export class UserInteractions
                 id: id.split('-')[1],
                 source: "features",
                 sourceLayer: annotation.layer
-            }
+            };
             this._map.setFeatureState(feature, { "annotated": true });
         }
 
