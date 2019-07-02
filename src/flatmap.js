@@ -170,24 +170,43 @@ class FlatMap
         return featureId in this._annotations;
     }
 
-    setAnnotationAbout(featureId, annotation)
-    //=======================================
+    async setAnnotationAbout(featureId, annotation)
+    //=============================================
     {
         const feature = {
             id: featureId.split('-')[1],
             source: "features",
             sourceLayer: annotation.layer
         };
+        let updateAnnotations = true;
         if (featureId in this._annotations) {
             if (annotation.annotation === '') {
                 delete this._annotations[featureId];
                 this._map.removeFeatureState(feature, "annotated");
             } else {
+                if (this._annotations[featureId].annotation === annotation.annotation) {
+                    updateAnnotations = false;
+                }
                 this._annotations[featureId] = annotation;
             }
         } else if (annotation.annotation !== '') {
             this._map.setFeatureState(feature, { "annotated": true });
             this._annotations[featureId] = annotation;
+        } else {
+            updateAnnotations = false;
+        }
+
+        if (updateAnnotations) {
+            const postAnnotations = await fetch(utils.makeUrlAbsolute(`flatmap/${this.id}/annotations`), {
+                headers: { "Content-Type": "application/json; charset=utf-8" },
+                method: 'POST',
+                body: JSON.stringify(this._annotations)
+            });
+            if (!postAnnotations.ok) {
+                const errorMsg = `Unable to update annotations for '${this.id}' map`;
+                console.log(errorMsg);
+                alert(errorMsg);
+            }
         }
     }
 
