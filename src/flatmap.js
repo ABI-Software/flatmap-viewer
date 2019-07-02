@@ -108,7 +108,7 @@ class FlatMap
 
         this._layerManager = null;
 
-        this._userInteracions = null;
+        this._userInteractions = null;
 
         this._map.on('load', this.finalise_.bind(this));
     }
