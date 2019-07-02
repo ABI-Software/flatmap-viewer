@@ -38,9 +38,9 @@ function addUrlBase(url)
 {
     if (url.startsWith('/')) {
         if (window.location.pathname.endsWith('/')) {
-            return `${window.location.origin}${window.location.pathname}${url.substr(1)}`;
+            return `${window.location.origin}${window.location.pathname}flatmap${url}`;
         } else {
-            return `${window.location.origin}${window.location.pathname}${url}`;
+            return `${window.location.origin}${window.location.pathname}/flatmap${url}`;
         }
     } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
         console.log(`Invalid URL (${url}) in map's sources`);
@@ -205,7 +205,7 @@ function showError(htmlElementId, error)
 
 export async function loadMap(mapId, htmlElementId, options={})
 {
-    const getIndex = await fetch(utils.makeUrlAbsolute(`${mapId}/`), {
+    const getIndex = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
@@ -225,7 +225,7 @@ export async function loadMap(mapId, htmlElementId, options={})
         mapOptions[name] = value;
     }
 
-    const getStyle = await fetch(utils.makeUrlAbsolute(`${mapId}/style`), {
+    const getStyle = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/style`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
@@ -237,7 +237,7 @@ export async function loadMap(mapId, htmlElementId, options={})
 
     const mapStyle = await getStyle.json();
 
-    const getAnnotations = await fetch(utils.makeUrlAbsolute(`${mapId}/annotations`), {
+    const getAnnotations = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/annotations`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
