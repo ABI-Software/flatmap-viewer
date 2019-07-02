@@ -26,42 +26,6 @@ import mapboxgl from 'mapbox-gl';
 
 //==============================================================================
 
-function valueToString(value)
-//===========================
-{
-    if (typeof value === 'undefined' || value === null){
-        return value;
-    } else if (value instanceof Date) {
-        return value.toLocaleString();
-    } else if (typeof value === 'object'
-            || typeof value === 'number'
-            || typeof value === 'string') {
-        return value.toString();
-    } else {
-        return value;
-    }
-}
-
-function describeProperty(name, value)
-//====================================
-{
-    return `<div class="features-property">
-  <div class="features-property-value">${valueToString(value)}</div>
-</div>`;
-}
-
-function describeFeature(feature)
-//===============================
-{
-    const html = [];
-    for (const [name, value] of Object.entries(feature.properties)) {
-        html.push(describeProperty(name, value));
-    }
-    return html.join('\n');
-}
-
-//==============================================================================
-
 export class ToolTip
 {
     constructor(flatmap)
@@ -80,11 +44,11 @@ export class ToolTip
         this._popup.remove();
     }
 
-    show(feature, position)
+    show(position, content)
     //=====================
     {
         this._popup.setLngLat(position);
-        this._popup.setHTML(`<div class="features-tooltip">${describeFeature(feature)}</div>`);
+        this._popup.setDOMContent(content);
         this._popup.addTo(this._map);
     }
 }
