@@ -95,7 +95,7 @@ class FlatMap
             this._map.setMaxZoom(options.maxzoom);
         }
 
-        if (options.fullscreenControl !== false) {
+        if (options.fullscreenControl === true) {
             this._map.addControl(new mapboxgl.FullscreenControl());
         }
 
