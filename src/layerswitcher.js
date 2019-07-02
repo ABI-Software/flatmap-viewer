@@ -67,7 +67,7 @@ export class LayerSwitcher
         for (const layer of this._flatmap.layers) {
             const description = featureDescriptions.get(layer.id);
             if (description !== '') {
-                selector.appendChild(newOption(layer.id, description));
+                selector.appendChild(newOption(`${this._flatmap.id}/${layer.id}`, description));
             }
         }
 
@@ -99,7 +99,8 @@ export class LayerSwitcher
                         break;   // No change
                     }
                     option.selected = true;
-                } else if (option.selected) {
+                } else if (option.selected
+                        && msg.resource.startsWith(`${this._flatmap.id}/`)) {
                     option.selected = false;
                 }
             }

@@ -133,7 +133,7 @@ export class LayerManager
         const featureLayer = new MapFeatureLayer(this._map, layer.id);
         // layer.description
 
-        this._layers.set(layer.id, featureLayer);
+        this._layers.set(`${this._flatmap.id}/${layer.id}`, featureLayer);
     }
 
     get layers()
