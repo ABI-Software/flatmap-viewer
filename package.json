@@ -2,6 +2,7 @@
   "name": "mvtmaps",
   "version": "0.3.1",
   "description": "Flatmap viewer using Mapbox GL",
+  "repository": "https://github.com/dbrnz/flatmap-mvt-viewer.git",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
