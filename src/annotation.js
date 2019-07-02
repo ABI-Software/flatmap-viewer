@@ -120,8 +120,10 @@ export class Annotator
         this._dialogCallback = callback;
     	this._dialog = document.createElement('dialog');
     	this._dialog.innerHTML = `<form method="dialog" class="flatmap-annotation">
-	<label for="${this._annotationFieldId}">Annotate '${featureId}':</label>
-	<input type="text" id="${this._annotationFieldId}" name="${featureId}" value="${annotation.annotation}"></input>
+    <div>
+		<label for="${this._annotationFieldId}">Annotate '${featureId}':</label>
+		<input type="text" id="${this._annotationFieldId}" class="flatmap-annotation-input" name="${featureId}" value="${annotation.annotation}"></input>
+    </div>
 	<div class='flatmap-buttons'>
 		<span><input type="submit" value="Save"></span>
 		<span><input type="submit" autofocus value="Cancel"></span>

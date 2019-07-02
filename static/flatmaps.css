@@ -47,9 +47,10 @@ form.flatmap-annotation div {
     padding-top: 4px;
     padding-bottom: 4px;
 }
-form.flatmap-annotation input
+.flatmap-annotation-input {
     margin-left: 6px;
-    width: 600px;
+    float: right;
+    width: 300px;
 }
 .flatmap-annotation label {
     display: inline-block;
