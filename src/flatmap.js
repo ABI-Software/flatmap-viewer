@@ -125,6 +125,12 @@ class FlatMap
         return this._layerManager.activeLayerId;
     }
 
+    get annotatable()
+    //===============
+    {
+        return this._options.annotatable === true;
+    }
+
     get annotations()
     //===============
     {
@@ -152,13 +158,37 @@ class FlatMap
     annotationAbout(featureId)
     //========================
     {
-        return this._annotations[featureId];
+        if (featureId in this._annotations) {
+            return this._annotations[featureId];
+        }
+        return null;
     }
 
     hasAnnotationAbout(featureId)
     //===========================
     {
         return featureId in this._annotations;
+    }
+
+    setAnnotationAbout(featureId, annotation)
+    //=======================================
+    {
+        const feature = {
+            id: featureId.split('-')[1],
+            source: "features",
+            sourceLayer: annotation.layer
+        };
+        if (featureId in this._annotations) {
+            if (annotation.annotation === '') {
+                delete this._annotations[featureId];
+                this._map.removeFeatureState(feature, "annotated");
+            } else {
+                this._annotations[featureId] = annotation;
+            }
+        } else if (annotation.annotation !== '') {
+            this._map.setFeatureState(feature, { "annotated": true });
+            this._annotations[featureId] = annotation;
+        }
     }
 
     finalise_()

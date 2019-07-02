@@ -62,27 +62,35 @@ class MapFeatureLayer
         return this._id;
     }
 
-    activate()
-    //========
+    activate(annotating=false)
+    //========================
     {
-        if (this._backgroundLayerId !== null) {
+        if (this._backgroundLayerId) {
             this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 1);
         }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.FeatureBorderLayer.lineOpacity(true));
+                                   style.FeatureBorderLayer.lineOpacity(true, annotating));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
-                                   style.FeatureBorderLayer.lineWidth(true));
+                                   style.FeatureBorderLayer.lineWidth(true, annotating));
+        this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
+                                   style.FeatureBorderLayer.lineOpacity(true, annotating));
+        this._map.setPaintProperty(this._lineLayerId, 'line-width',
+                                   style.FeatureBorderLayer.lineWidth(true, annotating));
     }
 
     deactivate()
     //==========
     {
-        if (this._backgroundLayerId !== null) {
+        if (this._backgroundLayerId) {
             this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 0);
         }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.FeatureBorderLayer.lineOpacity());
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
+                                   style.FeatureBorderLayer.lineWidth());
+        this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
+                                   style.FeatureBorderLayer.lineOpacity());
+        this._map.setPaintProperty(this._lineLayerId, 'line-width',
                                    style.FeatureBorderLayer.lineWidth());
     }
 
@@ -142,23 +150,19 @@ export class LayerManager
         return this._layers;
     }
 
-    activate(layerId)
-    //===============
+    activate(layerId, annotating=false)
+    //=================================
     {
-        if (this._activeLayer === null
-         || this._activeLayer.id !== layerId) {
-            if (layerId === '') {
+        const layer = this._layers.get(layerId);
+        if (layerId === '' || layer !== undefined) {
+            if (this._activeLayer !== null) {
                 this._activeLayer.deactivate();
+            }
+            if (layerId === '') {
                 this._activeLayer = null;
             } else {
-                const layer = this._layers.get(layerId);
-                if (layer !== undefined) {
-                    if (this._activeLayer !== null) {
-                        this._activeLayer.deactivate();
-                    }
-                    layer.activate();
-                    this._activeLayer = layer;
-                }
+                layer.activate(annotating);
+                this._activeLayer = layer;
             }
         }
     }

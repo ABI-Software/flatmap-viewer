@@ -29,7 +29,7 @@ export const PAINT_STYLES = {
     'border-stroke-color': 'blue',
     'border-stroke-width': 1.5,
     'line-stroke-color': '#f00',
-    'line-stroke-opacity': 0.1,
+    'line-stroke-opacity': 1,
     'line-stroke-width': 0.5
 };
 
@@ -37,14 +37,14 @@ export const PAINT_STYLES = {
 
 class LineWidth
 {
-    static scale(width)   // width at zoom 0
+    static scale(width, annotating=false)   // width at zoom 0
     {
         return [
             "let", "linewidth", [
                 'case',
                 ['boolean', ['feature-state', 'highlighted'], false], 2*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
-                0
+                annotating ? width : 0
             ],
             ["interpolate",
             ["exponential", 1.3],
@@ -104,10 +104,10 @@ export class FeatureBorderLayer
         };
     }
 
-    static lineOpacity(layerActive=false)
+    static lineOpacity(layerActive=false, annotating=false)
     {
         if (layerActive) {
-            return [
+            return annotating ? 1 : [
                 'case',
                 ['boolean', ['feature-state', 'highlighted'], false], 1,
                 ['boolean', ['feature-state', 'annotated'], false], 1,
@@ -118,10 +118,10 @@ export class FeatureBorderLayer
         }
     }
 
-    static lineWidth(layerActive=false)
+    static lineWidth(layerActive=false, annotating=false)
     {
         if (layerActive) {
-            return LineWidth.scale(PAINT_STYLES['border-stroke-width'])
+            return LineWidth.scale(PAINT_STYLES['border-stroke-width'], annotating)
         }
         else {
             return 0;
