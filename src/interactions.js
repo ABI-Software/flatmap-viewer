@@ -83,7 +83,6 @@ export class UserInteractions
     processMessage_(msg)
     //==================
     {
-        console.log(this._flatmap.id, 'received', msg);
         if (msg.action === 'activate-layer') {
             this._flatmap.layerManager.activate(msg.resource);
 

@@ -41,8 +41,6 @@ export class MessagePasser
 
     broadcast(action, resource, data={})
     {
-        console.log('Sending', action, resource, data);
-
         this._channel.postMessage({
             "sender": this._id,
             "action": action,
