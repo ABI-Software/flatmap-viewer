@@ -20,6 +20,7 @@ ul.flatmap-contextmenu {
     list-style: none;
     padding-left: 8px;
     padding-right: 8px;
+    min-width: 120px;
 }
 
 li.flatmap-contextmenu-item:hover {
