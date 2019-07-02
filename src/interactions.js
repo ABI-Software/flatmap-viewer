@@ -80,7 +80,7 @@ export class UserInteractions
 
         // Display a context menu on right-click
 
-        this._contextMenu = new ContextMenu(flatmap);
+        this._contextMenu = new ContextMenu(flatmap, this.contextMenuClosed_.bind(this));
         this._map.on('contextmenu', this.contextMenuEvent_.bind(this));
 
         // Setup callbacks
@@ -210,6 +210,12 @@ export class UserInteractions
                 return;
             }
         }
+    }
+
+    contextMenuClosed_(e)
+    //===================
+    {
+        this._modal = false;
     }
 
     annotate_(e)

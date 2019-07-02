@@ -59,22 +59,30 @@ function domContextMenu(items)
 
 export class ContextMenu
 {
-    constructor(flatmap)
+    constructor(flatmap, closeCallback)
     {
         this._flatmap = flatmap;
         this._map = flatmap.map;
+        this._closeCallback = closeCallback;
         this._popup = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: true,
             className: 'flatmap-contextmenu',
             maxWidth: 'none'
         });
+        this._popup.on('close', this.popupClose_.bind(this));
     }
 
     hide()
     //====
     {
         this._popup.remove();
+    }
+
+    popupClose_(e)
+    //============
+    {
+        this._closeCallback();
     }
 
     show(position, menuItems)
