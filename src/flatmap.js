@@ -273,6 +273,16 @@ export async function loadMap(mapId, htmlElementId, options={})
         mapOptions[name] = value;
     }
 
+    for (let n = 0; n < mapOptions.layers.length; ++n) {
+        const layer = mapOptions.layers[n];
+        if (typeof layer === 'string') {
+            mapOptions.layers[n] = {
+                id: layer,
+                description: layer.charAt(0).toUpperCase() + layer.slice(1)
+            };
+        }
+    }
+
     const getStyle = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/style`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
