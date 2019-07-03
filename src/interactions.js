@@ -116,9 +116,6 @@ export class UserInteractions
     {
         if (msg.action === 'activate-layer') {
             this.activateLayer(msg.resource);
-
-            }
-
         }
     }
 
