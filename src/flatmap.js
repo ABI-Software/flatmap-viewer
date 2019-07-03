@@ -78,8 +78,7 @@ class FlatMap
 
         this._map = new mapboxgl.Map({
             style: mapStyle,
-            container: htmlElementId,
-            hash: true
+            container: htmlElementId
         });
 
         /*
