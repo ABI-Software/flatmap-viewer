@@ -27,11 +27,37 @@ export const PAINT_STYLES = {
     'fill-color': '#fff',
     'fill-opacity': 0,
     'border-stroke-color': 'blue',
-    'border-stroke-width': 1.5,
+    'border-stroke-width': 0.5,
     'line-stroke-color': '#f00',
     'line-stroke-opacity': 1,
     'line-stroke-width': 0.5
 };
+
+//==============================================================================
+
+export function lineOpacity(layerActive=false, annotating=false)
+{
+    if (layerActive) {
+        return annotating ? 1 : [
+            'case',
+            ['boolean', ['feature-state', 'highlighted'], false], 1,
+            ['boolean', ['feature-state', 'annotated'], false], 1,
+            0
+        ];
+    } else {
+        return 0;
+    }
+}
+
+export function lineWidth(width, layerActive=false, annotating=false)
+{
+    if (layerActive) {
+        return LineWidth.scale(width, annotating)
+    }
+    else {
+        return 0;
+    }
+}
 
 //==============================================================================
 
@@ -42,7 +68,7 @@ class LineWidth
         return [
             "let", "linewidth", [
                 'case',
-                ['boolean', ['feature-state', 'highlighted'], false], 2*width,
+                ['boolean', ['feature-state', 'highlighted'], false], 3*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
                 annotating ? width : 0
             ],
@@ -98,34 +124,15 @@ export class FeatureBorderLayer
             ],
             'paint': {
                 'line-color': PAINT_STYLES['border-stroke-color'],
-                'line-opacity': FeatureBorderLayer.lineOpacity(),
-                'line-width': FeatureBorderLayer.lineWidth()
+                'line-opacity': lineOpacity(),
+                'line-width': lineWidth(PAINT_STYLES['border-stroke-width'])
             }
         };
     }
 
-    static lineOpacity(layerActive=false, annotating=false)
-    {
-        if (layerActive) {
-            return annotating ? 1 : [
-                'case',
-                ['boolean', ['feature-state', 'highlighted'], false], 1,
-                ['boolean', ['feature-state', 'annotated'], false], 1,
-                0
-            ];
-        } else {
-            return 0;
-        }
-    }
-
     static lineWidth(layerActive=false, annotating=false)
     {
-        if (layerActive) {
-            return LineWidth.scale(PAINT_STYLES['border-stroke-width'], annotating)
-        }
-        else {
-            return 0;
-        }
+        return lineWidth(PAINT_STYLES['border-stroke-width'], layerActive, annotating);
     }
 }
 
@@ -147,10 +154,15 @@ export class FeatureLineLayer
             ],
             'paint': {
                 'line-color': PAINT_STYLES['line-stroke-color'],
-                'line-opacity': PAINT_STYLES['line-stroke-opacity'],
-                'line-width': LineWidth.scale(PAINT_STYLES['line-stroke-width'])
+                'line-opacity': lineOpacity(),
+                'line-width': lineWidth(PAINT_STYLES['line-stroke-width'])
             }
         };
+    }
+
+    static lineWidth(layerActive=false, annotating=false)
+    {
+        return lineWidth(PAINT_STYLES['line-stroke-width'], layerActive, annotating);
     }
 }
 

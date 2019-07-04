@@ -69,13 +69,13 @@ class MapFeatureLayer
             this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 1);
         }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.FeatureBorderLayer.lineOpacity(true, annotating));
+                                   style.lineOpacity(true, annotating));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
                                    style.FeatureBorderLayer.lineWidth(true, annotating));
         this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
-                                   style.FeatureBorderLayer.lineOpacity(true, annotating));
+                                   style.lineOpacity(true, annotating));
         this._map.setPaintProperty(this._lineLayerId, 'line-width',
-                                   style.FeatureBorderLayer.lineWidth(true, annotating));
+                                   style.FeatureLineLayer.lineWidth(true, annotating));
     }
 
     deactivate()
@@ -85,13 +85,13 @@ class MapFeatureLayer
             this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 0);
         }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.FeatureBorderLayer.lineOpacity());
+                                   style.lineOpacity());
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
                                    style.FeatureBorderLayer.lineWidth());
         this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
-                                   style.FeatureBorderLayer.lineOpacity());
+                                   style.lineOpacity());
         this._map.setPaintProperty(this._lineLayerId, 'line-width',
-                                   style.FeatureBorderLayer.lineWidth());
+                                   style.FeatureLineLayer.lineWidth());
     }
 
     move(beforeLayer)
