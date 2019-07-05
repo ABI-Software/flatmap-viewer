@@ -27,9 +27,14 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
+import {QueryInterface} from './query.js';
 import {UserInteractions} from './interactions.js';
 
 import * as utils from './utils.js';
+
+//==============================================================================
+
+const queryInterface = new QueryInterface();
 
 //==============================================================================
 
