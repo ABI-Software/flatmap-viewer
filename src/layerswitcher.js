@@ -23,8 +23,6 @@ limitations under the License.
 //==============================================================================
 
 import {MessagePasser} from './messages.js';
-//  Broadcast's an 'activate-layer LAYER_ID' message
-
 
 //==============================================================================
 
@@ -44,7 +42,8 @@ export class LayerSwitcher
     {
         this._flatmap = flatmap;
         this._prompt = prompt;
-        this._messagePasser = new MessagePasser(flatmap.id, json => this.processMessage_(json));
+        //  To broadcast an 'activate-layer LAYER_ID' message
+        this._messagePasser = new MessagePasser(`${flatmap.id}-layerswitcher`, json => this.processMessage_(json));
     }
 
     onAdd(map)
