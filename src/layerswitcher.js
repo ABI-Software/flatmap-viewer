@@ -66,7 +66,7 @@ export class LayerSwitcher
         selector.appendChild(newOption('', `${this._prompt}:`));
         for (const layer of this._flatmap.layers) {
             const description = featureDescriptions.get(layer.id);
-            if (description !== '') {
+            if (layer.selectable && description !== '') {
                 selector.appendChild(newOption(`${this._flatmap.id}/${layer.id}`, description));
             }
         }

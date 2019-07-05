@@ -24,8 +24,9 @@ limitations under the License.
 
 import {AnnotationControl, Annotator} from './annotation.js';
 import {ContextMenu} from './contextmenu.js';
-import {MessagePasser} from './messages.js';
+import {LayerManager} from './layers.js';
 import {LayerSwitcher} from './layerswitcher.js'
+import {MessagePasser} from './messages.js';
 import {ToolTip} from './tooltip.js'
 
 //==============================================================================
@@ -57,6 +58,51 @@ export class UserInteractions
         this._highlightedFeature = null;
         this._modal = false;
 
+        // Add a control to enable annotation if option set
+
+        if (flatmap.annotatable) {
+            this._annotator = new Annotator(flatmap, this);
+        }
+
+        // To pass messages with other applications
+
+        this._messagePasser = new MessagePasser(flatmap.id, json => this.processMessage_(json));
+
+         // Manage our layers
+
+        this._layerManager = new LayerManager(flatmap);
+
+        // Add a background layer if we have one
+
+        if (flatmap.hasBackground) {
+            this._layerManager.addBackgroundLayer();
+        }
+
+        // Add the map's layers
+
+        // Layers have an id, either layer-N or an assigned name
+        // Some layers might have a description. These are the selectable layers,
+        // unless they are flagged as `no-select`
+        // Selectable layers have opacity 0 unless active, in which case they have opacity 1.
+        // `no-select` layers have opacity 0.5
+        // Background layer has opacity 0.2
+
+        for (const layer of flatmap.layers) {
+            this._layerManager.addLayer(layer);
+        }
+
+        if (this._layerManager.selectableLayerCount > 1) {
+            this._map.addControl(new LayerSwitcher(flatmap, 'Select organ system'));
+
+        } else if (this._layerManager.selectableLayerCount === 1) {
+            // If only one selectable layer then it's always active...
+
+            const selectableLayerId = this._layerManager.lastSelectableLayerId;
+            this.activateLayer(selectableLayerId);
+
+            this._messagePasser.broadcast('activate-layer', selectableLayerId);
+        }
+
 
         for (const [id, annotation] of Object.entries(flatmap.annotations)) {
             const feature = {
@@ -66,12 +112,6 @@ export class UserInteractions
             };
             this._map.setFeatureState(feature, { "annotated": true });
         }
-
-        if (flatmap.annotatable) {
-            this._annotator = new Annotator(flatmap, this);
-        }
-
-        this._map.addControl(new LayerSwitcher(flatmap, 'Select organ system'));
 
         // Display a tooltip at the mouse pointer
 
@@ -88,9 +128,6 @@ export class UserInteractions
 
         this._map.on('click', this.clickEvent_.bind(this));
 
-        // Pass messages with other applications
-
-        this._messagePasser = new MessagePasser(flatmap.id, json => this.processMessage_(json));
     }
 
     get annotating()
@@ -99,16 +136,22 @@ export class UserInteractions
         return this._flatmap.annotatable && this._annotator.enabled;
     }
 
+    get activeLayerId()
+    //=================
+    {
+        return this._layerManager.activeLayerId;
+    }
+
     get currentLayer()
     //================
     {
-        return `${this._flatmap.id}/${this._flatmap.layerManager.activeLayerId}`;
+        return `${this._flatmap.id}/${this._layerManager.activeLayerId}`;
     }
 
     activateLayer(layerId)
     //====================
     {
-        this._flatmap.layerManager.activate(layerId, this.annotating);
+        this._layerManager.activate(layerId, this.annotating);
     }
 
     processMessage_(msg)
@@ -141,9 +184,10 @@ export class UserInteractions
     activeFeatures_(e)
     //================
     {
-        const activeLayerId = this._flatmap.activeLayerId;
+        // Get features in active layer
+
         return this._map.queryRenderedFeatures(e.point).filter(f => {
-            return activeLayerId === f.sourceLayer
+            return this.activeLayerId === f.sourceLayer
                 && 'id' in f.properties;
             }
         );

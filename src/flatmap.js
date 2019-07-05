@@ -27,7 +27,6 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
-import {LayerManager} from './layers.js';
 import {UserInteractions} from './interactions.js';
 
 import * as utils from './utils.js';
@@ -105,10 +104,7 @@ class FlatMap
 
         // Finish initialisation when all sources have loaded
 
-        this._layerManager = null;
-
         this._userInteractions = null;
-
         this._map.on('load', this.finalise_.bind(this));
     }
 
@@ -121,7 +117,7 @@ class FlatMap
     get activeLayerId()
     //=================
     {
-        return this._layerManager.activeLayerId;
+        return this._userInteractions.activeLayerId;
     }
 
     get annotatable()
@@ -136,6 +132,12 @@ class FlatMap
         return this._annotations;
     }
 
+    get hasBackground()
+    //=================
+    {
+        return this._hasBackground;
+    }
+
     get layers()
     //==========
     {
@@ -146,12 +148,6 @@ class FlatMap
     //=======
     {
         return this._map;
-    }
-
-    get layerManager()
-    //================
-    {
-        return this._layerManager;
     }
 
     annotationAbout(featureId)
@@ -212,21 +208,7 @@ class FlatMap
     finalise_()
     //=========
     {
-        // Manage our layers
-
-        this._layerManager = new LayerManager(this)
-
-        // Add a background layer if we have one
-
-        if (this._hasBackground) {
-            this._layerManager.addBackgroundLayer();
-        }
-
-        // Add the map's layers
-
-        for (const layer of this.layers) {
-            this._layerManager.addLayer(layer);
-        }
+        // Layers have now loaded so finish setting up
 
         this._userInteractions = new UserInteractions(this);
     }
@@ -278,7 +260,8 @@ export async function loadMap(mapId, htmlElementId, options={})
         if (typeof layer === 'string') {
             mapOptions.layers[n] = {
                 id: layer,
-                description: layer.charAt(0).toUpperCase() + layer.slice(1)
+                description: layer.charAt(0).toUpperCase() + layer.slice(1),
+                selectable: true
             };
         }
     }

@@ -33,24 +33,25 @@ const FEATURE_SOURCE_ID = 'features';
 
 class MapFeatureLayer
 {
-    constructor(map, sourceLayerId)
+    constructor(map, layer)
     {
         this._map = map;
-        this._id = sourceLayerId;
-
-        const backgroundId = `${sourceLayerId}-background`;
+        this._id = layer.id;
+        const backgroundId = `${layer.id}-background`;
         if (this._map.isSourceLoaded(backgroundId)) {
             this._backgroundLayerId = backgroundId;
-            this._map.addLayer(style.ImageLayer.style(this._backgroundLayerId, `${sourceLayerId}-background`));
+            this._map.addLayer(style.ImageLayer.style(this._backgroundLayerId,
+                                                      `${layer.id}-background`,
+                                                      layer.selectable ? 0 : style.PAINT_STYLES['no-select-opacity']));
         } else {
             this._backgroundLayerId = null;
         }
-        this._fillLayerId = `${sourceLayerId}-fill`;
-        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, sourceLayerId));
-        this._borderLayerId = `${sourceLayerId}-border`;
-        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, sourceLayerId));
-        this._lineLayerId = `${sourceLayerId}-line`;
-        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, sourceLayerId));
+        this._fillLayerId = `${layer.id}-fill`;
+        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, layer.id));
+        this._borderLayerId = `${layer.id}-border`;
+        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, layer.id));
+        this._lineLayerId = `${layer.id}-line`;
+        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, layer.id));
 
         this._topLayerId = (this._backgroundLayerId !== null) ? this._backgroundLayerId
                                                               : this._fillLayerId;
@@ -118,6 +119,8 @@ export class LayerManager
         this._map = flatmap.map;
         this._layers = new Map;
         this._activeLayer = null;
+        this._selectableLayerId = '';
+        this._selectableLayerCount = 0;
     }
 
     get activeLayerId()
@@ -138,16 +141,33 @@ export class LayerManager
     addLayer(layer)
     //=============
     {
-        const featureLayer = new MapFeatureLayer(this._map, layer.id);
-        // layer.description
+        const featureLayer = new MapFeatureLayer(this._map, layer);
+        const layerId = `${this._flatmap.id}/${layer.id}`;
 
-        this._layers.set(`${this._flatmap.id}/${layer.id}`, featureLayer);
+        this._layers.set(layerId, featureLayer);
+
+        if (layer.selectable) {
+            this._selectableLayerId = layerId;
+            this._selectableLayerCount += 1;
+        }
     }
 
     get layers()
     //==========
     {
         return this._layers;
+    }
+
+    get selectableLayerCount()
+    //========================
+    {
+        return this._selectableLayerCount;
+    }
+
+    get lastSelectableLayerId()
+    //=========================
+    {
+        return this._selectableLayerId;
     }
 
     activate(layerId, annotating=false)
