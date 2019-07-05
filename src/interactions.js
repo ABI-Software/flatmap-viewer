@@ -209,7 +209,7 @@ export class UserInteractions
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
                 this.highlightFeature_(feature);
                 if (annotation) {
-                    this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
+                    //this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
                 }
                 this._map.getCanvas().style.cursor = 'pointer';
                 return;
