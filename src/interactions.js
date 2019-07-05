@@ -27,7 +27,7 @@ import {ContextMenu} from './contextmenu.js';
 import {LayerManager} from './layers.js';
 import {LayerSwitcher} from './layerswitcher.js'
 import {MessagePasser} from './messages.js';
-import {ToolTip} from './tooltip.js'
+import {ToolTip} from './tooltip.js';
 
 //==============================================================================
 
