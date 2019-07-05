@@ -27,9 +27,9 @@ export const PAINT_STYLES = {
     'no-select-opacity': 0.5,
     'fill-color': '#fff',
     'fill-opacity': 0,
-    'border-stroke-color': 'blue',
+    'border-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'blue' ],
     'border-stroke-width': 0.5,
-    'line-stroke-color': '#f00',
+    'line-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'red' ],
     'line-stroke-opacity': 1,
     'line-stroke-width': 0.5
 };
@@ -41,7 +41,7 @@ export function lineOpacity(layerActive=false, annotating=false)
     if (layerActive) {
         return annotating ? 1 : [
             'case',
-            ['boolean', ['feature-state', 'highlighted'], false], 1,
+            ['boolean', ['feature-state', 'selected'], false], 1,
             ['boolean', ['feature-state', 'annotated'], false], 1,
             0
         ];
@@ -69,7 +69,7 @@ class LineWidth
         return [
             "let", "linewidth", [
                 'case',
-                ['boolean', ['feature-state', 'highlighted'], false], 3*width,
+                ['boolean', ['feature-state', 'selected'], false], 3*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
                 annotating ? width : 0
             ],

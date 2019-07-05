@@ -55,7 +55,7 @@ export class UserInteractions
         this._flatmap = flatmap;
         this._map = flatmap.map;
 
-        this._highlightedFeature = null;
+        this._selectedFeature = null;
         this._modal = false;
 
         // Add a control to enable annotation if option set
@@ -162,21 +162,21 @@ export class UserInteractions
         }
     }
 
-    highlightFeature_(feature)
-    //========================
+    selectFeature_(feature)
+    //=====================
     {
-        this.unhighlightFeatures_(false);
-        this._map.setFeatureState(feature, { "highlighted": true })
-        this._highlightedFeature = feature;
+        this.unselectFeatures_(false);
+        this._map.setFeatureState(feature, { "selected": true })
+        this._selectedFeature = feature;
     }
 
-    unhighlightFeatures_(reset=true)
-    //==============================
+    unselectFeatures_(reset=true)
+    //===========================
     {
-        if (this._highlightedFeature !== null) {
-            this._map.removeFeatureState(this._highlightedFeature, "highlighted");
+        if (this._selectedFeature !== null) {
+            this._map.removeFeatureState(this._selectedFeature, "selected");
             if (reset) {
-                this._highlightedFeature = null;
+                this._selectedFeature = null;
             }
         }
     }
@@ -207,9 +207,9 @@ export class UserInteractions
         for (const feature of features) {
             if (this.annotating || this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
-                this.highlightFeature_(feature);
                 if (annotation) {
                     //this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
+                this.selectFeature_(feature);
                 }
                 this._map.getCanvas().style.cursor = 'pointer';
                 return;
@@ -217,7 +217,7 @@ export class UserInteractions
         }
         this._map.getCanvas().style.cursor = '';
         this._tooltip.hide();
-        this.unhighlightFeatures_();
+        this.unselectFeatures_();
     }
 
     contextMenuEvent_(e)
@@ -230,7 +230,7 @@ export class UserInteractions
         for (const feature of features) {
             if (this.annotating || this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const id = feature.properties.id;
-                this.highlightFeature_(feature);
+                this.selectFeature_(feature);
                 this._tooltip.hide();
                 this._modal = true;
                 const items = [{
