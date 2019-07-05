@@ -207,9 +207,9 @@ export class UserInteractions
         for (const feature of features) {
             if (this.annotating || this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
-                if (annotation) {
-                    //this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
                 this.selectFeature_(feature);
+                if (annotation && this.annotating) {
+                    this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
                 }
                 this._map.getCanvas().style.cursor = 'pointer';
                 return;
