@@ -35,8 +35,9 @@ export class MessagePasser
     constructor(id, callback)
     {
         this._id = id;
+        this._callback = callback;
         this._channel = new BroadcastChannel(SPARC_CHANNEL);
-        this._channel.addEventListener('message', callback);
+        this._channel.addEventListener('message', this.callback.bind(this));
     }
 
     broadcast(action, resource, data={})
@@ -47,6 +48,11 @@ export class MessagePasser
             "resource": resource,
             "data": data
         });
+    }
+
+    callback(msg)
+    {
+        this._callback(msg);
     }
 }
 
