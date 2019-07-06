@@ -56,6 +56,8 @@ export class UserInteractions
         this._map = flatmap.map;
 
         this._selectedFeature = null;
+        this._highlightedFeatures = [];
+
         this._modal = false;
 
         // Add a control to enable annotation if option set
@@ -159,6 +161,20 @@ export class UserInteractions
     {
         if (msg.action === 'activate-layer') {
             this.activateLayer(msg.resource);
+        } else if (msg.action === 'query-results') {
+            for (const featureUrl of msg.resource) {
+                console.log(featureUrl);
+                const objectId = this._flatmap.objectIdForUrl(featureUrl);
+                if (objectId) {
+                    const feature = {
+                        id: objectId.split('-')[1],
+                        source: "features",
+                        sourceLayer: this._flatmap.layerIdForUrl(featureUrl)
+                    };
+                    this._map.setFeatureState(feature, { "highlighted": true });
+                    this._highlightedFeatures.push(feature);
+                }
+            }
         }
     }
 
@@ -179,6 +195,15 @@ export class UserInteractions
                 this._selectedFeature = null;
             }
         }
+    }
+
+    unhighlightFeatures_(reset=true)
+    //==============================
+    {
+        for (const feature of this._highlightedFeatures) {
+            this._map.removeFeatureState(feature, "highlighted");
+        }
+        this._highlightedFeatures = [];
     }
 
     activeFeatures_(e)
