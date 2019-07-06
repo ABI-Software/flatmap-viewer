@@ -70,6 +70,7 @@ class LineWidth
             "let", "linewidth", [
                 'case',
                 ['boolean', ['feature-state', 'selected'], false], 3*width,
+                ['boolean', ['feature-state', 'highlighted'], false], 2*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
                 annotating ? width : 0
             ],
