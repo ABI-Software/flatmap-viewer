@@ -61,21 +61,22 @@ SELECT DISTINCT ?edge ?node
                 const errorMsg = `SPARQL query failed...`;
                 console.log(errorMsg);
                 alert(errorMsg);
+                return;
             }
             const results = await postQuery.json();
             if ('error' in results) {
                 const errorMsg = `SPARQL query failed: ${results.error}`;
                 console.log(errorMsg);
                 alert(errorMsg);
-            } else {
-                const features = [];
-                for (const result of results.results.bindings) {
-                    const value = Object.entries(result)[0][1];
-                    features.push(value.value);
-                }
-                if (features.length) {
-                    this._messagePasser.broadcast('query-results', features);
-                }
+                return;
+            }
+            const features = [];
+            for (const result of results.results.bindings) {
+                const value = Object.entries(result)[0][1];
+                features.push(value.value);
+            }
+            if (features.length) {
+                this._messagePasser.broadcast('query-results', features);
             }
         }
     }
