@@ -61,6 +61,16 @@ class FlatMap
         this._id = map.id;
 
         this._annotations = map.annotations;
+        this._idToUrl = new Map();
+        this._urlToId = new Map();
+        this._urlToLayer = new Map();
+        for (const [id, annotation] of Object.entries(map.annotations)) {
+            const feature = annotation.annotation.split(' ')[0].substring(1);
+            const url = `${map.source}/${annotation.layer}/${feature}`;
+            this._idToUrl.set(id, url);
+            this._urlToId.set(url, id);
+            this._urlToLayer.set(url, annotation.layer);
+        }
 
         // Set base of source URLs in map's style
 
@@ -154,6 +164,24 @@ class FlatMap
     //=======
     {
         return this._map;
+    }
+
+    urlForObjectId(objectId)
+    //======================
+    {
+        return this._idToUrl.get(objectId);
+    }
+
+    objectIdForUrl(url)
+    //=================
+    {
+        return this._urlToId.get(url);
+    }
+
+    layerIdForUrl(url)
+    //=================
+    {
+        return this._urlToLayer.get(url);
     }
 
     annotationAbout(featureId)
