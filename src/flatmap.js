@@ -27,16 +27,10 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
-import {MapManager} from './manager.js';
 import {QueryInterface} from './query.js';
 import {UserInteractions} from './interactions.js';
 
 import * as utils from './utils.js';
-
-//==============================================================================
-
-const mapManager = new MapManager();
-mapManager.getMaps();
 
 //==============================================================================
 
