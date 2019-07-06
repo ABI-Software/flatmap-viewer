@@ -62,7 +62,7 @@ class FlatMap
 
         this._annotations = map.annotations;
 
-        // Set base of URLs in map's sources
+        // Set base of source URLs in map's style
 
         for (const [id, source] of Object.entries(map.style.sources)) {
             if (source.url) {
@@ -264,25 +264,29 @@ export async function loadMap(mapSource, htmlElementId, options={})
         return null;
     }
 
+    // Load the maps index file
+
     const getIndex = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
-
     if (!getIndex.ok) {
         showError(htmlElementId, `Missing index file for map '${mapId}'`);
         return null;
     }
+
+    // Set the map's options
 
     const mapOptions = await getIndex.json();
     if (mapId !== mapOptions.id) {
         showError(htmlElementId, `Map '${mapId}' has wrong ID in index`);
         return null;
     }
-
     for (const [name, value] of Object.entries(options)) {
         mapOptions[name] = value;
     }
+
+    // Set layer data if the layer just has an id specified
 
     for (let n = 0; n < mapOptions.layers.length; ++n) {
         const layer = mapOptions.layers[n];
@@ -295,28 +299,28 @@ export async function loadMap(mapSource, htmlElementId, options={})
         }
     }
 
+    // Get the map's style file
+
     const getStyle = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/style`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
-
     if (!getStyle.ok) {
         showError(htmlElementId, `Missing style file for map '${mapId}'`);
         return null;
     }
-
     const mapStyle = await getStyle.json();
+
+    // Get the map's annotations
 
     const getAnnotations = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/annotations`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
     });
-
     if (!getAnnotations.ok) {
         showError(htmlElementId, `Missing annotations for map '${mapId}'`);
         return null;
     }
-
     const annotations = await getAnnotations.json();
 
     // Display the map
