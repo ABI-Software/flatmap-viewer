@@ -163,7 +163,6 @@ export class UserInteractions
             this.activateLayer(msg.resource);
         } else if (msg.action === 'query-results') {
             for (const featureUrl of msg.resource) {
-                console.log(featureUrl);
                 const objectId = this._flatmap.objectIdForUrl(featureUrl);
                 if (objectId) {
                     const feature = {
