@@ -251,28 +251,39 @@ export class UserInteractions
         e.preventDefault();
 
         const features = this.activeFeatures_(e);
-
         for (const feature of features) {
-            if (this.annotating || this._flatmap.hasAnnotationAbout(feature.properties.id)) {
-                const id = feature.properties.id;
+            const id = feature.properties.id;
+            if (this.annotating || this._flatmap.hasAnnotationAbout(id)) {
                 this.selectFeature_(feature);
                 this._tooltip.hide();
-                this._modal = true;
-                const items = [{
-                    id: id,
-                    prompt: 'Query',
-                    action: this.query_.bind(this)
-                }];
+                const items = [];
+                if (feature.geometry.type === 'Polygon') {
+                    items.push({
+                        id: id,
+                        prompt: 'Query edges',
+                        action: this.query_.bind(this, 'edges')
+                    });
+                    items.push({
+                        id: id,
+                        prompt: 'Query nodes',
+                        action: this.query_.bind(this, 'nodes')
+                    });
+                }
                 if (this.annotating) {
-                    items.push('-');
+                    if (items.length) {
+                        items.push('-');
+                    }
                     items.push({
                         id: id,
                         prompt: 'Annotate',
                         action: this.annotate_.bind(this)
                     });
                 }
-                this._contextMenu.show(e.lngLat, items);
-                return;
+                if (items.length) {
+                    this._modal = true;
+                    this._contextMenu.show(e.lngLat, items);
+                    return;
+                }
             }
         }
     }
@@ -291,13 +302,16 @@ export class UserInteractions
                                    () => { this._modal = false; });
     }
 
-    query_(e)
-    //=======
+    query_(type, e)
+    //=============
     {
-        console.log(e);
-        this._messagePasser.broadcast('query', 'xx', {});
-
+        this.unhighlightFeatures_();
         this._contextMenu.hide();
+
+        const objectId = e.target.getAttribute('id');
+        const node_url = this._flatmap.urlForObjectId(objectId);
+        this._messagePasser.broadcast(`query-node-${type}`, node_url);
+
         this._modal = false;
     }
 
