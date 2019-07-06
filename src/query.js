@@ -71,9 +71,10 @@ SELECT DISTINCT ?edge ?node
                 return;
             }
             const features = [];
-            for (const result of results.results.bindings) {
-                const value = Object.entries(result)[0][1];
-                features.push(value.value);
+            for (const binding of results.results.bindings) {
+                for (const [name, result] of Object.entries(binding)) {
+                    features.push(result.value);
+                }
             }
             if (features.length) {
                 this._messagePasser.broadcast('query-results', features);
