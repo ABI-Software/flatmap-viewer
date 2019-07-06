@@ -62,14 +62,15 @@ function addUrlBase(url)
 
 class FlatMap
 {
-    constructor(htmlElementId, mapId, mapStyle, options, annotations)
+    constructor(htmlElementId, map)
     {
-        this._id = mapId;
-        this._annotations = annotations;
+        this._id = map.id;
+
+        this._annotations = map.annotations;
 
         // Set base of URLs in map's sources
 
-        for (const [id, source] of Object.entries(mapStyle.sources)) {
+        for (const [id, source] of Object.entries(map.style.sources)) {
             if (source.url) {
                 source.url = addUrlBase(source.url);
             }
@@ -82,12 +83,12 @@ class FlatMap
             }
         }
 
-        this._hasBackground = ('background' in mapStyle.sources);
+        this._hasBackground = ('background' in map.style.sources);
 
-        this._options = options;
+        this._options = map.options;
 
         this._map = new mapboxgl.Map({
-            style: mapStyle,
+            style: map.style,
             container: htmlElementId
         });
 
@@ -100,11 +101,11 @@ class FlatMap
 
         this._map.setRenderWorldCopies(false);
 
-        if ('maxzoom' in options) {
-            this._map.setMaxZoom(options.maxzoom);
+        if ('maxzoom' in map.options) {
+            this._map.setMaxZoom(map.options.maxzoom);
         }
 
-        if (options.fullscreenControl === true) {
+        if (map.options.fullscreenControl === true) {
             this._map.addControl(new mapboxgl.FullscreenControl());
         }
 
@@ -244,8 +245,31 @@ function showError(htmlElementId, error)
 
 //==============================================================================
 
-export async function loadMap(mapId, htmlElementId, options={})
+export async function loadMap(mapSource, htmlElementId, options={})
 {
+    // Find what maps we have available
+
+    const mapsQuery = await fetch(utils.makeUrlAbsolute('flatmap/'), {
+        headers: { "Content-Type": "application/json; charset=utf-8" },
+        method: 'GET'
+    });
+    if (!mapsQuery.ok) {
+        showError('Error requesting flatmaps...');
+        return null;
+    }
+    let mapId = null;
+    const maps = await mapsQuery.json();
+    for (const map of maps) {
+        if (map.source === mapSource) {
+            mapId = map.id;
+            break;
+        }
+    }
+    if (!mapId) {
+        showError(htmlElementId, `Unknown map '${mapSource}'`);
+        return null;
+    }
+
     const getIndex = await fetch(utils.makeUrlAbsolute(`flatmap/${mapId}/`), {
         headers: { "Accept": "application/json; charset=utf-8" },
         method: 'GET'
@@ -301,7 +325,15 @@ export async function loadMap(mapId, htmlElementId, options={})
 
     const annotations = await getAnnotations.json();
 
-    return new FlatMap(htmlElementId, mapId, mapStyle, mapOptions, annotations);
+    // Display the map
+
+    return new FlatMap(htmlElementId, {
+        id: mapId,
+        source: mapSource,
+        style: mapStyle,
+        options: mapOptions,
+        annotations: annotations
+    });
 }
 
 //==============================================================================
