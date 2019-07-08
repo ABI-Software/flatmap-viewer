@@ -226,10 +226,12 @@ export class UserInteractions
 
         const features = this.activeFeatures_(e);
 
-        // Highlight top feature
+        // When not annotating highlight the top polygon feature, otherwise
+        // highlight the top festure
 
         for (const feature of features) {
-            if (this.annotating || this._flatmap.hasAnnotationAbout(feature.properties.id)) {
+            if (this.annotating
+             || (feature.geometry.type === 'Polygon' && this._flatmap.hasAnnotationAbout(feature.properties.id))) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
                 this.selectFeature_(feature);
                 if (annotation && this.annotating) {
