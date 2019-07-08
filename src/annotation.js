@@ -114,7 +114,7 @@ export class Annotator
     		annotation = { layer: this._flatmap.activeLayerId, annotation: '' };
     	}
     	this._currentFeature = featureId;
-    	this._currentAnnotation = annotation;
+    	this._currentAnnotation = Object.assign({}, annotation);
 
     	this._annotationFieldId = `annotate-${featureId}`;
         this._dialogCallback = callback;
