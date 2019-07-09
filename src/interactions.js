@@ -319,8 +319,9 @@ export class UserInteractions
     clickEvent_(e)
     //============
     {
-        const features = this.activeFeatures_(e);
+        this.unhighlightFeatures_();
 
+        const features = this.activeFeatures_(e);
         for (const feature of features) {
             if (this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
