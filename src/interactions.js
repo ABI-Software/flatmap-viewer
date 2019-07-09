@@ -323,7 +323,7 @@ export class UserInteractions
 
         const features = this.activeFeatures_(e);
         for (const feature of features) {
-            if (this._flatmap.hasAnnotationAbout(feature.properties.id)) {
+            if (feature.geometry.type === 'Polygon' && this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
                 this._messagePasser.broadcast('select', feature.properties.id, annotation);
                 return;
