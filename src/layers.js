@@ -70,7 +70,7 @@ class MapFeatureLayer
             this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 1);
         }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.lineOpacity(true, annotating));
+                                   style.borderOpacity(true, annotating));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
                                    style.FeatureBorderLayer.lineWidth(true, annotating));
         this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
@@ -86,7 +86,7 @@ class MapFeatureLayer
             this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 0);
         }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.lineOpacity());
+                                   style.borderOpacity());
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
                                    style.FeatureBorderLayer.lineWidth());
         this._map.setPaintProperty(this._lineLayerId, 'line-opacity',

@@ -30,19 +30,35 @@ export const PAINT_STYLES = {
     'border-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'blue' ],
     'border-stroke-width': 0.5,
     'line-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'red' ],
-    'line-stroke-opacity': 1,
+    'line-stroke-opacity': 0,
     'line-stroke-width': 0.5
 };
 
 //==============================================================================
 
-export function lineOpacity(layerActive=false, annotating=false)
+export function borderOpacity(layerActive=false, annotating=false)
 {
     if (layerActive) {
         return annotating ? 1 : [
             'case',
             ['boolean', ['feature-state', 'selected'], false], 1,
+            ['boolean', ['feature-state', 'highlighted'], false], 1,
             ['boolean', ['feature-state', 'annotated'], false], 1,
+            0
+        ];
+    } else {
+        return 0;
+    }
+}
+
+export function lineOpacity(layerActive=false, annotating=false)
+{
+    if (layerActive) {
+        return annotating ? 0 : [
+            'case',
+            ['boolean', ['feature-state', 'selected'], false], 0,
+            ['boolean', ['feature-state', 'highlighted'], false], 0.4,
+            ['boolean', ['feature-state', 'annotated'], false], 0,
             0
         ];
     } else {
@@ -102,7 +118,11 @@ export class FeatureFillLayer
             ],
             'paint': {
                 'fill-color': PAINT_STYLES['fill-color'],
-                'fill-opacity': PAINT_STYLES['fill-opacity']
+                'fill-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.5,
+                    0
+                ]
             }
         };
     }
