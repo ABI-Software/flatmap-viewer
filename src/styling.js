@@ -54,7 +54,7 @@ export function borderOpacity(layerActive=false, annotating=false)
 export function lineOpacity(layerActive=false, annotating=false)
 {
     if (layerActive) {
-        return annotating ? 0 : [
+        return annotating ? 1 : [
             'case',
             ['boolean', ['feature-state', 'selected'], false], 0,
             ['boolean', ['feature-state', 'highlighted'], false], 0.4,
