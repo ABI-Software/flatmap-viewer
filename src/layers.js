@@ -144,15 +144,15 @@ export class LayerManager
         this._map = flatmap.map;
         this._layers = new Map;
         this._activeLayers = [];
-        this._activeLayerIds = [];
+        this._activeLayerNames = [];
         this._selectableLayerId = '';
         this._selectableLayerCount = 0;
     }
 
-    get activeLayerIds()
-    //==================
+    get activeLayerNames()
+    //====================
     {
-        return this._activeLayerIds;
+        return this._activeLayerNames;
     }
 
     addLayer(layer)
@@ -196,7 +196,7 @@ export class LayerManager
             layer.activate(annotating);
             if (this._activeLayers.indexOf(layer) < 0) {
                 this._activeLayers.push(layer);
-                this._activeLayerIds.push(layer.id);
+                this._activeLayerNames.push(layer.id);
             }
         }
     }
@@ -210,7 +210,7 @@ export class LayerManager
             const index = this._activeLayers.indexOf(layer);
             if (index >= 0) {
                 delete this._activeLayers[index];
-                delete this._activeLayerIds[index];
+                delete this._activeLayerNames[index];
             }
         }
     }

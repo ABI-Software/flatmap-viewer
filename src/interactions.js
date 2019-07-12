@@ -91,7 +91,7 @@ export class UserInteractions
         } else if (this._layerManager.selectableLayerCount === 1) {
             // If only one selectable layer then it's always active...
 
-            const selectableLayerId = this._layerManager.lastSelectableLayerId;
+            const selectableLayeId = this._layerManager.lastSelectableLayerId;
             this.activateLayer(selectableLayerId);
 
             this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
@@ -129,17 +129,17 @@ export class UserInteractions
         return this._flatmap.annotatable && this._annotator.enabled;
     }
 
-    get activeLayerIds()
-    //==================
+    get activeLayerNames()
+    //====================
     {
-        return this._layerManager.activeLayerIds;
+        return this._layerManager.activeLayerNames;
     }
 
     get activeLayers()
     //================
     {
         const layers = [];
-        for (const layerId of this._layerManager.activeLayerIds) {
+        for (const layerId of this._layerManager.activeLayerNames) {
             layers.push(`${this._flatmap.id}/${layerId}`);
         }
         return layers;
@@ -222,7 +222,7 @@ export class UserInteractions
         // Get features in active layer
 
         return this._map.queryRenderedFeatures(e.point).filter(f => {
-            return (this.activeLayerIds.indexOf(f.sourceLayer) >= 0)
+            return (this.activeLayerNames.indexOf(f.sourceLayer) >= 0)
                 && ('id' in f.properties);
             }
         );
