@@ -22,12 +22,14 @@ limitations under the License.
 
 //==============================================================================
 
-import {loadMap} from './src/flatmap.js';
+import {MapManager} from './src/flatmap.js';
 
 import './static/flatmaps.css';
 
 //==============================================================================
 
-window.loadMap = loadMap;
+const mapManager = new MapManager();
+
+window.loadMap = mapManager.loadMap.bind(mapManager);
 
 //==============================================================================
