@@ -303,13 +303,20 @@ export class MapManager
         }
 
         let mapId = null;
+        let latest = '';
         for (const map of this._maps) {  // But wait until response above...
-            // have describes, created fields
-            if (map.source === mapSource) {
-                return map.id;
+            if (mapSource == map.describes || mapSource === map.source) {
+                if ('created' in map) {
+                    if (latest < map.created) {
+                        latest = map.created;
+                        mapId = map.id;
+                    }
+                } else {
+                    return map.id;
+                }
             }
         }
-        return null;
+        return mapId;
     }
 
     async loadMap(mapSource, htmlElementId, options={})
