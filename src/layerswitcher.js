@@ -22,17 +22,55 @@ limitations under the License.
 
 //==============================================================================
 
+import * as dat from 'dat.gui';
+
+//==============================================================================
+
 import {MessagePasser} from './messages.js';
 
 //==============================================================================
 
-function newOption(value, prompt)
+
+class LayerControl
 {
-    const option = document.createElement('option');
-    option.setAttribute('value', value);
-    option.textContent = prompt;
-    return option;
+    constructor(flatmap)
+    {
+        //  To broadcast an 'flatmap-activate-layer LAYER_ID' message
+        this._messagePasser = new MessagePasser(`${flatmap.id}-layerswitcher`, json => {});
+
+        this._descriptionToLayer = new Map();
+        for (const layer of flatmap.layers) {
+            if (layer.selectable && layer.description !== '') {
+                const layerId = `${flatmap.id}/${layer.id}`;
+                this[layer.description] = layer.selected;
+                this._descriptionToLayer.set(layer.description, layerId);
+                if (layer.selected) {
+                    this._messagePasser.broadcast('flatmap-activate-layer', layerId);
+                }
+            }
+        }
+    }
+
+    addToGui(gui)
+    //===========
+    {
+        for (const [description, layer] of this._descriptionToLayer.entries()) {
+            const controller = gui.add(this, description);
+            controller.onChange(this.checkboxChanged.bind(this, layer));
+        }
+    }
+
+    checkboxChanged(layerId, checked)
+    //===============================
+    {
+        if (checked) {
+            this._messagePasser.broadcast('flatmap-activate-layer', layerId);
+        } else {
+            this._messagePasser.broadcast('flatmap-deactivate-layer', layerId);
+        }
+    }
 }
+
 
 //==============================================================================
 
@@ -41,75 +79,34 @@ export class LayerSwitcher
     constructor(flatmap, prompt='Select layer')
     {
         this._flatmap = flatmap;
-        this._prompt = prompt;
-        //  To broadcast an 'activate-layer LAYER_ID' message
-        this._messagePasser = new MessagePasser(`${flatmap.id}-layerswitcher`, json => this.processMessage_(json));
     }
 
     onAdd(map)
     //========
     {
-        this._map = map;
+        this._gui = new dat.GUI({ autoPlace: false });
+
+        const layerControl = new LayerControl(this._flatmap);
+        layerControl.addToGui(this._gui);
 
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl';
+        this._container.appendChild(this._gui.domElement);
 
-        const features = this._map.getSource('features');
-        const featureDescriptions = new Map();
-        for (const layer of this._flatmap.layers) {
-            featureDescriptions.set(layer.id, layer.description);
-        }
-
-        const selector = document.createElement('select');
-        selector.onchange = this.selectionChanged_.bind(this);
-        selector.appendChild(newOption('', `${this._prompt}:`));
-        for (const layer of this._flatmap.layers) {
-            const description = featureDescriptions.get(layer.id);
-            if (layer.selectable && description !== '') {
-                selector.appendChild(newOption(`${this._flatmap.id}/${layer.id}`, description));
-            }
-        }
-
-        this._container.appendChild(selector);
         return this._container;
     }
 
     onRemove()
     //========
     {
+        this._gui.destroy();
         this._container.parentNode.removeChild(this._container);
-        this._map = undefined;
     }
 
     getDefaultPosition()
     //==================
     {
         return 'top-left';
-    }
-
-    processMessage_(msg)
-    //==================
-    {
-        if (msg.action === 'activate-layer') {
-            // change selected status of option with ID === msg.resource
-            for (const option of this._container.children[0].children) {
-                if (option.value === msg.resource) {
-                    if (option.selected) {
-                        break;   // No change
-                    }
-                    option.selected = true;
-                } else if (option.selected
-                        && msg.resource.startsWith(`${this._flatmap.id}/`)) {
-                    option.selected = false;
-                }
-            }
-        }
-    }
-
-    selectionChanged_(e)
-    //==================
-    {
-        this._messagePasser.broadcast('activate-layer', e.target.value);
     }
 }
 
