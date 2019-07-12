@@ -123,7 +123,6 @@ export class UserInteractions
         //NB. Can be restricted to a layer...
 
         this._map.on('click', this.clickEvent_.bind(this));
-
     }
 
     get annotating()
@@ -177,10 +176,10 @@ export class UserInteractions
             this.deactivateLayer(msg.resource);
         } else if (msg.action === 'flatmap-query-results') {
             for (const featureUrl of msg.resource) {
-                const objectId = this._flatmap.objectIdForUrl(featureUrl);
-                if (objectId) {
+                const featureId = this._flatmap.featureIdForUrl(featureUrl);
+                if (featureId) {
                     const feature = {
-                        id: objectId.split('-')[1],
+                        id: featureId.split('-')[1],
                         source: "features",
                         sourceLayer: this._flatmap.layerIdForUrl(featureUrl)
                     };
@@ -237,16 +236,15 @@ export class UserInteractions
         if (this._modal) {
             return;
         }
-
         const features = this.activeFeatures_(e);
 
         // When not annotating highlight the top polygon feature, otherwise
         // highlight the top festure
-
         for (const feature of features) {
+            const id = feature.properties.id;
             if (this.annotating
-                const annotation = this._flatmap.annotationAbout(feature.properties.id);
-             || (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotationAbout(id))) {
+             || (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotation(id))) {
+                const annotation = this._flatmap.getAnnotation(id);
                 this.selectFeature_(feature);
                 if (annotation && this.annotating) {
                     this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
@@ -264,11 +262,10 @@ export class UserInteractions
     //==================
     {
         e.preventDefault();
-
         const features = this.activeFeatures_(e);
         for (const feature of features) {
             const id = feature.properties.id;
-            if (this.annotating || this._flatmap.hasAnnotationAbout(id)) {
+            if (this.annotating || this._flatmap.hasAnnotation(id)) {
                 this.selectFeature_(feature);
                 this._tooltip.hide();
                 const items = [];
@@ -322,9 +319,8 @@ export class UserInteractions
     {
         this.unhighlightFeatures_();
         this._contextMenu.hide();
-
-        const objectId = e.target.getAttribute('id');
-        const node_url = this._flatmap.urlForObjectId(objectId);
+        const featureId = e.target.getAttribute('id');
+        const node_url = this._flatmap.urlForFeature(featureId);
         this._messagePasser.broadcast(`flatmap-query-node-${type}`, node_url);
         this._modal = false;
     }
@@ -332,16 +328,17 @@ export class UserInteractions
     clickEvent_(e)
     //============
     {
-        this.unhighlightFeatures_();
-
         const features = this.activeFeatures_(e);
         for (const feature of features) {
-                const annotation = this._flatmap.annotationAbout(feature.properties.id);
-            if (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotationAbout(id)) {
+            const id = feature.properties.id;
+            if (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotation(id)) {
+                for (const model of this._flatmap.modelsForFeature(id)) {
                     this._messagePasser.broadcast('flatmap-query-data', model);
+                }
                 return;
             }
         }
+        this.unhighlightFeatures_();
     }
 
 }

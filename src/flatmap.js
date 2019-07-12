@@ -58,23 +58,18 @@ class FlatMap
     {
         this._id = map.id;
 
-        this._annotations = map.annotations;
         this._idToAnnotation = new Map();
         this._urlToAnnotation = new Map();
-
         for (const [id, annotation] of Object.entries(map.annotations)) {
             const ann = parser.parseAnnotation(annotation.annotation);
-
             if ('error' in ann) {
                 console.log(`Annotation error: ${ann.error} (${ann.text})`);
             } else {
                 const feature = ann.id.substring(1);
                 const url = `${map.source}/${annotation.layer}/${feature}`;
-
                 ann.url = url;
-                ann.objectId = id;
+                ann.featureId = id;
                 ann.layer = annotation.layer;
-
                 this._idToAnnotation.set(id, ann);
                 this._urlToAnnotation.set(url, ann);
             }
@@ -152,7 +147,7 @@ class FlatMap
     get annotations()
     //===============
     {
-        return this._annotations;
+        return this._idToAnnotation;
     }
 
     get layers()
@@ -167,18 +162,28 @@ class FlatMap
         return this._map;
     }
 
-    urlForObjectId(objectId)
+    urlForFeature(featureId)
     //======================
     {
-        const ann = this._idToAnnotation.get(objectId);
+        const ann = this._idToAnnotation.get(featureId);
         return (ann) ? ann.url : null;
     }
 
-    objectIdForUrl(url)
-    //=================
+    modelsForFeature(featureId)
+    //=========================
+    {
+        const ann = this._idToAnnotation.get(featureId);
+        if (ann && 'models' in ann.properties) {
+            return ann.properties.models;
+        }
+        return [];
+    }
+
+    featureIdForUrl(url)
+    //==================
     {
         const ann = this._urlToAnnotation.get(url);
-        return (ann) ? ann.objectId : null;
+        return (ann) ? ann.featureId : null;
     }
 
     layerIdForUrl(url)
@@ -188,23 +193,27 @@ class FlatMap
         return (ann) ? ann.layer : null;
     }
 
-    annotationAbout(featureId)
+    hasAnnotation(featureId)
+    //======================
+    {
+        return this._idToAnnotation.has(featureId);
+    }
+
+    getAnnotation(featureId)
+    //======================
+    {
+        return this._idToAnnotation.get(featureId);
+    }
+
+    annotationText(featureId)
     //========================
     {
-        if (featureId in this._annotations) {
-            return this._annotations[featureId];
-        }
-        return null;
+        const ann = this._idToAnnotation.get(featureId);
+        return (ann) ? ann.text : null;
     }
 
-    hasAnnotationAbout(featureId)
-    //===========================
-    {
-        return featureId in this._annotations;
-    }
-
-    async setAnnotationAbout(featureId, annotation)
-    //=============================================
+    async setAnnotationText(featureId, annotation)
+    //============================================
     {
         const feature = {
             id: featureId.split('-')[1],

@@ -107,7 +107,7 @@ export class Annotator
     showDialog(featureId, callback)
     //=============================
     {
-    	let annotation = this._flatmap.annotationAbout(featureId);
+    	let annotation = this._flatmap.annotationText(featureId);
     	if (annotation !== null) {
     	  	if (annotation.layer != this._flatmap.activeLayerId) {
     			console.log(`Annotation layer (${annotation.layer}) didn't match active layer (${
@@ -146,7 +146,7 @@ export class Annotator
         	if (annotationField) {
         		if (this._currentAnnotation.annotation !== annotationField.value) {
         			this._currentAnnotation.annotation = annotationField.value;
-        			this._flatmap.setAnnotationAbout(this._currentFeature, this._currentAnnotation);
+        			this._flatmap.setAnnotationText(this._currentFeature, this._currentAnnotation);
         		}
         	}
         }
