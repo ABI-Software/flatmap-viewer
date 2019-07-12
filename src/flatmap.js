@@ -230,7 +230,7 @@ class FlatMap
         }
 
         if (updateAnnotations) {
-            const postAnnotations = await fetch(utils.makeUrlAbsolute(`flatmap/${this.id}/annotations`), {
+            const postAnnotations = await fetch(mapEndpoint(`${this.id}/annotations`), {
                 headers: { "Content-Type": "application/json; charset=utf-8" },
                 method: 'POST',
                 body: JSON.stringify(this._annotations)
