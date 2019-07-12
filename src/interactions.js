@@ -275,13 +275,13 @@ export class UserInteractions
                 if (feature.geometry.type.includes('Polygon')) {
                     items.push({
                         id: id,
-                        prompt: 'Query edges',
-                        action: this.query_.bind(this, 'edges')
+                        prompt: 'Query this node',
+                        action: this.query_.bind(this, 'single')
                     });
                     items.push({
                         id: id,
-                        prompt: 'Query nodes',
-                        action: this.query_.bind(this, 'nodes')
+                        prompt: 'Query connected nodes',
+                        action: this.query_.bind(this, 'connected')
                     });
                 }
                 if (this.annotating) {
@@ -337,8 +337,8 @@ export class UserInteractions
         const features = this.activeFeatures_(e);
         for (const feature of features) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
-                this._messagePasser.broadcast('select', feature.properties.id, annotation);
             if (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotationAbout(id)) {
+                    this._messagePasser.broadcast('flatmap-query-data', model);
                 return;
             }
         }
