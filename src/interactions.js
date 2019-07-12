@@ -88,7 +88,7 @@ export class UserInteractions
         }
 
         if (this._layerManager.selectableLayerCount > 1) {
-            this._map.addControl(new LayerSwitcher(flatmap, 'Select organ system'));
+            this._map.addControl(new LayerSwitcher(flatmap, 'Select system'));
 
         } else if (this._layerManager.selectableLayerCount === 1) {
             // If only one selectable layer then it's always active...
