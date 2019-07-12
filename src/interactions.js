@@ -102,7 +102,7 @@ export class UserInteractions
             const selectableLayerId = this._layerManager.lastSelectableLayerId;
             this.activateLayer(selectableLayerId);
 
-            this._messagePasser.broadcast('activate-layer', selectableLayerId);
+            this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
         }
 
 
@@ -156,12 +156,26 @@ export class UserInteractions
         this._layerManager.activate(layerId, this.annotating);
     }
 
+    activateLayers(layerIds)
+    //======================
+    {
+        for (const layerId of layerIds) {
+            this._layerManager.activate(layerId, this.annotating);
+        }
+    }
+
+    deactivateLayer(layerId)
+    //======================
+    {
+        this._layerManager.deactivate(layerId);
+    }
+
     processMessage_(msg)
     //==================
     {
-        if (msg.action === 'activate-layer') {
+        if (msg.action === 'flatmap-activate-layer') {
             this.activateLayer(msg.resource);
-        } else if (msg.action === 'query-results') {
+        } else if (msg.action === 'flatmap-query-results') {
             for (const featureUrl of msg.resource) {
                 const objectId = this._flatmap.objectIdForUrl(featureUrl);
                 if (objectId) {
@@ -311,8 +325,7 @@ export class UserInteractions
 
         const objectId = e.target.getAttribute('id');
         const node_url = this._flatmap.urlForObjectId(objectId);
-        this._messagePasser.broadcast(`query-node-${type}`, node_url);
-
+        this._messagePasser.broadcast(`flatmap-query-node-${type}`, node_url);
         this._modal = false;
     }
 

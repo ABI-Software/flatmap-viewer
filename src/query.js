@@ -38,12 +38,12 @@ export class QueryInterface
     async processMessage_(msg)
     //========================
     {
-        const sparql = (msg.action === 'query-node-edges') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
+        const sparql = (msg.action === 'flatmap-query-node-edges') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 SELECT DISTINCT ?edge
     WHERE { ?edge a flatmap:Edge .
             ?edge ?route1 <${msg.resource}>
           }`
-                     : (msg.action === 'query-node-nodes') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
+                     : (msg.action === 'flatmap-query-node-nodes') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 SELECT DISTINCT ?edge ?node
     WHERE { ?edge a flatmap:Edge .
             ?edge ?route1 <${msg.resource}> .
@@ -77,7 +77,7 @@ SELECT DISTINCT ?edge ?node
                 }
             }
             if (features.length) {
-                this._messagePasser.broadcast('query-results', features);
+                this._messagePasser.broadcast('flatmap-query-results', features);
             }
         }
     }
