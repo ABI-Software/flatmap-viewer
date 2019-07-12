@@ -25,6 +25,8 @@ limitations under the License.
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
+import 'dat.gui/build/dat.gui.css';
+
 //==============================================================================
 
 import {mapEndpoint} from './endpoints.js';
