@@ -245,8 +245,8 @@ export class UserInteractions
 
         for (const feature of features) {
             if (this.annotating
-             || (feature.geometry.type === 'Polygon' && this._flatmap.hasAnnotationAbout(feature.properties.id))) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
+             || (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotationAbout(id))) {
                 this.selectFeature_(feature);
                 if (annotation && this.annotating) {
                     this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
@@ -272,7 +272,7 @@ export class UserInteractions
                 this.selectFeature_(feature);
                 this._tooltip.hide();
                 const items = [];
-                if (feature.geometry.type === 'Polygon') {
+                if (feature.geometry.type.includes('Polygon')) {
                     items.push({
                         id: id,
                         prompt: 'Query edges',
@@ -336,9 +336,9 @@ export class UserInteractions
 
         const features = this.activeFeatures_(e);
         for (const feature of features) {
-            if (feature.geometry.type === 'Polygon' && this._flatmap.hasAnnotationAbout(feature.properties.id)) {
                 const annotation = this._flatmap.annotationAbout(feature.properties.id);
                 this._messagePasser.broadcast('select', feature.properties.id, annotation);
+            if (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotationAbout(id)) {
                 return;
             }
         }
