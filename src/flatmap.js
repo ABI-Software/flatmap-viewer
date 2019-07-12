@@ -30,6 +30,7 @@ import 'dat.gui/build/dat.gui.css';
 //==============================================================================
 
 import {mapEndpoint} from './endpoints.js';
+import {parser} from './annotation.js';
 import {QueryInterface} from './query.js';
 import {UserInteractions} from './interactions.js';
 
@@ -58,15 +59,25 @@ class FlatMap
         this._id = map.id;
 
         this._annotations = map.annotations;
-        this._idToUrl = new Map();
-        this._urlToId = new Map();
-        this._urlToLayer = new Map();
+        this._idToAnnotation = new Map();
+        this._urlToAnnotation = new Map();
+
         for (const [id, annotation] of Object.entries(map.annotations)) {
-            const feature = annotation.annotation.split(' ')[0].substring(1);
-            const url = `${map.source}/${annotation.layer}/${feature}`;
-            this._idToUrl.set(id, url);
-            this._urlToId.set(url, id);
-            this._urlToLayer.set(url, annotation.layer);
+            const ann = parser.parseAnnotation(annotation.annotation);
+
+            if ('error' in ann) {
+                console.log(`Annotation error: ${ann.error} (${ann.text})`);
+            } else {
+                const feature = ann.id.substring(1);
+                const url = `${map.source}/${annotation.layer}/${feature}`;
+
+                ann.url = url;
+                ann.objectId = id;
+                ann.layer = annotation.layer;
+
+                this._idToAnnotation.set(id, ann);
+                this._urlToAnnotation.set(url, ann);
+            }
         }
 
         // Set base of source URLs in map's style
@@ -167,19 +178,22 @@ class FlatMap
     urlForObjectId(objectId)
     //======================
     {
-        return this._idToUrl.get(objectId);
+        const ann = this._idToAnnotation.get(objectId);
+        return (ann) ? ann.url : null;
     }
 
     objectIdForUrl(url)
     //=================
     {
-        return this._urlToId.get(url);
+        const ann = this._urlToAnnotation.get(url);
+        return (ann) ? ann.objectId : null;
     }
 
     layerIdForUrl(url)
     //=================
     {
-        return this._urlToLayer.get(url);
+        const ann = this._urlToAnnotation.get(url);
+        return (ann) ? ann.layer : null;
     }
 
     annotationAbout(featureId)

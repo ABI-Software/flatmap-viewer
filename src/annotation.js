@@ -21,6 +21,10 @@ limitations under the License.
 'use strict';
 
 //==============================================================================
+
+const peg = require("pegjs");
+
+//==============================================================================
 /*
  *  Standard prefixes: https://github.com/tgbugs/pyontutils/blob/master/nifstd/scigraph/curie_map.yaml
  */
@@ -151,5 +155,137 @@ export class Annotator
         this._dialogCallback();
     }
 }
+
+//==============================================================================
+
+const GRAMMER = `
+    ANNOTATION
+        = FEATURE_ID (_ SPECIFICATION)*
+
+    SPECIFICATION
+        = FEATURE_CLASS
+        / PROPERTY_SPEC
+
+    // Feature classes
+
+    FEATURE_CLASS
+        = NODE_SPEC
+        / EDGE_SPEC
+
+    NODE_SPEC = 'node' _ '(' _ NEURAL_NODE _ ')'
+
+    NEURAL_NODE
+        = 'N1'
+        / 'N2'
+        / 'N3'
+        / 'N4'
+        / 'N5'
+
+    // Need to check at least two IDs in edge
+    // and that they are nodes...
+
+    EDGE_SPEC = 'edge' _ '(' _ FEATURE_ID_LIST _ ')'
+
+    // Properties
+
+    PROPERTY_SPEC
+        = MODELS_SPEC
+        / ROUTING_SPEC
+
+    MODELS_SPEC
+        = 'models' _ '(' _ ONTOLOGY_ID_LIST _ ')'
+
+    ROUTING_SPEC
+        = ROUTING _ '(' _ FEATURE_ID _ ')'
+
+    ROUTING
+        = 'source'
+        / 'target'
+        / 'via'
+
+    // Identifiers
+
+    ONTOLOGY_ID_LIST
+        = ONTOLOGY_ID _ ( ',' _ ONTOLOGY_ID ) *
+
+    ONTOLOGY_ID
+        = ontology_id:(ONTOLOGY_SUFFIX + ':' + IDENTIFIER)
+        { return ontology_id.join(''); }
+
+    ONTOLOGY_SUFFIX
+        = 'FMA'
+        / 'ILX'
+        / 'UBERON'
+
+    FEATURE_ID_LIST
+        = FEATURE_ID _ ( ',' _ FEATURE_ID ) *
+
+    FEATURE_ID
+        = feature_id:('#' IDENTIFIER) { return feature_id.join('') }
+
+    IDENTIFIER =
+        start:START_ID
+        rest:(START_ID / [./:\\-_])*
+        { return start + rest.join(''); }
+
+    START_ID =
+        ([a-z] / [A-Z] / [0-9])
+
+    // Whitespace
+
+    _ "whitespace"
+        = [ \t]* { return '' }
+    `;
+
+//==============================================================================
+
+class Parser
+{
+    constructor()
+    {
+        this._parser = peg.generate(GRAMMER);
+    }
+
+    parseAnnotation(text)
+    //===================
+    {
+        const result = {
+            text: text
+        };
+        try {
+            const parsed = this._parser.parse(text);
+            result['id'] = parsed[0];
+            const properties = {};
+            for (const spec of parsed[1]) {
+                const property = spec[1][0];
+                const params = spec[1][4];
+                let parameters = [];
+                if (property in properties) {
+                    parameters = properties[property];
+                } else {
+                    properties[property] = parameters;
+                }
+                if (typeof params === 'string') {
+                    parameters.push(params);
+                } else {
+                    parameters.push(params[0]);
+                    for (const param of params[2]) {
+                        parameters.push(param[2]);
+                    }
+                }
+            result['properties'] = properties;
+            }
+        } catch(error) {
+            if (error.name === 'SyntaxError') {
+                result['error'] = error.message;
+            } else {
+                throw error;
+            }
+        }
+    return result;
+    }
+}
+
+export const parser = new Parser;
 
 //==============================================================================
