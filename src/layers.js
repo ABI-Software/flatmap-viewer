@@ -118,33 +118,26 @@ export class LayerManager
         this._flatmap = flatmap;
         this._map = flatmap.map;
         this._layers = new Map;
-        this._activeLayer = null;
+        this._activeLayers = [];
+        this._activeLayerIds = [];
         this._selectableLayerId = '';
         this._selectableLayerCount = 0;
     }
 
-    get activeLayerId()
-    //=================
-    {
-        return this._activeLayer ? this._activeLayer.id : '';
-    }
-
-    addBackgroundLayer()
+    get activeLayerIds()
     //==================
     {
-        if (this._map.isSourceLoaded('background')) {
-            this._map.addLayer(style.ImageLayer.style('background', 'background',
-                                                      style.PAINT_STYLES['background-opacity']));
-        }
+        return this._activeLayerIds;
     }
 
     addLayer(layer)
     //=============
     {
-        const featureLayer = new MapFeatureLayer(this._map, layer);
+        const layers = layer.selectable ? new MapFeatureLayer(this._map, layer.id)
+                                        : new MapImageLayer(this._map, layer.id)
         const layerId = `${this._flatmap.id}/${layer.id}`;
 
-        this._layers.set(layerId, featureLayer);
+        this._layers.set(layerId, layers);
 
         if (layer.selectable) {
             this._selectableLayerId = layerId;
@@ -174,15 +167,25 @@ export class LayerManager
     //=================================
     {
         const layer = this._layers.get(layerId);
-        if (layerId === '' || layer !== undefined) {
-            if (this._activeLayer !== null) {
-                this._activeLayer.deactivate();
+        if (layer !== undefined) {
+            layer.activate(annotating);
+            if (this._activeLayers.indexOf(layer) < 0) {
+                this._activeLayers.push(layer);
+                this._activeLayerIds.push(layer.id);
             }
-            if (layerId === '') {
-                this._activeLayer = null;
-            } else {
-                layer.activate(annotating);
-                this._activeLayer = layer;
+        }
+    }
+
+    deactivate(layerId)
+    //=================
+    {
+        const layer = this._layers.get(layerId);
+        if (layer !== undefined) {
+            layer.deactivate();
+            const index = this._activeLayers.indexOf(layer);
+            if (index >= 0) {
+                delete this._activeLayers[index];
+                delete this._activeLayerIds[index];
             }
         }
     }

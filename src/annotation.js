@@ -74,7 +74,7 @@ class AnnotationControl
                                      `background-color: ${this._annotating ? ANNOTATION_ON_BACKGROUND
                                                                            : ANNOTATION_OFF_BACKGROUND};`)
 
-        this._ui.activateLayer(this._ui.currentLayer);
+        this._ui.activateLayers([this._ui.currentLayer]);
 
         // Get key if enabling...
         // Compare md5(key) with stored value... (which could live in map's metadata...)

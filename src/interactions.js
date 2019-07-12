@@ -138,16 +138,20 @@ export class UserInteractions
         return this._flatmap.annotatable && this._annotator.enabled;
     }
 
-    get activeLayerId()
-    //=================
+    get activeLayerIds()
+    //==================
     {
-        return this._layerManager.activeLayerId;
+        return this._layerManager.activeLayerIds;
     }
 
-    get currentLayer()
+    get activeLayers()
     //================
     {
-        return `${this._flatmap.id}/${this._layerManager.activeLayerId}`;
+        const layers = [];
+        for (const layerId of this._layerManager.activeLayerIds) {
+            layers.push(`${this._flatmap.id}/${layerId}`);
+        }
+        return layers;
     }
 
     activateLayer(layerId)
@@ -175,6 +179,8 @@ export class UserInteractions
     {
         if (msg.action === 'flatmap-activate-layer') {
             this.activateLayer(msg.resource);
+        } else if (msg.action === 'flatmap-deactivate-layer') {
+            this.deactivateLayer(msg.resource);
         } else if (msg.action === 'flatmap-query-results') {
             for (const featureUrl of msg.resource) {
                 const objectId = this._flatmap.objectIdForUrl(featureUrl);
@@ -225,8 +231,8 @@ export class UserInteractions
         // Get features in active layer
 
         return this._map.queryRenderedFeatures(e.point).filter(f => {
-            return this.activeLayerId === f.sourceLayer
-                && 'id' in f.properties;
+            return (this.activeLayerIds.indexOf(f.sourceLayer) >= 0)
+                && ('id' in f.properties);
             }
         );
     }
