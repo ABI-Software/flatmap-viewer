@@ -31,18 +31,16 @@ import {ToolTip} from './tooltip.js';
 
 //==============================================================================
 
-function domFeatureDescription(annotation)
+function tooltip(valuesList)
 {
     const tooltipElement = document.createElement('div');
     tooltipElement.className = 'flatmap-feature-tooltip';
-
-    for (const value of annotation.annotation.split(/\s+/)) {
+    for (const value of valuesList) {
         const valueElement = document.createElement('div');
         valueElement.className = 'flatmap-feature-property';
         valueElement.textContent = value;
         tooltipElement.appendChild(valueElement);
     }
-
     return tooltipElement;
 }
 
@@ -246,8 +244,15 @@ export class UserInteractions
              || (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotation(id))) {
                 const annotation = this._flatmap.getAnnotation(id);
                 this.selectFeature_(feature);
-                if (annotation && this.annotating) {
-                    this._tooltip.show(e.lngLat, domFeatureDescription(annotation));
+                if (annotation) {
+                    if (this.annotating) {
+                        this._tooltip.show(e.lngLat, tooltip(annotation.text.split(/\s+/)));
+                    } else {
+                        const models = this._flatmap.modelsForFeature(id);
+                        if (models.length) {
+                            this._tooltip.show(e.lngLat, tooltip(models));
+                        }
+                    }
                 }
                 this._map.getCanvas().style.cursor = 'pointer';
                 return;
