@@ -40,18 +40,6 @@ const queryInterface = new QueryInterface();
 
 //==============================================================================
 
-function addUrlBase(url)
-{
-    if (url.startsWith('/')) {
-        return mapEndpoint() + url.substring(1); // We don't want `{` and `}` escaped
-    } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        console.log(`Invalid URL (${url}) in map's sources`);
-    }
-    return url;
-}
-
-//==============================================================================
-
 class FlatMap
 {
     constructor(htmlElementId, map)
@@ -79,12 +67,12 @@ class FlatMap
 
         for (const [id, source] of Object.entries(map.style.sources)) {
             if (source.url) {
-                source.url = addUrlBase(source.url);
+                source.url = this.addUrlBase_(source.url);
             }
             if (source.tiles) {
                 const tiles = []
                 for (const tileUrl of source.tiles) {
-                    tiles.push(addUrlBase(tileUrl));
+                    tiles.push(this.addUrlBase_(tileUrl));
                 }
                 source.tiles = tiles;
             }
@@ -124,6 +112,17 @@ class FlatMap
 
         this._userInteractions = null;
         this._map.on('load', this.finalise_.bind(this));
+    }
+
+    addUrlBase_(url)
+    //==============
+    {
+        if (url.startsWith('/')) {
+            return mapEndpoint() + this._id + url; // We don't want embedded `{` and `}` characters escaped
+        } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            console.log(`Invalid URL (${url}) in map's sources`);
+        }
+        return url;
     }
 
     get id()
