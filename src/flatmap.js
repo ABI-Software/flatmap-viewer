@@ -95,8 +95,6 @@ class FlatMap
             }
         }
 
-        this._hasBackground = ('background' in map.style.sources);
-
         this._options = map.options;
 
         this._map = new mapboxgl.Map({
@@ -155,12 +153,6 @@ class FlatMap
     //===============
     {
         return this._annotations;
-    }
-
-    get hasBackground()
-    //=================
-    {
-        return this._hasBackground;
     }
 
     get layers()

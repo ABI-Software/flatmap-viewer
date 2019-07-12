@@ -74,12 +74,6 @@ export class UserInteractions
 
         this._layerManager = new LayerManager(flatmap);
 
-        // Add a background layer if we have one
-
-        if (flatmap.hasBackground) {
-            this._layerManager.addBackgroundLayer();
-        }
-
         // Add the map's layers
 
         // Layers have an id, either layer-N or an assigned name

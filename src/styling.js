@@ -24,7 +24,7 @@ limitations under the License.
 
 export const PAINT_STYLES = {
     'background-opacity': 0.2,
-    'no-select-opacity': 0.5,
+    'unselectable-opacity': 0.5,
     'fill-color': '#fff',
     'fill-opacity': 0,
     'border-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'blue' ],

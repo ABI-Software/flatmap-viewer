@@ -33,28 +33,20 @@ const FEATURE_SOURCE_ID = 'features';
 
 class MapFeatureLayer
 {
-    constructor(map, layer)
+    constructor(map, layerId)
     {
         this._map = map;
-        this._id = layer.id;
-        const backgroundId = `${layer.id}-background`;
-        if (this._map.isSourceLoaded(backgroundId)) {
-            this._backgroundLayerId = backgroundId;
-            this._map.addLayer(style.ImageLayer.style(this._backgroundLayerId,
-                                                      `${layer.id}-background`,
-                                                      layer.selectable ? 0 : style.PAINT_STYLES['no-select-opacity']));
-        } else {
-            this._backgroundLayerId = null;
-        }
-        this._fillLayerId = `${layer.id}-fill`;
-        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, layer.id));
-        this._borderLayerId = `${layer.id}-border`;
-        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, layer.id));
-        this._lineLayerId = `${layer.id}-line`;
-        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, layer.id));
+        this._id = layerId;
+        this._imageLayerId = `${layerId}-image`;
+        this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId, 0));
+        this._fillLayerId = `${layerId}-fill`;
+        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, layerId));
+        this._borderLayerId = `${layerId}-border`;
+        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, layerId));
+        this._lineLayerId = `${layerId}-line`;
+        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, layerId));
 
-        this._topLayerId = (this._backgroundLayerId !== null) ? this._backgroundLayerId
-                                                              : this._fillLayerId;
+        this._topLayerId = this._imageLayerId;
     }
 
     get id()
@@ -66,9 +58,7 @@ class MapFeatureLayer
     activate(annotating=false)
     //========================
     {
-        if (this._backgroundLayerId) {
-            this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 1);
-        }
+        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.borderOpacity(true, annotating));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
@@ -82,9 +72,7 @@ class MapFeatureLayer
     deactivate()
     //==========
     {
-        if (this._backgroundLayerId) {
-            this._map.setPaintProperty(this._backgroundLayerId, 'raster-opacity', 0);
-        }
+        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.borderOpacity());
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
@@ -100,12 +88,49 @@ class MapFeatureLayer
     {
         const beforeTopLayerId = beforeLayer ? beforeLayer._topLayerId : undefined;
 
-        if (this._backgroundLayerId !== null) {
-            this._map.moveLayer(this._backgroundLayerId, beforeTopLayerId);
-        }
+        this._map.moveLayer(this._imageLayerId, beforeTopLayerId);
         this._map.moveLayer(this._fillLayerId, beforeTopLayerId);
         this._map.moveLayer(this._borderLayerId, beforeTopLayerId);
         this._map.moveLayer(this._lineLayerId, beforeTopLayerId);
+    }
+}
+
+//==============================================================================
+
+class MapImageLayer
+{
+    constructor(map, layerId)
+    {
+        this._map = map;
+        this._id = layerId;
+        this._imageLayerId = `${layerId}-image`;
+        this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId,
+                                                  style.PAINT_STYLES['background-opacity']));
+    }
+
+    get id()
+    //======
+    {
+        return this._id;
+    }
+
+    activate()
+    //========
+    {
+        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity',
+                                   style.PAINT_STYLES['unselectable-opacity']);
+    }
+
+    deactivate()
+    //==========
+    {
+        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity',
+                                   style.PAINT_STYLES['background-opacity']);
+    }
+
+    move(beforeLayer)
+    //===============
+    {
     }
 }
 
