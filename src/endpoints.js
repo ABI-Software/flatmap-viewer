@@ -46,8 +46,8 @@ export function mapEndpoint(relativePath='')
 
 //==============================================================================
 
-export function queryEndpoint(relativePath)
-//=========================================
+export function queryEndpoint(relativePath='')
+//============================================
 {
     const url = new URL(relativePath, queryEndpointBase);
     return url.href;

@@ -23,8 +23,7 @@ limitations under the License.
 //==============================================================================
 
 import {MessagePasser} from './messages.js';
-
-import * as utils from './utils.js';
+import {queryEndpoint} from './endpoints.js';
 
 //==============================================================================
 
@@ -52,7 +51,7 @@ SELECT DISTINCT ?edge ?node
           }`
                      : null;
         if (sparql) {
-            const postQuery = await fetch(utils.makeUrlAbsolute('query'), {
+            const postQuery = await fetch(queryEndpoint(), {
                 headers: { "Content-Type": "application/json; charset=utf-8" },
                 method: 'POST',
                 body: JSON.stringify({ sparql: sparql })
