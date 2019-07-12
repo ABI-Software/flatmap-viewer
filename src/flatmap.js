@@ -27,10 +27,9 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 //==============================================================================
 
+import {mapEndpoint} from './endpoints.js';
 import {QueryInterface} from './query.js';
 import {UserInteractions} from './interactions.js';
-
-import * as utils from './utils.js';
 
 //==============================================================================
 
@@ -41,11 +40,7 @@ const queryInterface = new QueryInterface();
 function addUrlBase(url)
 {
     if (url.startsWith('/')) {
-        if (window.location.pathname.endsWith('/')) {
-            return `${window.location.origin}${window.location.pathname}flatmap${url}`;
-        } else {
-            return `${window.location.origin}${window.location.pathname}/flatmap${url}`;
-        }
+        return mapEndpoint() + url.substring(1); // We don't want `{` and `}` escaped
     } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
         console.log(`Invalid URL (${url}) in map's sources`);
     }

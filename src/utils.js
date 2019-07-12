@@ -22,16 +22,6 @@ limitations under the License.
 
 //==============================================================================
 
-export function makeUrlAbsolute(relativePath)
-{
-    const base = window.location.pathname.endsWith('/') ? window.location.pathname
-                                                        : (window.location.pathname + '/');
-    const url = new URL(relativePath, window.location.origin + base);
-    return url.href;
-}
-
-//==============================================================================
-
 export class List extends Array {
     constructor(iterable=null) {
         super();
