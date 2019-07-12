@@ -88,6 +88,7 @@ export class LayerSwitcher
 
         const layerControl = new LayerControl(this._flatmap);
         layerControl.addToGui(this._gui);
+        this._gui.close();
 
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl';
