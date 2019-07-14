@@ -76,7 +76,8 @@ SELECT DISTINCT ?edge ?node
                 }
             }
             if (features.length) {
-                this._messagePasser.broadcast('flatmap-query-results', features);
+                // We remove duplicates before broadcasting the results array
+                this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
             }
         }
     }
