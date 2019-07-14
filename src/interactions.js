@@ -87,15 +87,13 @@ export class UserInteractions
             this._layerManager.addLayer(layer);
         }
 
+        // Add a layer switcher if we have more than one selectable layer
+
         if (this._layerManager.selectableLayerCount > 1) {
             this._map.addControl(new LayerSwitcher(flatmap, 'Select system'));
-
         } else if (this._layerManager.selectableLayerCount === 1) {
-            // If only one selectable layer then it's always active...
-
             const selectableLayeId = this._layerManager.lastSelectableLayerId;
             this.activateLayer(selectableLayerId);
-
             this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
         }
 
