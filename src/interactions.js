@@ -128,7 +128,7 @@ export class UserInteractions
                         for (const value of attribute.values) {
                             const feature = utils.mapFeature(layerStats.layer, value);
                             if (this._map.getFeatureState(feature, 'annotated')) {
-                                this._map.setFeatureState(feature, { 'query-data': true });
+                                this._map.setFeatureState(feature, { 'queryable': true });
                             }
                         }
                     }
@@ -219,7 +219,7 @@ export class UserInteractions
                                                      featureId);
                     this._map.setFeatureState(feature, { "highlighted": true });
                     this._highlightedFeatures.push(feature);
-                    if (this._map.getFeatureState(feature, 'query-data')) {
+                    if (this._map.getFeatureState(feature, 'queryable')) {
                         for (const model of this._flatmap.modelsForFeature(featureId)) {
                             this._messagePasser.broadcast('flatmap-query-data', model);
                         }
@@ -324,16 +324,21 @@ export class UserInteractions
                 this.selectFeature_(feature);
                 this._tooltip.hide();
                 const items = [];
-                if (feature.geometry.type.includes('Polygon')) {
+                if (this._map.getFeatureState(feature, 'queryable')) {
                     items.push({
                         id: id,
-                        prompt: 'Query this node',
-                        action: this.query_.bind(this, 'single')
+                        prompt: 'Find datasets',
+                        action: this.query_.bind(this, 'data')
+                    });
+                    items.push({
+                        id: id,
+                        prompt: 'Query node',
+                        action: this.query_.bind(this, 'node-single')
                     });
                     items.push({
                         id: id,
                         prompt: 'Query connected nodes',
-                        action: this.query_.bind(this, 'connected')
+                        action: this.query_.bind(this, 'node-connected')
                     });
                 }
                 if (this.annotating) {
@@ -375,8 +380,14 @@ export class UserInteractions
         this.unhighlightFeatures_();
         this._contextMenu.hide();
         const featureId = e.target.getAttribute('id');
-        const node_url = this._flatmap.urlForFeature(featureId);
-        this._messagePasser.broadcast(`flatmap-query-node-${type}`, node_url);
+        if (type === 'data') {
+            for (const model of this._flatmap.modelsForFeature(featureId)) {
+                this._messagePasser.broadcast('flatmap-query-data', model);
+            }
+        } else {
+            const node_url = this._flatmap.urlForFeature(featureId);
+            this._messagePasser.broadcast(`flatmap-query-${type}`, node_url);
+        }
         this._modal = false;
     }
 
@@ -385,7 +396,7 @@ export class UserInteractions
     {
         const features = this.activeFeatures_(e);
         for (const feature of features) {
-            if (this._map.getFeatureState(feature, 'query-data')) {
+            if (this._map.getFeatureState(feature, 'queryable')) {
                 const id = feature.properties.id;
                 for (const model of this._flatmap.modelsForFeature(id)) {
                     this._messagePasser.broadcast('flatmap-query-data', model);
