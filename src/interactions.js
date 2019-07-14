@@ -106,6 +106,23 @@ export class UserInteractions
             this._map.setFeatureState(feature, { 'annotated': true });
         }
 
+        // Flag objects against which data queries may be made
+
+        for (const layerStats of this._map.getStyle().sources['features'].tilestats['layers']) {
+            if (layerStats.geometry.includes('Polygon')) {
+                for (const attribute of layerStats['attributes']) {
+                    if (attribute.attribute === 'id') {
+                        for (const value of attribute.values) {
+                            const feature = utils.mapFeature(layerStats.layer, value);
+                            if (this._map.getFeatureState(feature, 'annotated')) {
+                                this._map.setFeatureState(feature, { 'query-data': true });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         // Display a tooltip at the mouse pointer
 
         this._tooltip = new ToolTip(flatmap);
@@ -179,6 +196,11 @@ export class UserInteractions
                                                      featureId);
                     this._map.setFeatureState(feature, { "highlighted": true });
                     this._highlightedFeatures.push(feature);
+                    if (this._map.getFeatureState(feature, 'query-data')) {
+                        for (const model of this._flatmap.modelsForFeature(featureId)) {
+                            this._messagePasser.broadcast('flatmap-query-data', model);
+                        }
+                    }
                 }
             }
         }
