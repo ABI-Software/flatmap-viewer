@@ -83,8 +83,23 @@ export class UserInteractions
         // `no-select` layers have opacity 0.5
         // Background layer has opacity 0.2
 
+        const layersById = new Map();
+        const layerBackgroundIds = [];
         for (const layer of flatmap.layers) {
-            this._layerManager.addLayer(layer);
+            layer.backgroundLayers = [];
+            layersById.set(layer.id, layer);
+        }
+        for (const layer of flatmap.layers) {
+            if (layer.background_for) {
+                const l = layersById.get(layer.background_for);
+                l.backgroundLayers.push(layer);
+                layerBackgroundIds.push(layer.id);
+            }
+        }
+        for (const layer of flatmap.layers) {
+            if (layerBackgroundIds.indexOf(layer.id) < 0) {
+                this._layerManager.addLayer(layer);
+            }
         }
 
         // Add a layer switcher if we have more than one selectable layer

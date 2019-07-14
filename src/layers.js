@@ -33,18 +33,22 @@ const FEATURE_SOURCE_ID = 'features';
 
 class MapFeatureLayer
 {
-    constructor(map, layerId)
+    constructor(map, layer)
     {
         this._map = map;
-        this._id = layerId;
-        this._imageLayerId = `${layerId}-image`;
+        this._id = layer.id;
+        this._imageLayerId = `${layer.id}-image`;
         this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId, 0));
-        this._fillLayerId = `${layerId}-fill`;
-        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, layerId));
-        this._borderLayerId = `${layerId}-border`;
-        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, layerId));
-        this._lineLayerId = `${layerId}-line`;
-        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, layerId));
+        this._backgroundLayers = [];
+        for (const l of layer.backgroundLayers) {
+            this._backgroundLayers.push(new MapImageLayer(map, l));
+        }
+        this._fillLayerId = `${layer.id}-fill`;
+        this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, layer.id));
+        this._borderLayerId = `${layer.id}-border`;
+        this._map.addLayer(style.FeatureBorderLayer.style(this._borderLayerId, FEATURE_SOURCE_ID, layer.id));
+        this._lineLayerId = `${layer.id}-line`;
+        this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, layer.id));
 
         this._topLayerId = this._imageLayerId;
     }
@@ -59,6 +63,9 @@ class MapFeatureLayer
     //========================
     {
         this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
+        for (const l of this._backgroundLayers) {
+            l.activate();
+        }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.borderOpacity(true, annotating));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
@@ -73,6 +80,9 @@ class MapFeatureLayer
     //==========
     {
         this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
+        for (const l of this._backgroundLayers) {
+            l.deactivate();
+        }
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.borderOpacity());
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
@@ -89,6 +99,9 @@ class MapFeatureLayer
         const beforeTopLayerId = beforeLayer ? beforeLayer._topLayerId : undefined;
 
         this._map.moveLayer(this._imageLayerId, beforeTopLayerId);
+        for (const l of this._backgroundLayers) {
+            this._map.moveLayer(l.id, beforeTopLayerId);
+        }
         this._map.moveLayer(this._fillLayerId, beforeTopLayerId);
         this._map.moveLayer(this._borderLayerId, beforeTopLayerId);
         this._map.moveLayer(this._lineLayerId, beforeTopLayerId);
@@ -99,11 +112,11 @@ class MapFeatureLayer
 
 class MapImageLayer
 {
-    constructor(map, layerId)
+    constructor(map, layer)
     {
         this._map = map;
-        this._id = layerId;
-        this._imageLayerId = `${layerId}-image`;
+        this._id = layer.id;
+        this._imageLayerId = `${layer.id}-image`;
         this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId,
                                                   style.PAINT_STYLES['background-opacity']));
     }
@@ -118,7 +131,7 @@ class MapImageLayer
     //========
     {
         this._map.setPaintProperty(this._imageLayerId, 'raster-opacity',
-                                   style.PAINT_STYLES['unselectable-opacity']);
+                                   style.PAINT_STYLES['layer-background-opacity']);
     }
 
     deactivate()
@@ -158,10 +171,10 @@ export class LayerManager
     addLayer(layer)
     //=============
     {
-        const layers = layer.selectable ? new MapFeatureLayer(this._map, layer.id)
-                                        : new MapImageLayer(this._map, layer.id)
-        const layerId = `${this._flatmap.id}/${layer.id}`;
+        const layers = layer.selectable ? new MapFeatureLayer(this._map, layer)
+                                        : new MapImageLayer(this._map, layer)
 
+        const layerId = `${this._flatmap.id}/${layer.id}`;
         this._layers.set(layerId, layers);
 
         if (layer.selectable) {
