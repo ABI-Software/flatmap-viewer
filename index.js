@@ -24,8 +24,6 @@ limitations under the License.
 
 import {MapManager} from './src/flatmap.js';
 
-import './static/flatmaps.css';
-
 //==============================================================================
 
 const mapManager = new MapManager();

@@ -29,6 +29,12 @@ import 'dat.gui/build/dat.gui.css';
 
 //==============================================================================
 
+// Load our stylesheet last so we can ovveride styling rules
+
+import '../static/flatmaps.css';
+
+//==============================================================================
+
 import {mapEndpoint} from './endpoints.js';
 import {parser} from './annotation.js';
 import {QueryInterface} from './query.js';
