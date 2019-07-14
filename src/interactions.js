@@ -143,11 +143,21 @@ export class UserInteractions
 
         // Display a context menu on right-click
 
+        this._lastContextTime = 0;
         this._contextMenu = new ContextMenu(flatmap, this.contextMenuClosed_.bind(this));
         this._map.on('contextmenu', this.contextMenuEvent_.bind(this));
 
-        // Setup callbacks
-        //NB. Can be restricted to a layer...
+        // Display a context menu with a touch longer than 0.5 second
+
+        this._lastTouchTime = 0;
+        this._map.on('touchstart', (e) => { this._lastTouchTime = Date.now(); });
+        this._map.on('touchend', (e) => {
+            if (Date.now() > (this._lastTouchTime + 500)) {
+                this.contextMenuEvent_(e);
+            }
+        });
+
+        // Handle mouse click events
 
         this._map.on('click', this.clickEvent_.bind(this));
     }
@@ -298,6 +308,15 @@ export class UserInteractions
     //==================
     {
         e.preventDefault();
+
+        // Chrome on Android sends both touch and contextmenu events
+        // so ignore duplicate
+
+        if (Date.now() < (this._lastContextTime + 100)) {
+            return;
+        }
+        this._lastContextTime = Date.now();
+
         const features = this.activeFeatures_(e);
         for (const feature of features) {
             const id = feature.properties.id;
