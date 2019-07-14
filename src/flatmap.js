@@ -178,7 +178,9 @@ class FlatMap
     //=========================
     {
         const ann = this._idToAnnotation.get(featureId);
-        if (ann && 'models' in ann.properties) {
+        if (ann
+         && 'properties' in ann
+         && 'models' in ann.properties) {
             return ann.properties.models;
         }
         return [];
