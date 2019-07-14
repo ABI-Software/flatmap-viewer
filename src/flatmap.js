@@ -297,7 +297,7 @@ export class MapManager
             if (query.ok) {
                 this._maps = await query.json();
             } else {
-                showError('Error requesting flatmaps...');
+                alert(`Cannot access ${mapEndpoint()}`);
             }
         }
 
