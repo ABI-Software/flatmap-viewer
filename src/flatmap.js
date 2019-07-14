@@ -40,6 +40,8 @@ import {parser} from './annotation.js';
 import {QueryInterface} from './query.js';
 import {UserInteractions} from './interactions.js';
 
+import * as utils from './utils.js';
+
 //==============================================================================
 
 const queryInterface = new QueryInterface();
@@ -222,11 +224,7 @@ class FlatMap
     async setAnnotationText(featureId, annotation)
     //============================================
     {
-        const feature = {
-            id: featureId.split('-')[1],
-            source: "features",
-            sourceLayer: annotation.layer
-        };
+        const feature = utils.mapFeature(annotation.layer, featureId);
         let updateAnnotations = true;
         if (featureId in this._annotations) {
             if (annotation.annotation === '') {

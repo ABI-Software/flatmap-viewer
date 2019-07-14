@@ -29,6 +29,8 @@ import {LayerSwitcher} from './layerswitcher.js'
 import {MessagePasser} from './messages.js';
 import {ToolTip} from './tooltip.js';
 
+import * as utils from './utils.js';
+
 //==============================================================================
 
 function tooltip(valuesList)
@@ -97,14 +99,11 @@ export class UserInteractions
             this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
         }
 
+        // Flag objects that have annotations
 
-        for (const [id, annotation] of Object.entries(flatmap.annotations)) {
-            const feature = {
-                id: id.split('-')[1],
-                source: "features",
-                sourceLayer: annotation.layer
-            };
-            this._map.setFeatureState(feature, { "annotated": true });
+        for (const [id, annotation] of flatmap.annotations) {
+            const feature = utils.mapFeature(annotation.layer, id);
+            this._map.setFeatureState(feature, { 'annotated': true });
         }
 
         // Display a tooltip at the mouse pointer
@@ -176,11 +175,8 @@ export class UserInteractions
             for (const featureUrl of msg.resource) {
                 const featureId = this._flatmap.featureIdForUrl(featureUrl);
                 if (featureId) {
-                    const feature = {
-                        id: featureId.split('-')[1],
-                        source: "features",
-                        sourceLayer: this._flatmap.layerIdForUrl(featureUrl)
-                    };
+                    const feature = utils.mapFeature(this._flatmap.layerIdForUrl(featureUrl),
+                                                     featureId);
                     this._map.setFeatureState(feature, { "highlighted": true });
                     this._highlightedFeatures.push(feature);
                 }
@@ -335,8 +331,8 @@ export class UserInteractions
     {
         const features = this.activeFeatures_(e);
         for (const feature of features) {
-            const id = feature.properties.id;
-            if (feature.geometry.type.includes('Polygon') && this._flatmap.hasAnnotation(id)) {
+            if (this._map.getFeatureState(feature, 'query-data')) {
+                const id = feature.properties.id;
                 for (const model of this._flatmap.modelsForFeature(id)) {
                     this._messagePasser.broadcast('flatmap-query-data', model);
                 }

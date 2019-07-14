@@ -22,6 +22,17 @@ limitations under the License.
 
 //==============================================================================
 
+export function mapFeature(layer, id)
+{
+    return {
+        id: id.split('-')[1],
+        source: "features",
+        sourceLayer: layer
+    };
+}
+
+//==============================================================================
+
 export class List extends Array {
     constructor(iterable=null) {
         super();
