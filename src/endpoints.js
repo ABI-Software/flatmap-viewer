@@ -24,7 +24,7 @@ limitations under the License.
 
 const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
 
-const QUERY_ENDPOINT = 'https://mapcore-demo.org/flatmaps/query';
+const QUERY_ENDPOINT = MAP_ENDPOINT + 'query';
 
 //==============================================================================
 

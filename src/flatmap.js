@@ -94,13 +94,6 @@ class FlatMap
             attributionControl: false
         });
 
-        /*
-        this._map.addControl(new mapboxgl.AttributionControl({
-            compact: true,
-            customAttribution: "\u00a9 Auckland Bioengineering Institute"
-        }));
-        */
-
         this._map.setRenderWorldCopies(false);
 
         if ('maxzoom' in map.options) {
@@ -114,7 +107,6 @@ class FlatMap
         this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
         this._map.dragRotate.disable();
         this._map.touchZoomRotate.disableRotation();
-
 
         // Finish initialisation when all sources have loaded
 
