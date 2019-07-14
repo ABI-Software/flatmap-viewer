@@ -297,7 +297,7 @@ export class MapManager
         if (this._maps === null) {
             // Find what maps we have available
             const query = await fetch(mapEndpoint(), {
-                headers: { "Content-Type": "application/json; charset=utf-8" },
+                headers: { "Accept": "application/json; charset=utf-8" },
                 method: 'GET'
             });
             if (query.ok) {

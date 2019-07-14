@@ -52,7 +52,10 @@ SELECT DISTINCT ?edge ?node
                      : null;
         if (sparql) {
             const postQuery = await fetch(queryEndpoint(), {
-                headers: { "Content-Type": "application/json; charset=utf-8" },
+                headers: {
+                    "Content-Type": "application/json; charset=utf-8",
+                    "Accept": "application/json; charset=utf-8"
+                },
                 method: 'POST',
                 body: JSON.stringify({ sparql: sparql })
             });
