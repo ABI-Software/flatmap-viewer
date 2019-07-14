@@ -22,25 +22,16 @@ limitations under the License.
 
 //==============================================================================
 
-const mapEndpointPath = window.location.pathname.endsWith('/') ? window.location.pathname + 'flatmap/'
-                                                               : (window.location.pathname + '/flatmap/');
-const mapEndpointBase = window.location.origin + mapEndpointPath;
+const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
 
-const queryEndpointPath = window.location.pathname.endsWith('/') ? window.location.pathname + 'query'
-                                                                 : (window.location.pathname + '/query');
-const queryEndpointBase = window.location.origin + queryEndpointPath;
-
-//const MAP_ENDPOINT = 'https://mapcore-demo.org/current/data-portal/map/flatmap/';
-const MAP_ENDPOINT = 'https://celldl.org/flatmaps/demo/flatmap/';
-const QUERY_ENDPOINT = 'https://celldl.org/flatmaps/demo/query';
+const QUERY_ENDPOINT = 'https://mapcore-demo.org/flatmaps/query';
 
 //==============================================================================
 
 export function mapEndpoint(relativePath='')
 //==========================================
 {
-    const url = new URL(relativePath, mapEndpointBase);
-//    const url = new URL(relativePath, MAP_ENDPOINT);
+    const url = new URL(relativePath, MAP_ENDPOINT);
     return url.href;
 }
 
@@ -49,7 +40,7 @@ export function mapEndpoint(relativePath='')
 export function queryEndpoint(relativePath='')
 //============================================
 {
-    const url = new URL(relativePath, queryEndpointBase);
+    const url = new URL(relativePath, QUERY_ENDPOINT);
     return url.href;
 }
 

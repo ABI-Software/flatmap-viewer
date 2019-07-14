@@ -118,7 +118,7 @@ class FlatMap
     //==============
     {
         if (url.startsWith('/')) {
-            return mapEndpoint() + this._id + url; // We don't want embedded `{` and `}` characters escaped
+            return `${mapEndpoint()}flatmap/${this._id}${url}`; // We don't want embedded `{` and `}` characters escaped
         } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
             console.log(`Invalid URL (${url}) in map's sources`);
         }
@@ -286,8 +286,8 @@ export class MapManager
         this._maps = null;
     }
 
-    async findMap_(mapSource)
-    //=======================
+    async findMap_(mapDescribes)
+    //==========================
     {
         if (this._maps === null) {
             // Find what maps we have available
@@ -302,48 +302,48 @@ export class MapManager
             }
         }
 
-        let mapId = null;
-        let latest = '';
+        let latestMap = null;
+        let lastCreatedTime = '';
         for (const map of this._maps) {  // But wait until response above...
-            if (mapSource == map.describes || mapSource === map.source) {
+            if (mapDescribes == map.describes || mapDescribes === map.source) {
                 if ('created' in map) {
-                    if (latest < map.created) {
-                        latest = map.created;
-                        mapId = map.id;
+                    if (lastCreatedTime < map.created) {
+                        lastCreatedTime = map.created;
+                        latestMap = map;
                     }
                 } else {
-                    return map.id;
+                    return map;
                 }
             }
         }
-        return mapId;
+        return latestMap;
     }
 
-    async loadMap(mapSource, htmlElementId, options={})
-    //=================================================
+    async loadMap(mapDescribes, htmlElementId, options={})
+    //====================================================
     {
-        const mapId = await this.findMap_(mapSource);
-        if (mapId === null) {
-            showError(htmlElementId, `Unknown map '${mapSource}'`);
+        const map = await this.findMap_(mapDescribes);
+        if (map === null) {
+            showError(htmlElementId, `Unknown map for '${mapDescribes}'`);
             return null;
         }
 
         // Load the maps index file
 
-        const getIndex = await fetch(mapEndpoint(`${mapId}/`), {
+        const getIndex = await fetch(mapEndpoint(`flatmap/${map.id}/`), {
             headers: { "Accept": "application/json; charset=utf-8" },
             method: 'GET'
         });
         if (!getIndex.ok) {
-            showError(htmlElementId, `Missing index file for map '${mapId}'`);
+            showError(htmlElementId, `Missing index file for map '${map.id}'`);
             return null;
         }
 
         // Set the map's options
 
         const mapOptions = await getIndex.json();
-        if (mapId !== mapOptions.id) {
-            showError(htmlElementId, `Map '${mapId}' has wrong ID in index`);
+        if (map.id !== mapOptions.id) {
+            showError(htmlElementId, `Map '${map.id}' has wrong ID in index`);
             return null;
         }
         for (const [name, value] of Object.entries(options)) {
@@ -365,24 +365,24 @@ export class MapManager
 
         // Get the map's style file
 
-        const getStyle = await fetch(mapEndpoint(`${mapId}/style`), {
+        const getStyle = await fetch(mapEndpoint(`flatmap/${map.id}/style`), {
             headers: { "Accept": "application/json; charset=utf-8" },
             method: 'GET'
         });
         if (!getStyle.ok) {
-            showError(htmlElementId, `Missing style file for map '${mapId}'`);
+            showError(htmlElementId, `Missing style file for map '${map.id}'`);
             return null;
         }
         const mapStyle = await getStyle.json();
 
         // Get the map's annotations
 
-        const getAnnotations = await fetch(mapEndpoint(`${mapId}/annotations`), {
+        const getAnnotations = await fetch(mapEndpoint(`flatmap/${map.id}/annotations`), {
             headers: { "Accept": "application/json; charset=utf-8" },
             method: 'GET'
         });
         if (!getAnnotations.ok) {
-            showError(htmlElementId, `Missing annotations for map '${mapId}'`);
+            showError(htmlElementId, `Missing annotations for map '${map.id}'`);
             return null;
         }
         const annotations = await getAnnotations.json();
@@ -390,8 +390,8 @@ export class MapManager
         // Display the map
 
         return new FlatMap(htmlElementId, {
-            id: mapId,
-            source: mapSource,
+            id: map.id,
+            source: map.source,
             style: mapStyle,
             options: mapOptions,
             annotations: annotations
