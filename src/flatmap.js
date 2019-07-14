@@ -42,7 +42,7 @@ const queryInterface = new QueryInterface();
 
 class FlatMap
 {
-    constructor(htmlElementId, map)
+    constructor(container, map)
     {
         this._id = map.id;
 
@@ -82,7 +82,7 @@ class FlatMap
 
         this._map = new mapboxgl.Map({
             style: map.style,
-            container: htmlElementId,
+            container: container,
             attributionControl: false
         });
 
@@ -270,9 +270,8 @@ class FlatMap
 
 //==============================================================================
 
-function showError(htmlElementId, error)
+function showError(container, error)
 {
-    const container = document.getElementById(htmlElementId);
     container.style = 'text-align: center; color: red;';
     container.innerHTML = `<h3>${error}</h3`;
 }
@@ -319,12 +318,12 @@ export class MapManager
         return latestMap;
     }
 
-    async loadMap(mapDescribes, htmlElementId, options={})
-    //====================================================
+    async loadMap(mapDescribes, container, options={})
+    //================================================
     {
         const map = await this.findMap_(mapDescribes);
         if (map === null) {
-            showError(htmlElementId, `Unknown map for '${mapDescribes}'`);
+            showError(container, `Unknown map for '${mapDescribes}'`);
             return null;
         }
 
@@ -335,7 +334,7 @@ export class MapManager
             method: 'GET'
         });
         if (!getIndex.ok) {
-            showError(htmlElementId, `Missing index file for map '${map.id}'`);
+            showError(container, `Missing index file for map '${map.id}'`);
             return null;
         }
 
@@ -343,7 +342,7 @@ export class MapManager
 
         const mapOptions = await getIndex.json();
         if (map.id !== mapOptions.id) {
-            showError(htmlElementId, `Map '${map.id}' has wrong ID in index`);
+            showError(container, `Map '${map.id}' has wrong ID in index`);
             return null;
         }
         for (const [name, value] of Object.entries(options)) {
@@ -370,7 +369,7 @@ export class MapManager
             method: 'GET'
         });
         if (!getStyle.ok) {
-            showError(htmlElementId, `Missing style file for map '${map.id}'`);
+            showError(container, `Missing style file for map '${map.id}'`);
             return null;
         }
         const mapStyle = await getStyle.json();
@@ -382,14 +381,14 @@ export class MapManager
             method: 'GET'
         });
         if (!getAnnotations.ok) {
-            showError(htmlElementId, `Missing annotations for map '${map.id}'`);
+            showError(container, `Missing annotations for map '${map.id}'`);
             return null;
         }
         const annotations = await getAnnotations.json();
 
         // Display the map
 
-        return new FlatMap(htmlElementId, {
+        return new FlatMap(container, {
             id: map.id,
             source: map.source,
             style: mapStyle,
