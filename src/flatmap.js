@@ -270,8 +270,10 @@ class FlatMap
 
 function showError(container, error)
 {
-    container.style = 'text-align: center; color: red;';
-    container.innerHTML = `<h3>${error}</h3`;
+    const domElement = (typeof container === 'string') ? document.getElementById(container)
+                                                       : container;
+    domElement.style = 'text-align: center; color: red;';
+    domElement.innerHTML = `<h3>${error}</h3`;
 }
 
 //==============================================================================
