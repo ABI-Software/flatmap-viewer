@@ -37,11 +37,19 @@ class MapFeatureLayer
     {
         this._map = map;
         this._id = layer.id;
-        this._imageLayerId = `${layer.id}-image`;
-        this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId, 0));
+        this._topLayerId = null;
         this._backgroundLayers = [];
         for (const l of layer.backgroundLayers) {
-            this._backgroundLayers.push(new MapImageLayer(map, l));
+            const backgroundImage = new MapImageLayer(map, l, this._id);
+            this._backgroundLayers.push(backgroundImage);
+            if (this._topLayerId === null) {
+                this._topLayerId = backgroundImage.imageLayerId;
+            }
+        }
+        this._imageLayerId = `${layer.id}-image`;
+        this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId, 0));
+        if (this._topLayerId === null) {
+            this._topLayerId = this._imageLayerId;
         }
         this._fillLayerId = `${layer.id}-fill`;
         this._map.addLayer(style.FeatureFillLayer.style(this._fillLayerId, FEATURE_SOURCE_ID, layer.id));
@@ -50,7 +58,6 @@ class MapFeatureLayer
         this._lineLayerId = `${layer.id}-line`;
         this._map.addLayer(style.FeatureLineLayer.style(this._lineLayerId, FEATURE_SOURCE_ID, layer.id));
 
-        this._topLayerId = this._imageLayerId;
     }
 
     get id()
@@ -62,10 +69,10 @@ class MapFeatureLayer
     activate(annotating=false)
     //========================
     {
-        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
         for (const l of this._backgroundLayers) {
             l.activate();
         }
+        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.borderOpacity(true, annotating));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
@@ -79,10 +86,10 @@ class MapFeatureLayer
     deactivate()
     //==========
     {
-        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
         for (const l of this._backgroundLayers) {
             l.deactivate();
         }
+        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
                                    style.borderOpacity());
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
@@ -98,10 +105,10 @@ class MapFeatureLayer
     {
         const beforeTopLayerId = beforeLayer ? beforeLayer._topLayerId : undefined;
 
-        this._map.moveLayer(this._imageLayerId, beforeTopLayerId);
         for (const l of this._backgroundLayers) {
-            this._map.moveLayer(l.id, beforeTopLayerId);
+            this._map.moveLayer(l.imageLayerId, beforeTopLayerId);
         }
+        this._map.moveLayer(this._imageLayerId, beforeTopLayerId);
         this._map.moveLayer(this._fillLayerId, beforeTopLayerId);
         this._map.moveLayer(this._borderLayerId, beforeTopLayerId);
         this._map.moveLayer(this._lineLayerId, beforeTopLayerId);
@@ -112,12 +119,16 @@ class MapFeatureLayer
 
 class MapImageLayer
 {
-    constructor(map, layer)
+    constructor(map, layer, topId='')
     {
         this._map = map;
         this._id = layer.id;
-        this._imageLayerId = `${layer.id}-image`;
-        this._map.addLayer(style.ImageLayer.style(this._imageLayerId, this._imageLayerId,
+        if (topId === '') {
+            this._imageLayerId = `${layer.id}-image`;
+        } else {
+            this._imageLayerId = `${topId}-${layer.id}-image`;
+        }
+        this._map.addLayer(style.ImageLayer.style(this._imageLayerId, `${layer.id}-image`,
                                                   style.PAINT_STYLES['background-opacity']));
     }
 
@@ -125,6 +136,12 @@ class MapImageLayer
     //======
     {
         return this._id;
+    }
+
+    get imageLayerId()
+    //================
+    {
+        return this._imageLayerId;
     }
 
     activate()
