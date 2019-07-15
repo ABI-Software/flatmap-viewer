@@ -226,6 +226,7 @@ export class UserInteractions
                     }
                 }
             }
+            this._map.getCanvas().style.cursor = '';
         }
     }
 
@@ -387,6 +388,7 @@ export class UserInteractions
         } else {
             const node_url = this._flatmap.urlForFeature(featureId);
             this._messagePasser.broadcast(`flatmap-query-${type}`, node_url);
+            this._map.getCanvas().style.cursor = 'progress';
         }
         this._modal = false;
     }
