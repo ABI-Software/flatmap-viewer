@@ -160,6 +160,43 @@ export class UserInteractions
         // Handle mouse click events
 
         this._map.on('click', this.clickEvent_.bind(this));
+    getState()
+    //========
+    {
+        // Return the map's centre, zoom, and active layers
+        // Can only be called when the map is fully loaded
+        return {
+            center: this._map.getCenter().toArray(),
+            zoom: this._map.getZoom(),
+            layers: this.activeLayerNames
+        };
+    }
+
+    setState(state)
+    //=============
+    {
+        // Restore the map to a saved state
+
+        if ('layers' in state) {
+            // We tell the layer manager the required state of a layer
+            // and its controller will broadcast activation/deactivation messages
+            for (const layerId of this.activeLayerIds) {
+                this._layerSwitcher.setState(layerId, false);
+            }
+            for (name of state.layers) {
+                this._layerSwitcher.setState(this._flatmap.mapLayerId(name), true);
+            }
+        }
+        const options = {};
+        if ('center' in state) {
+            options['center'] = state.center;
+        }
+        if ('zoom' in state) {
+            options['zoom'] = state.zoom;
+        }
+        if (Object.keys(options).length > 0) {
+            this._map.easeTo(options);
+        }
     }
 
     get annotating()

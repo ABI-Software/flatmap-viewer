@@ -299,6 +299,19 @@ function showError(container, error)
         };
     }
 
+    getState()
+    //========
+    {
+        return (this._userInteractions !== null) ? this._userInteractions.getState() : {};
+    }
+
+    setState(state)
+    //=============
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.setState(state);
+        }
+    }
 }
 
 //==============================================================================
