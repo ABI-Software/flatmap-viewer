@@ -174,8 +174,8 @@ export class UserInteractions
         return this._layerManager.activeLayerNames;
     }
 
-    get activeLayers()
-    //================
+    get activeLayerIds()
+    //==================
     {
         const mapLayers = [];
         for (const name of this._layerManager.activeLayerNames) {
