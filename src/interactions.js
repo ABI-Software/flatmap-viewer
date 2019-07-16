@@ -194,7 +194,7 @@ export class UserInteractions
     //======================
     {
         for (const layerId of layerIds) {
-            this._layerManager.activate(layerId, this.annotating);
+            this.activateLayer(layerId);
         }
     }
 
@@ -202,6 +202,14 @@ export class UserInteractions
     //======================
     {
         this._layerManager.deactivate(layerId);
+    }
+
+    deactivateLayers()
+    //================
+    {
+        for (const layerId of this.activeLayerIds) {
+            this.deactivateLayer(layerId);
+        }
     }
 
     processMessage_(msg)
