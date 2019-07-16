@@ -1,6 +1,6 @@
 {
   "name": "flatmap-mvt-viewer",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "Flatmap viewer using Mapbox GL",
   "repository": "https://github.com/dbrnz/flatmap-mvt-viewer.git",
   "main": "index.js",
