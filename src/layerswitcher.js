@@ -36,14 +36,15 @@ class LayerControl
     constructor(flatmap)
     {
         //  To broadcast an 'flatmap-activate-layer LAYER_ID' message
-        this._messagePasser = new MessagePasser(`${flatmap.id}-layerswitcher`, json => {});
+        this._messagePasser = new MessagePasser(`${flatmap.uniqueId}-layerswitcher`, json => {});
 
-        this._descriptionToLayer = new Map();
+        this._layerIdToController = new Map();
+        this._layerIdToDescription = new Map();
         for (const layer of flatmap.layers) {
             if (layer.selectable && layer.description !== '') {
                 const layerId = flatmap.mapLayerId(layer.id);
                 this[layer.description] = layer.selected;
-                this._descriptionToLayer.set(layer.description, layerId);
+                this._layerIdToDescription.set(layerId, layer.description);
                 if (layer.selected) {
                     this._messagePasser.broadcast('flatmap-activate-layer', layerId);
                 }
@@ -54,9 +55,10 @@ class LayerControl
     addToGui(gui)
     //===========
     {
-        for (const [description, layer] of this._descriptionToLayer.entries()) {
+        for (const [layerId, description] of this._layerIdToDescription.entries()) {
             const controller = gui.add(this, description);
-            controller.onChange(this.checkboxChanged.bind(this, layer));
+            controller.onChange(this.checkboxChanged.bind(this, layerId));
+            this._layerIdToController.set(layerId, controller);
         }
     }
 
@@ -69,6 +71,15 @@ class LayerControl
             this._messagePasser.broadcast('flatmap-deactivate-layer', layerId);
         }
     }
+
+    setState(layerId, checked)
+    //========================
+    {
+        const controller = this._layerIdToController.get(layerId);
+        if (controller) {
+            controller.setValue(checked);
+        }
+    }
 }
 
 
@@ -79,6 +90,7 @@ export class LayerSwitcher
     constructor(flatmap, prompt='Select layer')
     {
         this._flatmap = flatmap;
+        this._layerControl = null;
     }
 
     onAdd(map)
@@ -86,8 +98,8 @@ export class LayerSwitcher
     {
         this._gui = new dat.GUI({ autoPlace: false });
 
-        const layerControl = new LayerControl(this._flatmap);
-        layerControl.addToGui(this._gui);
+        this._layerControl = new LayerControl(this._flatmap);
+        this._layerControl.addToGui(this._gui);
         this._gui.close();
 
         this._container = document.createElement('div');
@@ -108,6 +120,14 @@ export class LayerSwitcher
     //==================
     {
         return 'top-left';
+    }
+
+    setState(layerId, checked)
+    //========================
+    {
+        if (this._layerControl !== null) {
+            this._layerControl.setState(layerId, checked);
+        }
     }
 }
 
