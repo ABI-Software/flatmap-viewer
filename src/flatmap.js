@@ -456,7 +456,8 @@ export class MapManager
                             if (!getAnnotations.ok) {
                                 reject(new Error(`Missing annotations for map '${map.id}'`));
                             }
-                            const annotations = getAnnotations.json();
+                            return getAnnotations.json();
+                        }).then(annotations => {
 
                             // Display the map
 
