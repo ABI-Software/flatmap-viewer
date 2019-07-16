@@ -53,6 +53,8 @@ class FlatMap
     constructor(container, map)
     {
         this._id = map.id;
+        this._source = map.source;
+        this._describes = map.describes;
         this._mapNumber = map.serialNumber;
 
         this._idToAnnotation = new Map();
@@ -286,6 +288,17 @@ function showError(container, error)
                                                        : container;
     domElement.style = 'text-align: center; color: red;';
     domElement.innerHTML = `<h3>${error}</h3`;
+    getIdentifier()
+    //=============
+    {
+        // Return identifiers for reloading the map
+
+        return {
+            describes: this._describes,
+            source: this._source
+        };
+    }
+
 }
 
 //==============================================================================
