@@ -50,12 +50,13 @@ const queryInterface = new QueryInterface();
 
 class FlatMap
 {
-    constructor(container, map)
+    constructor(container, map, resolve)
     {
         this._id = map.id;
         this._source = map.source;
         this._describes = map.describes;
         this._mapNumber = map.serialNumber;
+        this._resolve = resolve;
 
         this._idToAnnotation = new Map();
         this._urlToAnnotation = new Map();
@@ -115,6 +116,22 @@ class FlatMap
 
         this._userInteractions = null;
         this._map.on('load', this.finalise_.bind(this));
+    }
+
+    finalise_()
+    //=========
+    {
+        // Layers have now loaded so finish setting up
+
+        this._userInteractions = new UserInteractions(this, ui => {
+            if ('state' in this._options) {
+                // This is to ensure the layer switcher has been fully initialised...
+                setTimeout(() => {
+                     ui.setState(this._options.state);
+                }, 200);
+            }
+            this._resolve(this);
+        });
     }
 
     addUrlBase_(url)
@@ -258,14 +275,6 @@ class FlatMap
         }
     }
 
-    finalise_()
-    //=========
-    {
-        // Layers have now loaded so finish setting up
-
-        this._userInteractions = new UserInteractions(this);
-    }
-
     resize()
     //======
     {
@@ -273,21 +282,13 @@ class FlatMap
 
         this._map.resize();
     }
-}
 
-//==============================================================================
     mapLayerId(name)
     //==============
     {
         return `${this.uniqueId}/${name}`;
     }
 
-function showError(container, error)
-{
-    const domElement = (typeof container === 'string') ? document.getElementById(container)
-                                                       : container;
-    domElement.style = 'text-align: center; color: red;';
-    domElement.innerHTML = `<h3>${error}</h3`;
     getIdentifier()
     //=============
     {
@@ -324,25 +325,12 @@ export class MapManager
         this._mapNumber = 0;
     }
 
-    async findMap_(mapDescribes)
-    //==========================
+    latestMap_(mapDescribes)
+    //======================
     {
-        if (this._maps === null) {
-            // Find what maps we have available
-            const query = await fetch(mapEndpoint(), {
-                headers: { "Accept": "application/json; charset=utf-8" },
-                method: 'GET'
-            });
-            if (query.ok) {
-                this._maps = await query.json();
-            } else {
-                alert(`Cannot access ${mapEndpoint()}`);
-            }
-        }
-
         let latestMap = null;
         let lastCreatedTime = '';
-        for (const map of this._maps) {  // But wait until response above...
+        for (const map of this._maps) {
             if (mapDescribes == map.describes || mapDescribes === map.source) {
                 if ('created' in map) {
                     if (lastCreatedTime < map.created) {
@@ -357,84 +345,137 @@ export class MapManager
         return latestMap;
     }
 
-    async loadMap(mapDescribes, container, options={})
-    //================================================
+    lookupMap_(identifier)
+    //====================
     {
-        const map = await this.findMap_(mapDescribes);
-        if (map === null) {
-            showError(container, `Unknown map for '${mapDescribes}'`);
-            return null;
-        }
-
-        // Load the maps index file
-
-        const getIndex = await fetch(mapEndpoint(`flatmap/${map.id}/`), {
-            headers: { "Accept": "application/json; charset=utf-8" },
-            method: 'GET'
-        });
-        if (!getIndex.ok) {
-            showError(container, `Missing index file for map '${map.id}'`);
-            return null;
-        }
-
-        // Set the map's options
-
-        const mapOptions = await getIndex.json();
-        if (map.id !== mapOptions.id) {
-            showError(container, `Map '${map.id}' has wrong ID in index`);
-            return null;
-        }
-        for (const [name, value] of Object.entries(options)) {
-            mapOptions[name] = value;
-        }
-
-        // Set layer data if the layer just has an id specified
-
-        for (let n = 0; n < mapOptions.layers.length; ++n) {
-            const layer = mapOptions.layers[n];
-            if (typeof layer === 'string') {
-                mapOptions.layers[n] = {
-                    id: layer,
-                    description: layer.charAt(0).toUpperCase() + layer.slice(1),
-                    selectable: true
-                };
+        let mapDescribes = null;
+        if (typeof identifier === 'object') {
+            if ('source' in identifier) {
+                const flatmap = this.latestMap_(identifier.source);
+                if (flatmap !== null) {
+                    return flatmap;
+                }
             }
+            if ('describes' in identifier) {
+                mapDescribes = identifier.describes;
+            }
+        } else {
+            mapDescribes = identifier;
         }
+        return this.latestMap_(mapDescribes);
+    }
 
-        // Get the map's style file
-
-        const getStyle = await fetch(mapEndpoint(`flatmap/${map.id}/style`), {
-            headers: { "Accept": "application/json; charset=utf-8" },
-            method: 'GET'
+    findMap_(identifier)
+    //==================
+    {
+        return new Promise((resolve, reject) => {
+            if (this._maps === null) {
+                // Find what maps we have available
+                fetch(mapEndpoint(), {
+                    headers: { "Accept": "application/json; charset=utf-8" },
+                    method: 'GET'
+                }).then(query => {
+                    if (query.ok) {
+                        return query.json();
+                    } else {
+                        reject(new Error(`Cannot access ${mapEndpoint()}`));
+                    }
+                }).then(maps => {
+                     this._maps = maps;
+                     resolve(this.lookupMap_(identifier));
+                });
+            } else {
+                resolve(this.lookupMap_(identifier));
+            }
         });
-        if (!getStyle.ok) {
-            showError(container, `Missing style file for map '${map.id}'`);
-            return null;
-        }
-        const mapStyle = await getStyle.json();
+    }
 
-        // Get the map's annotations
+    loadMap(identifier, container, options={})
+    //========================================
+    {
+        return new Promise((resolve, reject) => {
+            this.findMap_(identifier)
+            .then(
+                map => {
+                    if (map === null) {
+                        reject(new Error(`Unknown map for ${JSON.stringify(identifier)}`));
+                    };
+                    return map;
+                },
+                err => {
+                    reject(err);
+                }
+            ).then(map => {
+                // Load the maps index file
 
-        const getAnnotations = await fetch(mapEndpoint(`flatmap/${map.id}/annotations`), {
-            headers: { "Accept": "application/json; charset=utf-8" },
-            method: 'GET'
-        });
-        if (!getAnnotations.ok) {
-            showError(container, `Missing annotations for map '${map.id}'`);
-            return null;
-        }
-        const annotations = await getAnnotations.json();
+                fetch(mapEndpoint(`flatmap/${map.id}/`), {
+                    headers: { "Accept": "application/json; charset=utf-8" },
+                    method: 'GET'
+                }).then(getIndex => {
+                    if (!getIndex.ok) {
+                        reject(new Error(`Missing index file for map '${map.id}'`));
+                    }
+                    return getIndex.json();
+                }).then(mapOptions => {
+                    // Set the map's options
+                    if (map.id !== mapOptions.id) {
+                        reject(new Error(`Map '${map.id}' has wrong ID in index`));
+                    }
+                    for (const [name, value] of Object.entries(options)) {
+                        mapOptions[name] = value;
+                    }
+                    // Set layer data if the layer just has an id specified
 
-        // Display the map
+                    for (let n = 0; n < mapOptions.layers.length; ++n) {
+                        const layer = mapOptions.layers[n];
+                        if (typeof layer === 'string') {
+                            mapOptions.layers[n] = {
+                                id: layer,
+                                description: layer.charAt(0).toUpperCase() + layer.slice(1),
+                                selectable: true
+                            };
+                        }
+                    }
+                    // Get the map's style file
 
-        return new FlatMap(container, {
-            id: map.id,
-            source: map.source,
-            style: mapStyle,
-            options: mapOptions,
+                    fetch(mapEndpoint(`flatmap/${map.id}/style`), {
+                        headers: { "Accept": "application/json; charset=utf-8" },
+                        method: 'GET'
+                    }).then(getStyle => {
+                        if (!getStyle.ok) {
+                            reject(new Error(`Missing style file for map '${map.id}'`));
+                        }
+                        return getStyle.json();
+                    }).then(mapStyle => {
+                        // Get the map's annotations
+
+                        fetch(mapEndpoint(`flatmap/${map.id}/annotations`), {
+                            headers: { "Accept": "application/json; charset=utf-8" },
+                            method: 'GET'
+                        }).then(getAnnotations => {
+                            if (!getAnnotations.ok) {
+                                reject(new Error(`Missing annotations for map '${map.id}'`));
+                            }
+                            const annotations = getAnnotations.json();
+
+                            // Display the map
+
                             this._mapNumber += 1;
+                            const flatmap = new FlatMap(container, {
+                                id: map.id,
+                                source: map.source,
+                                describes: map.describes,
+                                style: mapStyle,
+                                options: mapOptions,
                                 annotations: annotations,
                                 serialNumber: this._mapNumber
+                            }, resolve);
+
+                            return flatmap;
+                        });
+                    });
+               });
+            });
         });
     }
 }

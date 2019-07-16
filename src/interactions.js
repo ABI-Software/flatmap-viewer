@@ -50,10 +50,11 @@ function tooltip(valuesList)
 
 export class UserInteractions
 {
-    constructor(flatmap)
+    constructor(flatmap,  userInterfaceLoadedCallback=null)
     {
         this._flatmap = flatmap;
         this._map = flatmap.map;
+        this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
 
         this._selectedFeature = null;
         this._highlightedFeatures = [];
@@ -104,8 +105,11 @@ export class UserInteractions
 
         // Add a layer switcher if we have more than one selectable layer
 
+        this._layerSwitcher = null;
         if (this._layerManager.selectableLayerCount > 1) {
-            this._map.addControl(new LayerSwitcher(flatmap, 'Select system'));
+            this._layerSwitcher = new LayerSwitcher(flatmap, 'Select system',
+                                                    this.layerSwitcherActiveCallback_.bind(this));
+            this._map.addControl(this._layerSwitcher);
         } else if (this._layerManager.selectableLayerCount === 1) {
             const selectableLayeId = this._layerManager.lastSelectableLayerId;
             this.activateLayer(selectableLayerId);
@@ -160,6 +164,23 @@ export class UserInteractions
         // Handle mouse click events
 
         this._map.on('click', this.clickEvent_.bind(this));
+
+        if (this._layerSwitcher === null
+         && this._userInterfaceLoadedCallback !== null) {
+            this._userInterfaceLoadedCallback(this);
+            this._userInterfaceLoadedCallback = null;
+        }
+    }
+
+    layerSwitcherActiveCallback_(layerSwitcher)
+    //=========================================
+    {
+        if (this._userInterfaceLoadedCallback !== null) {
+            this._userInterfaceLoadedCallback(this);
+            this._userInterfaceLoadedCallback = null;
+        }
+    }
+
     getState()
     //========
     {

@@ -87,10 +87,11 @@ class LayerControl
 
 export class LayerSwitcher
 {
-    constructor(flatmap, prompt='Select layer')
+    constructor(flatmap, prompt='Select layer', controlAddedCallback=null)
     {
         this._flatmap = flatmap;
         this._layerControl = null;
+        this._controlAddedCallback = controlAddedCallback;
     }
 
     onAdd(map)
@@ -105,6 +106,10 @@ export class LayerSwitcher
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl';
         this._container.appendChild(this._gui.domElement);
+
+        if (this._controlAddedCallback !== null) {
+            this._controlAddedCallback(this);
+        }
 
         return this._container;
     }
