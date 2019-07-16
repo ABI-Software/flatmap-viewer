@@ -221,7 +221,7 @@ export class UserInteractions
                     this._highlightedFeatures.push(feature);
                     if (this._map.getFeatureState(feature, 'queryable')) {
                         for (const model of this._flatmap.modelsForFeature(featureId)) {
-                            this._messagePasser.broadcast('flatmap-query-data', model);
+                            this._messagePasser.broadcast('query-data', model);
                         }
                     }
                 }
@@ -383,7 +383,7 @@ export class UserInteractions
         const featureId = e.target.getAttribute('id');
         if (type === 'data') {
             for (const model of this._flatmap.modelsForFeature(featureId)) {
-                this._messagePasser.broadcast('flatmap-query-data', model);
+                this._messagePasser.broadcast('query-data', model);
             }
         } else {
             const node_url = this._flatmap.urlForFeature(featureId);
@@ -401,7 +401,7 @@ export class UserInteractions
             if (this._map.getFeatureState(feature, 'queryable')) {
                 const id = feature.properties.id;
                 for (const model of this._flatmap.modelsForFeature(id)) {
-                    this._messagePasser.broadcast('flatmap-query-data', model);
+                    this._messagePasser.broadcast('query-data', model);
                 }
                 return;
             }

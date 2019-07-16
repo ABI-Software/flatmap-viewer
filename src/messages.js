@@ -20,21 +20,35 @@ limitations under the License.
 
 'use strict';
 
+/*
+ *  From https://docs.google.com/document/d/1pZX97DWejksMtsbfzSAvf-5vLYoYLf3VVNDyvQd-obQ/edit?ts=5bad9acc#
+ *
+ *  We need to change the name of the query broadcast channel from ‘sparc-portal’
+ *  to ‘sparc-mapcore-channel’ with parameters:
+ *
+ *      * action - describes the message, for dataset searching we have ‘query-data’,
+ *                 also ‘scaffold-show’, ‘data-viewer-show’, ‘flatmap-show’, as well as
+ *                 app. specific actions (all flatmap ones are prefixed `flatmap-`)
+ *      * data - message specific data
+ *      * resource - the resource itself (UBERON id, URI) in the context of the action
+ *      * sender - some identifier for the sender e.g. ‘flatmap’, ‘scaffold’, ‘data-viewer’.
+ */
+
 //==============================================================================
 
 import BroadcastChannel from 'broadcast-channel';
 
 //==============================================================================
 
-const SPARC_CHANNEL = 'sparc-portal';
+const SPARC_CHANNEL = 'sparc-mapcore-channel';
 
 //==============================================================================
 
 export class MessagePasser
 {
-    constructor(id, callback)
+    constructor(localId, callback)
     {
-        this._id = id;
+        this._localId = localId;
         this._callback = callback;
         this._channel = new BroadcastChannel(SPARC_CHANNEL);
         this._channel.addEventListener('message', this.callback.bind(this));
@@ -42,8 +56,9 @@ export class MessagePasser
 
     broadcast(action, resource, data={})
     {
+        data['local-sender'] = this._localId;
         this._channel.postMessage({
-            "sender": this._id,
+            "sender": 'flatmap',
             "action": action,
             "resource": resource,
             "data": data
