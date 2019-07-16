@@ -68,7 +68,7 @@ export class UserInteractions
 
         // To pass messages with other applications
 
-        this._messagePasser = new MessagePasser(flatmap.id, json => this.processMessage_(json));
+        this._messagePasser = new MessagePasser(flatmap.uniqueId, json => this.processMessage_(json));
 
          // Manage our layers
 
@@ -177,11 +177,11 @@ export class UserInteractions
     get activeLayers()
     //================
     {
-        const layers = [];
-        for (const layerId of this._layerManager.activeLayerNames) {
-            layers.push(`${this._flatmap.id}/${layerId}`);
+        const mapLayers = [];
+        for (const name of this._layerManager.activeLayerNames) {
+            mapLayers.push(this._flatmap.mapLayerId(name));
         }
-        return layers;
+        return mapLayers;
     }
 
     activateLayer(layerId)

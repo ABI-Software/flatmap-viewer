@@ -53,6 +53,7 @@ class FlatMap
     constructor(container, map)
     {
         this._id = map.id;
+        this._mapNumber = map.serialNumber;
 
         this._idToAnnotation = new Map();
         this._urlToAnnotation = new Map();
@@ -129,6 +130,12 @@ class FlatMap
     //======
     {
         return this._id;
+    }
+
+    get uniqueId()
+    //============
+    {
+        return `${this._id}-${this._mapNumber}`;
     }
 
     get activeLayerId()
@@ -267,6 +274,11 @@ class FlatMap
 }
 
 //==============================================================================
+    mapLayerId(name)
+    //==============
+    {
+        return `${this.uniqueId}/${name}`;
+    }
 
 function showError(container, error)
 {
@@ -283,6 +295,7 @@ export class MapManager
     constructor()
     {
         this._maps = null;
+        this._mapNumber = 0;
     }
 
     async findMap_(mapDescribes)
@@ -393,7 +406,9 @@ export class MapManager
             source: map.source,
             style: mapStyle,
             options: mapOptions,
-            annotations: annotations
+                            this._mapNumber += 1;
+                                annotations: annotations,
+                                serialNumber: this._mapNumber
         });
     }
 }

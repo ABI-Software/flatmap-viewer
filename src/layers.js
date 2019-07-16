@@ -191,7 +191,7 @@ export class LayerManager
         const layers = layer.selectable ? new MapFeatureLayer(this._map, layer)
                                         : new MapImageLayer(this._map, layer)
 
-        const layerId = `${this._flatmap.id}/${layer.id}`;
+        const layerId = this._flatmap.mapLayerId(layer.id);
         this._layers.set(layerId, layers);
 
         if (layer.selectable) {

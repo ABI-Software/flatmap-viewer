@@ -41,7 +41,7 @@ class LayerControl
         this._descriptionToLayer = new Map();
         for (const layer of flatmap.layers) {
             if (layer.selectable && layer.description !== '') {
-                const layerId = `${flatmap.id}/${layer.id}`;
+                const layerId = flatmap.mapLayerId(layer.id);
                 this[layer.description] = layer.selected;
                 this._descriptionToLayer.set(layer.description, layerId);
                 if (layer.selected) {
