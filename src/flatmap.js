@@ -127,10 +127,12 @@ class FlatMap
             if ('state' in this._options) {
                 // This is to ensure the layer switcher has been fully initialised...
                 setTimeout(() => {
-                     ui.setState(this._options.state);
+                    ui.setState(this._options.state);
+                    this._resolve(this);
                 }, 200);
+            } else {
+                this._resolve(this);
             }
-            this._resolve(this);
         });
     }
 
