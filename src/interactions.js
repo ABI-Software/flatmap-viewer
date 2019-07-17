@@ -466,6 +466,7 @@ export class UserInteractions
         const features = this.activeFeatures_(e);
         for (const feature of features) {
             if (this._map.getFeatureState(feature, 'queryable')) {
+                this.selectFeature_(feature);
                 const id = feature.properties.id;
                 for (const model of this._flatmap.modelsForFeature(id)) {
                     this._messagePasser.broadcast('query-data', model);
