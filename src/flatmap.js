@@ -257,7 +257,8 @@ class FlatMap
     //===================
     {
         const url = this.annotationUrl(ann);
-        return !this._urlToAnnotation.has(url);
+        const storedAnn = this._urlToAnnotation.get(url);
+        return (storedAnn === undefined || storedAnn.id === ann.id);
     }
 
     async setAnnotation(featureId, ann)
