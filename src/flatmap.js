@@ -248,7 +248,7 @@ class FlatMap
     delAnnotation_(ann)
     //=================
     {
-        const url = `${this._source}/${ann.layer}/${ann.id}`;
+        const url = this.annotationUrl(ann);
         this._idToAnnotation.delete(ann.featureId);
         this._urlToAnnotation.delete(url);
     }
@@ -256,7 +256,7 @@ class FlatMap
     uniqueAnnotation(ann)
     //===================
     {
-        const url = `${this._source}/${ann.layer}/${ann.id}`;
+        const url = this.annotationUrl(ann);
         return !this._urlToAnnotation.has(url);
     }
 
