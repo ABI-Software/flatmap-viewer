@@ -50,12 +50,12 @@ const queryInterface = new QueryInterface();
 
 class FlatMap
 {
-    constructor(container, map, resolve)
+    constructor(container, mapDescription, resolve)
     {
-        this._id = map.id;
-        this._source = map.source;
-        this._describes = map.describes;
-        this._mapNumber = map.serialNumber;
+        this._id = mapDescription.id;
+        this._source = mapDescription.source;
+        this._describes = mapDescription.describes;
+        this._mapNumber = mapDescription.serialNumber;
         this._resolve = resolve;
 
         this._idToAnnotation = new Map();
@@ -72,7 +72,7 @@ class FlatMap
 
         // Set base of source URLs in map's style
 
-        for (const [id, source] of Object.entries(map.style.sources)) {
+        for (const [id, source] of Object.entries(mapDescription.style.sources)) {
             if (source.url) {
                 source.url = this.addUrlBase_(source.url);
             }
@@ -85,21 +85,21 @@ class FlatMap
             }
         }
 
-        this._options = map.options;
+        this._options = mapDescription.options;
 
         this._map = new mapboxgl.Map({
-            style: map.style,
+            style: mapDescription.style,
             container: container,
             attributionControl: false
         });
 
         this._map.setRenderWorldCopies(false);
 
-        if ('maxzoom' in map.options) {
-            this._map.setMaxZoom(map.options.maxzoom);
+        if ('maxzoom' in mapDescription.options) {
+            this._map.setMaxZoom(mapDescription.options.maxzoom);
         }
 
-        if (map.options.fullscreenControl === true) {
+        if (mapDescription.options.fullscreenControl === true) {
             this._map.addControl(new mapboxgl.FullscreenControl());
         }
 
