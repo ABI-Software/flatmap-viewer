@@ -240,7 +240,9 @@ export class LayerManager
             const index = this._activeLayers.indexOf(layer);
             if (index >= 0) {
                 delete this._activeLayers[index];
+                this._activeLayers.splice(index, 1);
                 delete this._activeLayerNames[index];
+                this._activeLayerNames.splice(index, 1);
             }
         }
     }
