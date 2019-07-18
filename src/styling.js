@@ -26,15 +26,22 @@ export const PAINT_STYLES = {
     'background-opacity': 0.2,
     'layer-background-opacity': 0.5,
     'fill-color': '#fff',
-    'fill-opacity': 0,
-    'border-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'blue' ],
     'border-stroke-width': 0.5,
-    'line-stroke-color': [ 'case', ['boolean', ['feature-state', 'highlighted'], false], 'green', 'red' ],
     'line-stroke-opacity': 0,
     'line-stroke-width': 0.5
 };
 
 //==============================================================================
+
+export function borderColour(layerActive=false, annotating=false)
+{
+    return [
+        'case',
+        ['boolean', ['feature-state', 'annotation-error'], false], 'pink',
+        ['boolean', ['feature-state', 'highlighted'], false], 'green',
+        'blue'
+    ];
+}
 
 export function borderOpacity(layerActive=false, annotating=false)
 {
@@ -51,27 +58,30 @@ export function borderOpacity(layerActive=false, annotating=false)
     }
 }
 
+//==============================================================================
+
+export function lineColour(layerActive=false, annotating=false)
+{
+    return [
+        'case',
+        ['boolean', ['feature-state', 'annotation-error'], false], 'pink',
+        ['boolean', ['feature-state', 'highlighted'], false], 'green',
+        'red'
+    ];
+}
+
 export function lineOpacity(layerActive=false, annotating=false)
 {
     if (layerActive) {
         return annotating ? 1 : [
             'case',
-            ['boolean', ['feature-state', 'selected'], false], 0,
+            ['boolean', ['feature-state', 'annotation-error'], false], 0.8,
             ['boolean', ['feature-state', 'highlighted'], false], 0.4,
+            ['boolean', ['feature-state', 'selected'], false], 0,
             ['boolean', ['feature-state', 'annotated'], false], 0,
             0
         ];
     } else {
-        return 0;
-    }
-}
-
-export function lineWidth(width, layerActive=false, annotating=false)
-{
-    if (layerActive) {
-        return LineWidth.scale(width, annotating)
-    }
-    else {
         return 0;
     }
 }
@@ -85,8 +95,9 @@ class LineWidth
         return [
             "let", "linewidth", [
                 'case',
-                ['boolean', ['feature-state', 'selected'], false], 3*width,
+                ['boolean', ['feature-state', 'annotation-error'], false], 4*width,
                 ['boolean', ['feature-state', 'highlighted'], false], 2*width,
+                ['boolean', ['feature-state', 'selected'], false], 3*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
                 annotating ? width : 0
             ],
@@ -97,6 +108,18 @@ class LineWidth
             7, [ "*", 10, ["var", "linewidth"]]
             ]
         ];
+    }
+}
+
+//==============================================================================
+
+function lineWidth_(width, layerActive=false, annotating=false)
+{
+    if (layerActive) {
+        return LineWidth.scale(width, annotating)
+    }
+    else {
+        return 0;
     }
 }
 
@@ -145,16 +168,16 @@ export class FeatureBorderLayer
                 'Polygon'
             ],
             'paint': {
-                'line-color': PAINT_STYLES['border-stroke-color'],
-                'line-opacity': lineOpacity(),
-                'line-width': lineWidth(PAINT_STYLES['border-stroke-width'])
+                'line-color': borderColour(),
+                'line-opacity': borderOpacity(),
+                'line-width': lineWidth_(PAINT_STYLES['border-stroke-width'])
             }
         };
     }
 
     static lineWidth(layerActive=false, annotating=false)
     {
-        return lineWidth(PAINT_STYLES['border-stroke-width'], layerActive, annotating);
+        return lineWidth_(PAINT_STYLES['border-stroke-width'], layerActive, annotating);
     }
 }
 
@@ -175,16 +198,16 @@ export class FeatureLineLayer
                 'LineString'
             ],
             'paint': {
-                'line-color': PAINT_STYLES['line-stroke-color'],
+                'line-color': lineColour(),
                 'line-opacity': lineOpacity(),
-                'line-width': lineWidth(PAINT_STYLES['line-stroke-width'])
+                'line-width': lineWidth_(PAINT_STYLES['line-stroke-width'])
             }
         };
     }
 
     static lineWidth(layerActive=false, annotating=false)
     {
-        return lineWidth(PAINT_STYLES['line-stroke-width'], layerActive, annotating);
+        return lineWidth_(PAINT_STYLES['line-stroke-width'], layerActive, annotating);
     }
 }
 

@@ -66,6 +66,28 @@ class MapFeatureLayer
         return this._id;
     }
 
+    setBorderProperties_(layerActive=false, annotating=false)
+    //=======================================================
+    {
+        this._map.setPaintProperty(this._borderLayerId, 'line-color',
+                                   style.borderColour(layerActive, annotating));
+        this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
+                                   style.borderOpacity(layerActive, annotating));
+        this._map.setPaintProperty(this._borderLayerId, 'line-width',
+                                   style.FeatureBorderLayer.lineWidth(layerActive, annotating));
+    }
+
+    setLineProperties_(layerActive=false, annotating=false)
+    //=====================================================
+    {
+        this._map.setPaintProperty(this._lineLayerId, 'line-color',
+                                   style.lineColour(layerActive, annotating));
+        this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
+                                   style.lineOpacity(layerActive, annotating));
+        this._map.setPaintProperty(this._lineLayerId, 'line-width',
+                                   style.FeatureLineLayer.lineWidth(layerActive, annotating));
+    }
+
     activate(annotating=false)
     //========================
     {
@@ -73,14 +95,8 @@ class MapFeatureLayer
             l.activate();
         }
         this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
-        this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.borderOpacity(true, annotating));
-        this._map.setPaintProperty(this._borderLayerId, 'line-width',
-                                   style.FeatureBorderLayer.lineWidth(true, annotating));
-        this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
-                                   style.lineOpacity(true, annotating));
-        this._map.setPaintProperty(this._lineLayerId, 'line-width',
-                                   style.FeatureLineLayer.lineWidth(true, annotating));
+        this.setBorderProperties_(true, annotating);
+        this.setLineProperties_(true, annotating);
     }
 
     deactivate()
@@ -90,14 +106,8 @@ class MapFeatureLayer
             l.deactivate();
         }
         this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
-        this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.borderOpacity());
-        this._map.setPaintProperty(this._borderLayerId, 'line-width',
-                                   style.FeatureBorderLayer.lineWidth());
-        this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
-                                   style.lineOpacity());
-        this._map.setPaintProperty(this._lineLayerId, 'line-width',
-                                   style.FeatureLineLayer.lineWidth());
+        this.setBorderProperties_();
+        this.setLineProperties_();
     }
 
     move(beforeLayer)

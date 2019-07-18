@@ -60,19 +60,14 @@ class FlatMap
 
         this._idToAnnotation = new Map();
         this._urlToAnnotation = new Map();
-        for (const [id, annotation] of Object.entries(map.annotations)) {
+        this._rawAnnotations = mapDescription.annotations;
+        for (const [featureId, annotation] of Object.entries(mapDescription.annotations)) {
             const ann = parser.parseAnnotation(annotation.annotation);
-            if ('error' in ann) {
-                console.log(`Annotation error: ${ann.error} (${ann.text})`);
-            } else {
-                const feature = ann.id.substring(1);
-                const url = `${map.source}/${annotation.layer}/${feature}`;
-                ann.url = url;
-                ann.featureId = id;
-                ann.layer = annotation.layer;
-                this._idToAnnotation.set(id, ann);
-                this._urlToAnnotation.set(url, ann);
+            if ('error' in annotation && !('error' in ann)) {
+                ann.error = annotation.error;
             }
+            ann.layer = annotation.layer;
+            this.addAnnotation_(featureId, ann);
         }
 
         // Set base of source URLs in map's style
@@ -159,10 +154,10 @@ class FlatMap
         return `${this._id}-${this._mapNumber}`;
     }
 
-    get activeLayerId()
-    //=================
+    get activeLayerNames()
+    //====================
     {
-        return this._userInteractions.activeLayerId;
+        return this._userInteractions.activeLayerNames;
     }
 
     get annotatable()
@@ -187,6 +182,12 @@ class FlatMap
     //=======
     {
         return this._map;
+    }
+
+    get selectedFeatureLayerName()
+    //============================
+    {
+        return this._userInteractions.selectedFeatureLayerName;
     }
 
     urlForFeature(featureId)
@@ -222,52 +223,88 @@ class FlatMap
         return (ann) ? ann.layer : null;
     }
 
-    hasAnnotation(featureId)
-    //======================
-    {
-        return this._idToAnnotation.has(featureId);
-    }
-
     getAnnotation(featureId)
     //======================
     {
         return this._idToAnnotation.get(featureId);
     }
 
-    annotationText(featureId)
-    //========================
+    annotationUrl(ann)
+    //================
     {
-        const ann = this._idToAnnotation.get(featureId);
-        return (ann) ? ann.text : null;
+        return `${this._source}/${ann.layer}/${ann.id}`;
     }
 
-    async setAnnotationText(featureId, annotation)
-    //============================================
+    addAnnotation_(featureId, ann)
+    //============================
     {
-        const feature = utils.mapFeature(annotation.layer, featureId);
+        const url = this.annotationUrl(ann);
+        ann.url = url;
+        ann.featureId = featureId;
+        this._idToAnnotation.set(featureId, ann);
+        this._urlToAnnotation.set(url, ann);
+    }
+
+    delAnnotation_(ann)
+    //=================
+    {
+        const url = `${this._source}/${ann.layer}/${ann.id}`;
+        this._idToAnnotation.delete(ann.featureId);
+        this._urlToAnnotation.delete(url);
+    }
+
+    uniqueAnnotation(ann)
+    //===================
+    {
+        const url = `${this._source}/${ann.layer}/${ann.id}`;
+        return !this._urlToAnnotation.has(url);
+    }
+
+    async setAnnotation(featureId, ann)
+    //=================================
+    {
         let updateAnnotations = true;
-        if (featureId in this._annotations) {
-            if (annotation.annotation === '') {
-                delete this._annotations[featureId];
-                this._map.removeFeatureState(feature, "annotated");
-            } else {
-                if (this._annotations[featureId].annotation === annotation.annotation) {
-                    updateAnnotations = false;
+        const mapFeature = utils.mapFeature(ann.layer, featureId);
+        if (featureId in this._rawAnnotations) {
+            if (ann.text === '') {
+                this.delAnnotation_(ann);
+                delete this._rawAnnotations[featureId];
+                this._map.removeFeatureState(mapFeature, "annotated");
+            } else if (ann.text !== this._rawAnnotations[featureId].annotation) {
+                if (ann.layer !== this._rawAnnotations[featureId].layer) {
+                    console.log(`Annotation layer mismatch: ${ann} and ${this._rawAnnotations[featureId]}`);
                 }
-                this._annotations[featureId] = annotation;
+                this.addAnnotation_(featureId, ann);
+                this._rawAnnotations[featureId].annotation = ann.text;
+            } else {
+                updateAnnotations = false;
             }
-        } else if (annotation.annotation !== '') {
-            this._map.setFeatureState(feature, { "annotated": true });
-            this._annotations[featureId] = annotation;
         } else {
-            updateAnnotations = false;
+            if (ann.text !== '') {
+                this.addAnnotation_(featureId, ann);
+                this._rawAnnotations[featureId] = {
+                    annotation: ann.text,
+                    layer: ann.layer
+                }
+                this._map.setFeatureState(mapFeature, { "annotated": true });
+            } else {
+                updateAnnotations = false;
+            }
+        }
+
+        if ('error' in ann) {
+            this._rawAnnotations[featureId].error = ann.error;
+            this._map.setFeatureState(mapFeature, { "annotation-error": true });
+        } else {
+            delete this._rawAnnotations[featureId].error;
+            this._map.removeFeatureState(mapFeature, "annotation-error");
         }
 
         if (updateAnnotations) {
-            const postAnnotations = await fetch(mapEndpoint(`${this.id}/annotations`), {
+            const postAnnotations = await fetch(mapEndpoint(`flatmap/${this.id}/annotations`), {
                 headers: { "Content-Type": "application/json; charset=utf-8" },
                 method: 'POST',
-                body: JSON.stringify(this._annotations)
+                body: JSON.stringify(this._rawAnnotations)
             });
             if (!postAnnotations.ok) {
                 const errorMsg = `Unable to update annotations for '${this.id}' map`;

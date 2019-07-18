@@ -107,26 +107,29 @@ export class Annotator
     showDialog(featureId, callback)
     //=============================
     {
-    	let annotation = this._flatmap.annotationText(featureId);
-    	if (annotation !== null) {
-    	  	if (annotation.layer != this._flatmap.activeLayerId) {
-    			console.log(`Annotation layer (${annotation.layer}) didn't match active layer (${
-    				this._flatmap.activeLayerId} for '${featureId}'`);
-    			annotation.layer = this._flatmap.activeLayerId;
+        const featureLayerName = this._flatmap.selectedFeatureLayerName;
+    	let ann = this._flatmap.getAnnotation(featureId);
+    	if (ann) {
+    	  	if (ann.layer != featureLayerName) {
+    			console.log(`Annotation layer (${ann.layer}) didn't match active layer (${
+    				featureLayerName} for '${featureId}'`);
+    			ann.layer = featureLayerName;
     		}
     	} else {
-    		annotation = { layer: this._flatmap.activeLayerId, annotation: '' };
+    		ann = {
+                featureId: featureId,
+                layer: featureLayerName,
+                text: ''
+            };
     	}
-    	this._currentFeature = featureId;
-    	this._currentAnnotation = Object.assign({}, annotation);
-
+    	this._currentAnn = Object.assign({}, ann);
     	this._annotationFieldId = `annotate-${featureId}`;
         this._dialogCallback = callback;
     	this._dialog = document.createElement('dialog');
     	this._dialog.innerHTML = `<form method="dialog" class="flatmap-annotation">
     <div>
 		<label for="${this._annotationFieldId}">Annotate '${featureId}':</label>
-		<input type="text" id="${this._annotationFieldId}" class="flatmap-annotation-input" name="${featureId}" value="${annotation.annotation}"></input>
+		<textarea rows="4" cols="20" id="${this._annotationFieldId}" class="flatmap-annotation-input" name="${featureId}">${ann.text}</textarea>
     </div>
 	<div class='flatmap-buttons'>
 		<span><input type="submit" value="Save"></span>
@@ -144,9 +147,21 @@ export class Annotator
         if (this._dialog.returnValue == 'Save') {
         	const annotationField = document.getElementById(this._annotationFieldId);
         	if (annotationField) {
-        		if (this._currentAnnotation.annotation !== annotationField.value) {
-        			this._currentAnnotation.annotation = annotationField.value;
-        			this._flatmap.setAnnotationText(this._currentFeature, this._currentAnnotation);
+                const newText = annotationField.value;
+                const ann = parser.parseAnnotation(newText);
+                if ('error' in ann) {
+                    alert(`Error in annotation: ${ann.error}`);
+                    this._dialog.showModal();
+                    return;
+                } else if (this._currentAnn.text !== newText) {
+                    ann.layer = this._currentAnn.layer;
+                    if (this._flatmap.uniqueAnnotation(ann)) {
+        			    this._flatmap.setAnnotation(this._currentAnn.featureId, ann);
+                    } else {
+                        alert('Error in annotation: Duplicate ID');
+                        this._dialog.showModal();
+                        return;
+                    }
         		}
         	}
         }
@@ -221,7 +236,7 @@ const GRAMMER = `
         = FEATURE_ID _ ( ',' _ FEATURE_ID ) *
 
     FEATURE_ID
-        = feature_id:('#' IDENTIFIER) { return feature_id.join('') }
+        = '#' feature_id:(IDENTIFIER) { return feature_id }
 
     IDENTIFIER =
         start:START_ID
