@@ -450,25 +450,30 @@ export class UserInteractions
 
         if (feature !== null) {
             const id = feature.properties.id;
+            const ann = this._flatmap.getAnnotation(id);
             this.selectFeature_(feature);
             this._tooltip.hide();
             const items = [];
             if (this._map.getFeatureState(feature, 'queryable')) {
-                items.push({
-                    id: id,
-                    prompt: 'Find datasets',
-                    action: this.query_.bind(this, 'data')
-                });
-                items.push({
-                    id: id,
-                    prompt: 'Query node',
-                    action: this.query_.bind(this, 'node-single')
-                });
-                items.push({
-                    id: id,
-                    prompt: 'Query connected nodes',
-                    action: this.query_.bind(this, 'node-connected')
-                });
+                if (this._flatmap.modelsForFeature(id).length > 0) {
+                    items.push({
+                        id: id,
+                        prompt: 'Find datasets',
+                        action: this.query_.bind(this, 'data')
+                    });
+                }
+                if (ann && ann.layer == 'neural') {    // #### HARDCODED ####
+                    items.push({
+                        id: id,
+                        prompt: 'Query node',
+                        action: this.query_.bind(this, 'node-single')
+                    });
+                    items.push({
+                        id: id,
+                        prompt: 'Query connected nodes',
+                        action: this.query_.bind(this, 'node-connected')
+                    });
+                }
             }
             if (this.annotating) {
                 if (items.length) {
