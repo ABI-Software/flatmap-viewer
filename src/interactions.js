@@ -399,19 +399,17 @@ export class UserInteractions
             feature = features[0];
         }
 
-        if (feature !== null) {
-            this.showTooltip_(event.lngLat, feature);
-            return;
+        if (feature === null || !this.showTooltip_(event.lngLat, feature)) {
+            this._map.getCanvas().style.cursor = '';
+            this._tooltip.hide();
+            this.unselectFeatures_();
         }
-
-        this._map.getCanvas().style.cursor = '';
-        this._tooltip.hide();
-        this.unselectFeatures_();
     }
 
     showTooltip_(position, feature)
     //=============================
     {
+        const result = false;
         const id = feature.properties.id;
         const ann = this._flatmap.getAnnotation(id);
         this.selectFeature_(feature);
@@ -419,14 +417,17 @@ export class UserInteractions
             if (this.annotating) {
                 const error = ('error' in ann) ? ann.error : '';
                 this._tooltip.show(position, tooltip([ann.featureId, ...ann.text.split(/\s+/), error]));
+                result = true;
             } else {
                 const models = this._flatmap.modelsForFeature(id);
                 if (models.length) {
                     this._tooltip.show(position, tooltip(models));
+                    result = true;
                 }
             }
-        }
         this._map.getCanvas().style.cursor = 'pointer';
+        }
+        return result;
     }
 
     contextMenuEvent_(event)
