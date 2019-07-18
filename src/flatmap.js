@@ -274,6 +274,13 @@ class FlatMap
                 if (ann.layer !== this._rawAnnotations[featureId].layer) {
                     console.log(`Annotation layer mismatch: ${ann} and ${this._rawAnnotations[featureId]}`);
                 }
+                const oldAnn = this.getAnnotation(featureId);
+                if (oldAnn
+                 && oldAnn.id !== ann.id
+                 && oldAnn.error !== 'duplicate-id') {
+                    const url = this.annotationUrl(oldAnn);
+                    this._urlToAnnotation.delete(url);
+                }
                 this.addAnnotation_(featureId, ann);
                 this._rawAnnotations[featureId].annotation = ann.text;
             } else {

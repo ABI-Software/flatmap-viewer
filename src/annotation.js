@@ -148,16 +148,17 @@ export class Annotator
         	const annotationField = document.getElementById(this._annotationFieldId);
         	if (annotationField) {
                 const newText = annotationField.value;
-                const ann = parser.parseAnnotation(newText);
-                if ('error' in ann) {
-                    alert(`Error in annotation: ${ann.error}`);
+                const newAnn = parser.parseAnnotation(newText);
+                if ('error' in newAnn) {
+                    alert(`Error in annotation: ${newAnn.error}`);
                     this._dialog.showModal();
                     return;
                 } else if (this._currentAnn.text !== newText) {
-                    ann.layer = this._currentAnn.layer;
-                    if (this._flatmap.uniqueAnnotation(ann)) {
-        			    this._flatmap.setAnnotation(this._currentAnn.featureId, ann);
+                    newAnn.layer = this._currentAnn.layer;
+                    if (this._flatmap.uniqueAnnotation(newAnn)) {
+        			    this._flatmap.setAnnotation(this._currentAnn.featureId, newAnn);
                     } else {
+                        newAnn.error = 'duplicate-id';
                         alert('Error in annotation: Duplicate ID');
                         this._dialog.showModal();
                         return;
