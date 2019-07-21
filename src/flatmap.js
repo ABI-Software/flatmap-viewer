@@ -96,8 +96,14 @@ class FlatMap
 
         this._map.setRenderWorldCopies(false);
 
-        if ('maxzoom' in mapDescription.options) {
-            this._map.setMaxZoom(mapDescription.options.maxzoom);
+        if ('min-zoom' in mapDescription.options) {
+            this._map.setMinZoom(mapDescription.options['min-zoom']);
+        }
+        if ('max-zoom' in mapDescription.options) {
+            this._map.setMaxZoom(mapDescription.options['max-zoom']);
+        }
+        if ('zoom' in mapDescription.options) {
+            this._map.setZoom(mapDescription.options['zoom']);
         }
 
         if (mapDescription.options.fullscreenControl === true) {
