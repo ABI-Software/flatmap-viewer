@@ -116,7 +116,7 @@ export class UserInteractions
                                                     this.layerSwitcherActiveCallback_.bind(this));
             this._map.addControl(this._layerSwitcher);
         } else if (this._layerManager.selectableLayerCount === 1) {
-            const selectableLayeId = this._layerManager.lastSelectableLayerId;
+            const selectableLayerId = this._layerManager.lastSelectableLayerId;
             this.activateLayer(selectableLayerId);
             this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
         }
