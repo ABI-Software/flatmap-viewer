@@ -24,23 +24,12 @@ limitations under the License.
 
 const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
 
-const QUERY_ENDPOINT = MAP_ENDPOINT + 'query';
-
 //==============================================================================
 
 export function mapEndpoint(relativePath='')
 //==========================================
 {
     const url = new URL(relativePath, MAP_ENDPOINT);
-    return url.href;
-}
-
-//==============================================================================
-
-export function queryEndpoint(relativePath='')
-//============================================
-{
-    const url = new URL(relativePath, QUERY_ENDPOINT);
     return url.href;
 }
 
