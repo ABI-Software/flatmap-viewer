@@ -121,7 +121,8 @@ export class UserInteractions
             this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
         }
 
-        // Flag objects that have annotations
+        // Flag features that have annotations
+        // Also flag those features that are models of something
 
         for (const [id, ann] of flatmap.annotations) {
             const feature = utils.mapFeature(ann.layer, id);
@@ -129,21 +130,6 @@ export class UserInteractions
             if ('error' in ann) {
                 this._map.setFeatureState(feature, { 'annotation-error': true });
                 console.log(`Annotation error, ${ann.layer}: ${ann.error} (${ann.text})`);
-            }
-        }
-
-        // Flag objects against which data queries may be made
-
-        for (const layerStats of this._map.getStyle().sources['features'].tilestats['layers']) {
-            if (layerStats.geometry.includes('Polygon')) {
-                for (const attribute of layerStats['attributes']) {
-                    if (attribute.attribute === 'id') {
-                        for (const value of attribute.values) {
-                            const feature = utils.mapFeature(layerStats.layer, value);
-                            this._map.setFeatureState(feature, { 'queryable': true });
-                        }
-                    }
-                }
             }
         }
 
@@ -289,14 +275,10 @@ export class UserInteractions
             for (const featureUrl of msg.resource) {
                 const featureId = this._flatmap.featureIdForUrl(featureUrl);
                 if (featureId) {
-                    const feature = utils.mapFeature(this._flatmap.layerIdForUrl(featureUrl),
-                                                     featureId);
+                    const ann = this._flatmap.getAnnotation(featureId);
+                    const feature = utils.mapFeature(ann.layer, featureId);
                     this._map.setFeatureState(feature, { "highlighted": true });
                     this._highlightedFeatures.push(feature);
-                    if (this._map.getFeatureState(feature, 'queryable')) {
-                        for (const model of this._flatmap.modelsForFeature(featureId)) {
-                            this._messagePasser.broadcast('query-data', model);
-                        }
                     }
                 }
             }
@@ -367,7 +349,7 @@ export class UserInteractions
         let smallestFeature = null;
         for (const feature of features) {
             if (feature.geometry.type.includes('Polygon')
-             && this._map.getFeatureState(feature, 'annotated')) {
+             && (this.annotating || this._map.getFeatureState(feature)['annotated'])) {
                 const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
                 const area = turfArea(polygon);
                 if (smallestFeature === null || smallestArea > area) {
@@ -387,6 +369,32 @@ export class UserInteractions
         return this.smallestAnnotatedPolygonFeature_(this.activeFeaturesAtEvent_(event));
     }
 
+    showTooltip_(position, feature)
+    //=============================
+    {
+        let result = false;
+        const id = feature.properties.id;
+        const ann = this._flatmap.getAnnotation(id);
+        this.selectFeature_(feature);
+        if (this.annotating) {
+            if (ann) {
+                const error = ('error' in ann) ? ann.error : '';
+                this._tooltip.show(position, tooltip([`Zoom: ${this._map.getZoom()}`, ann.featureId, ...ann.text.split(/\s+/), error]));
+            } else {
+                this._tooltip.show(position, tooltip([id, this._map.getFeatureState(feature)['annotated']]));
+            }
+            result = true;
+        } else if (ann) {
+            const models = ann.models;
+            if (models.length) {
+                this._tooltip.show(position, tooltip(models));
+                result = true;
+            }
+        this._map.getCanvas().style.cursor = 'pointer';
+        }
+        return result;
+    }
+
     mouseMoveEvent_(event)
     //====================
     {
@@ -404,30 +412,6 @@ export class UserInteractions
             this._tooltip.hide();
             this.unselectFeatures_();
         }
-    }
-
-    showTooltip_(position, feature)
-    //=============================
-    {
-        const result = false;
-        const id = feature.properties.id;
-        const ann = this._flatmap.getAnnotation(id);
-        this.selectFeature_(feature);
-        if (ann) {
-            if (this.annotating) {
-                const error = ('error' in ann) ? ann.error : '';
-                this._tooltip.show(position, tooltip([ann.featureId, ...ann.text.split(/\s+/), error]));
-                result = true;
-            } else {
-                const models = this._flatmap.modelsForFeature(id);
-                if (models.length) {
-                    this._tooltip.show(position, tooltip(models));
-                    result = true;
-                }
-            }
-        this._map.getCanvas().style.cursor = 'pointer';
-        }
-        return result;
     }
 
     contextMenuEvent_(event)
@@ -455,8 +439,8 @@ export class UserInteractions
             this.selectFeature_(feature);
             this._tooltip.hide();
             const items = [];
-            if (this._map.getFeatureState(feature, 'queryable')) {
-                if (this._flatmap.modelsForFeature(id).length > 0) {
+            if (ann) {
+                if (ann.models.length > 0) {
                     items.push({
                         id: id,
                         prompt: 'Find datasets',
@@ -483,7 +467,7 @@ export class UserInteractions
                 items.push({
                     id: id,
                     prompt: 'Annotate',
-                    action: this.annotate_.bind(this)
+                    action: this.annotate_.bind(this, feature.geometry.type.includes('Polygon'))
                 });
             }
             if (items.length) {
@@ -500,12 +484,15 @@ export class UserInteractions
         this._modal = false;
     }
 
-    annotate_(event)
-    //==============
+    annotate_(queryableFeature, event)
+    //================================
     {
         this._contextMenu.hide();
-        this._annotator.showDialog(event.target.getAttribute('id'),
-                                   () => { this._modal = false; });
+        this._annotator.editAnnotation(event.target.getAttribute('id'),
+                                       queryableFeature,
+                                       () => { this._modal = false; });
+    }
+
     }
 
     query_(type, event)

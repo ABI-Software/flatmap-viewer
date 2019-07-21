@@ -67,6 +67,7 @@ class FlatMap
                 ann.error = metadata.error;
             }
             ann.layer = metadata.layer;
+            ann.queryable = metadata.geometry.includes('Polygon')
             this.addAnnotation_(featureId, ann);
         }
 
@@ -268,9 +269,9 @@ class FlatMap
         const mapFeature = utils.mapFeature(ann.layer, featureId);
         if (featureId in this._metadata) {
             if (ann.text === '') {
-                this._map.removeFeatureState(mapFeature, "annotated");
                 delete this._metadata[featureId];
                 this.delAnnotation_(featureId, ann);
+                this._map.removeFeatureState(mapFeature);
             } else if (ann.text !== this._metadata[featureId].annotation) {
                 if (ann.layer !== this._metadata[featureId].layer) {
                     console.log(`Annotation layer mismatch: ${ann} and ${this._metadata[featureId]}`);
@@ -291,23 +292,24 @@ class FlatMap
             if (ann.text !== '') {
                 this._metadata[featureId] = {
                     annotation: ann.text,
+                    geometry: ann.queryable ? 'Polygon' : 'LineString',
                     layer: ann.layer
                 }
-                this._map.setFeatureState(mapFeature, { "annotated": true });
                 this.addAnnotation_(featureId, ann);
+                this._map.setFeatureState(mapFeature, { 'annotated': true });
             } else {
                 updateAnnotations = false;
             }
         }
 
         if ('error' in ann) {
-            this._map.setFeatureState(mapFeature, { "annotation-error": true });
             this._metadata[featureId].error = ann.error;
+            this._map.setFeatureState(mapFeature, { 'annotation-error': true });
         } else {
-            this._map.removeFeatureState(mapFeature, "annotation-error");
             if (featureId in this._metadata) {
                 delete this._metadata[featureId].error;
             }
+            this._map.removeFeatureState(mapFeature, 'annotation-error');
         }
 
         if (updateAnnotations) {

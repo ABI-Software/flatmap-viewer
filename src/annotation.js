@@ -104,8 +104,8 @@ export class Annotator
         return this._annotationControl.enabled;
     }
 
-    showDialog(featureId, callback)
-    //=============================
+    editAnnotation(featureId, queryableFeature, callback)
+    //===================================================
     {
         const featureLayerName = this._flatmap.selectedFeatureLayerName;
     	let ann = this._flatmap.getAnnotation(featureId);
@@ -119,6 +119,7 @@ export class Annotator
     		ann = {
                 featureId: featureId,
                 layer: featureLayerName,
+                queryable: queryableFeature,
                 text: ''
             };
     	}
@@ -156,6 +157,7 @@ export class Annotator
                         return;
                     } else if (this._currentAnn.text !== newText) {
                         newAnn.layer = this._currentAnn.layer;
+                        newAnn.queryable = this._currentAnn.queryable;
                         if (this._flatmap.uniqueAnnotation(newAnn)) {
             			    this._flatmap.setAnnotation(this._currentAnn.featureId, newAnn);
                         } else {
@@ -169,6 +171,7 @@ export class Annotator
                     this._flatmap.setAnnotation(this._currentAnn.featureId, {
                         layer: this._currentAnn.layer,
                         models: [],
+                        queryable: false,
                         text: ''
                     });
                 }
