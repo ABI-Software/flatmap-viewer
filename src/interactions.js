@@ -463,7 +463,7 @@ export class UserInteractions
                         action: this.query_.bind(this, 'data')
                     });
                 }
-                if (ann && ann.layer == 'neural') {    // #### HARDCODED ####
+                if (this._layerManager.layerQueryable(ann.layer)) {
                     items.push({
                         id: id,
                         prompt: 'Query node',

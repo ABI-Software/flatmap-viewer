@@ -183,6 +183,7 @@ export class LayerManager
         this._flatmap = flatmap;
         this._map = flatmap.map;
         this._layers = new Map;
+        this._mapLayers = new Map;
         this._activeLayers = [];
         this._activeLayerNames = [];
         this._selectableLayerId = '';
@@ -198,6 +199,8 @@ export class LayerManager
     addLayer(layer)
     //=============
     {
+        this._mapLayers.set(layer.id, layer);
+
         const layers = layer.selectable ? new MapFeatureLayer(this._map, layer)
                                         : new MapImageLayer(this._map, layer)
 
@@ -226,6 +229,13 @@ export class LayerManager
     //=========================
     {
         return this._selectableLayerId;
+    }
+
+    layerQueryable(layerName)
+    //========================
+    {
+        const layer = this._mapLayers.get(layerName);
+        return layer['queryable-nodes'];
     }
 
     activate(layerId, annotating=false)
