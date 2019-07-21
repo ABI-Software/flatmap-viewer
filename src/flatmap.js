@@ -60,13 +60,13 @@ class FlatMap
 
         this._idToAnnotation = new Map();
         this._urlToAnnotation = new Map();
-        this._rawAnnotations = mapDescription.annotations;
-        for (const [featureId, annotation] of Object.entries(mapDescription.annotations)) {
-            const ann = parser.parseAnnotation(annotation.annotation);
-            if ('error' in annotation && !('error' in ann)) {
-                ann.error = annotation.error;
+        this._metadata = mapDescription.metadata;
+        for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
+            const ann = parser.parseAnnotation(metadata.annotation);
+            if ('error' in metadata && !('error' in ann)) {
+                ann.error = metadata.error;
             }
-            ann.layer = annotation.layer;
+            ann.layer = metadata.layer;
             this.addAnnotation_(featureId, ann);
         }
 
@@ -266,14 +266,14 @@ class FlatMap
     {
         let updateAnnotations = true;
         const mapFeature = utils.mapFeature(ann.layer, featureId);
-        if (featureId in this._rawAnnotations) {
+        if (featureId in this._metadata) {
             if (ann.text === '') {
                 this.delAnnotation_(ann);
-                delete this._rawAnnotations[featureId];
                 this._map.removeFeatureState(mapFeature, "annotated");
-            } else if (ann.text !== this._rawAnnotations[featureId].annotation) {
-                if (ann.layer !== this._rawAnnotations[featureId].layer) {
-                    console.log(`Annotation layer mismatch: ${ann} and ${this._rawAnnotations[featureId]}`);
+                delete this._metadata[featureId];
+            } else if (ann.text !== this._metadata[featureId].annotation) {
+                if (ann.layer !== this._metadata[featureId].layer) {
+                    console.log(`Annotation layer mismatch: ${ann} and ${this._metadata[featureId]}`);
                 }
                 const oldAnn = this.getAnnotation(featureId);
                 if (oldAnn
@@ -283,14 +283,14 @@ class FlatMap
                     this._urlToAnnotation.delete(url);
                 }
                 this.addAnnotation_(featureId, ann);
-                this._rawAnnotations[featureId].annotation = ann.text;
+                this._metadata[featureId].annotation = ann.text;
             } else {
                 updateAnnotations = false;
             }
         } else {
             if (ann.text !== '') {
                 this.addAnnotation_(featureId, ann);
-                this._rawAnnotations[featureId] = {
+                this._metadata[featureId] = {
                     annotation: ann.text,
                     layer: ann.layer
                 }
@@ -301,21 +301,23 @@ class FlatMap
         }
 
         if ('error' in ann) {
-            this._rawAnnotations[featureId].error = ann.error;
             this._map.setFeatureState(mapFeature, { "annotation-error": true });
+            this._metadata[featureId].error = ann.error;
         } else {
-            delete this._rawAnnotations[featureId].error;
             this._map.removeFeatureState(mapFeature, "annotation-error");
+            if (featureId in this._metadata) {
+                delete this._metadata[featureId].error;
+            }
         }
 
         if (updateAnnotations) {
-            const postAnnotations = await fetch(mapEndpoint(`flatmap/${this.id}/annotations`), {
+            const postAnnotations = await fetch(mapEndpoint(`flatmap/${this.id}/metadata`), {
                 headers: { "Content-Type": "application/json; charset=utf-8" },
                 method: 'POST',
-                body: JSON.stringify(this._rawAnnotations)
+                body: JSON.stringify(this._metadata)
             });
             if (!postAnnotations.ok) {
-                const errorMsg = `Unable to update annotations for '${this.id}' map`;
+                const errorMsg = `Unable to update metadata for '${this.id}' map`;
                 console.log(errorMsg);
                 alert(errorMsg);
             }
@@ -494,17 +496,17 @@ export class MapManager
                         }
                         return getStyle.json();
                     }).then(mapStyle => {
-                        // Get the map's annotations
+                        // Get the map's metadata
 
-                        fetch(mapEndpoint(`flatmap/${map.id}/annotations`), {
+                        fetch(mapEndpoint(`flatmap/${map.id}/metadata`), {
                             headers: { "Accept": "application/json; charset=utf-8" },
                             method: 'GET'
-                        }).then(getAnnotations => {
-                            if (!getAnnotations.ok) {
-                                reject(new Error(`Missing annotations for map '${map.id}'`));
+                        }).then(metadata => {
+                            if (!metadata.ok) {
+                                reject(new Error(`Missing metadata for map '${map.id}'`));
                             }
-                            return getAnnotations.json();
-                        }).then(annotations => {
+                            return metadata.json();
+                        }).then(metadata => {
 
                             // Display the map
 
@@ -515,7 +517,7 @@ export class MapManager
                                 describes: map.describes,
                                 style: mapStyle,
                                 options: mapOptions,
-                                annotations: annotations,
+                                metadata: metadata,
                                 serialNumber: this._mapNumber
                             }, resolve);
 
