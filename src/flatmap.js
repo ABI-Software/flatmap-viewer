@@ -432,7 +432,7 @@ export class MapManager
                     method: 'GET'
                 });
                 if (!response.ok) {
-                    reject(new Error(`Cannot access ${mapEndpoint()}`));
+                    throw new Error(`Cannot access ${mapEndpoint()}`);
                 }
                 this._maps = await response.json();
                 resolve(this.lookupMap_(identifier));
@@ -449,7 +449,7 @@ export class MapManager
             try {
                 const map = await this.findMap_(identifier);
                 if (map === null) {
-                    reject(new Error(`Unknown map for ${JSON.stringify(identifier)}`));
+                    throw new Error(`Unknown map for ${JSON.stringify(identifier)}`);
                 };
                 // Load the maps index file (its options)
 
@@ -458,12 +458,12 @@ export class MapManager
                     method: 'GET'
                 });
                 if (!optionsResponse.ok) {
-                    reject(new Error(`Missing index file for map '${map.id}'`));
+                    throw new Error(`Missing index file for map '${map.id}'`);
                 }
                 const mapOptions = await optionsResponse.json();
 
                 if (map.id !== mapOptions.id) {
-                    reject(new Error(`Map '${map.id}' has wrong ID in index`));
+                    throw new Error(`Map '${map.id}' has wrong ID in index`);
                 }
 
                 // Set the map's options
@@ -492,7 +492,7 @@ export class MapManager
                     method: 'GET'
                 });
                 if (!styleResponse.ok) {
-                    reject(new Error(`Missing style file for map '${map.id}'`));
+                    throw new Error(`Missing style file for map '${map.id}'`);
                 }
                 const mapStyle = await styleResponse.json();
 
