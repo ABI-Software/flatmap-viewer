@@ -23,7 +23,7 @@ limitations under the License.
 //==============================================================================
 
 export const PAINT_STYLES = {
-    'background-opacity': 0.2,
+    'background-opacity': 0.3,
     'layer-background-opacity': 0.5,
     'fill-color': '#fff',
     'border-stroke-width': 0.5,
@@ -90,7 +90,7 @@ export function lineOpacity(layerActive=false, annotating=false)
 
 class LineWidth
 {
-    static scale(width, annotating=false)   // width at zoom 0
+    static scale(width, annotating=false)   // width at zoom 3
     {
         return [
             "let", "linewidth", [
@@ -102,10 +102,10 @@ class LineWidth
                 annotating ? width : 0
             ],
             ["interpolate",
-            ["exponential", 1.3],
+            ["exponential", 1.4],
             ["zoom"],
-            0, ["var", "linewidth"],
-            7, [ "*", 10, ["var", "linewidth"]]
+            3, ["var", "linewidth"],
+            10, [ "*", 10, ["var", "linewidth"]]
             ]
         ];
     }
