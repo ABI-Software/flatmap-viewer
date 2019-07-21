@@ -309,6 +309,12 @@ class Parser
                 throw error;
             }
         }
+    if ('properties' in result && 'models' in result.properties) {
+        result['models'] = result.properties.models;
+    } else {
+        result['models'] = [];
+    }
+
     return result;
     }
 }

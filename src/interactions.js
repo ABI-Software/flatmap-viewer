@@ -272,6 +272,7 @@ export class UserInteractions
         } else if (msg.action === 'flatmap-deactivate-layer') {
             this.deactivateLayer(msg.resource);
         } else if (msg.action === 'flatmap-query-results') {
+            let modelList = [];
             for (const featureUrl of msg.resource) {
                 const featureId = this._flatmap.featureIdForUrl(featureUrl);
                 if (featureId) {
@@ -279,8 +280,13 @@ export class UserInteractions
                     const feature = utils.mapFeature(ann.layer, featureId);
                     this._map.setFeatureState(feature, { "highlighted": true });
                     this._highlightedFeatures.push(feature);
+                    if (ann.queryable) {
+                        modelList = modelList.concat(ann.models);
                     }
                 }
+            }
+            if (modelList.length > 0) {
+                this.queryData_([... new Set(modelList)]);
             }
             this._map.getCanvas().style.cursor = '';
         }
@@ -493,6 +499,14 @@ export class UserInteractions
                                        () => { this._modal = false; });
     }
 
+    queryData_(modelList)
+    //===================
+    {
+        if (modelList.length > 0) {
+            this._messagePasser.broadcast('query-data', modelList, {
+                describes: this._flatmap.describes
+            });
+        }
     }
 
     query_(type, event)
@@ -502,9 +516,7 @@ export class UserInteractions
         this._contextMenu.hide();
         const featureId = event.target.getAttribute('id');
         if (type === 'data') {
-            for (const model of this._flatmap.modelsForFeature(featureId)) {
-                this._messagePasser.broadcast('query-data', model);
-            }
+            this.queryData_(this._flatmap.modelsForFeature(featureId));
         } else {
             const node_url = this._flatmap.urlForFeature(featureId);
             this._messagePasser.broadcast(`flatmap-query-${type}`, node_url);
@@ -518,15 +530,12 @@ export class UserInteractions
     {
         const feature = this.smallestAnnotatedPolygonAtEvent_(event);
         if (feature !== null) {
+            const featureId = feature.properties.id;
             this.selectFeature_(feature);
-            const id = feature.properties.id;
-            for (const model of this._flatmap.modelsForFeature(id)) {
-                this._messagePasser.broadcast('query-data', model);
-            }
+            this.queryData_(this._flatmap.modelsForFeature(featureId));
         }
         this.unhighlightFeatures_();
     }
-
 }
 
 //==============================================================================

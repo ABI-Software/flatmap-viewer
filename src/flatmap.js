@@ -155,6 +155,12 @@ class FlatMap
         return `${this._id}-${this._mapNumber}`;
     }
 
+    get describes()
+    //=============
+    {
+        return this._describes;
+    }
+
     get activeLayerNames()
     //====================
     {
@@ -202,12 +208,7 @@ class FlatMap
     //=========================
     {
         const ann = this._idToAnnotation.get(featureId);
-        if (ann
-         && 'properties' in ann
-         && 'models' in ann.properties) {
-            return ann.properties.models;
-        }
-        return [];
+        return ann ? ann.models : [];
     }
 
     featureIdForUrl(url)
