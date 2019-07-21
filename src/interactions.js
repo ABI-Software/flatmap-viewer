@@ -55,7 +55,7 @@ function tooltip(valuesList)
 
 export class UserInteractions
 {
-    constructor(flatmap,  userInterfaceLoadedCallback=null)
+    constructor(flatmap, userInterfaceLoadedCallback=null)
     {
         this._flatmap = flatmap;
         this._map = flatmap.map;
