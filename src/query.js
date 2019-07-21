@@ -84,13 +84,15 @@ SELECT ?node1 ?edge1 ?edge2
        UNION {
             ?edge2 ?route2 <${msg.resource}>  .
         } }`
-                     : (msg.action === 'flatmap-query-node-connected') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
-SELECT DISTINCT ?edge ?node
-    WHERE { ?edge a flatmap:Edge .
-            ?edge ?route1 <${msg.resource}> .
-            ?edge ?route2 ?node .
-            ?node a flatmap:Node
-          }`
+                    : (msg.action === 'flatmap-query-node-connected') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
+PREFIX obo: <http://purl.obolibrary.org/obo/>
+SELECT ?node2 ?node1 ?edge1 WHERE
+    { ?edge1 ?route2 ?node2 .
+      ?edge1 a flatmap:Edge .
+      ?edge1 ?route1 ?node1 .
+      ?node1 obo:RO_0003301 ?entity .
+      <${msg.resource}> obo:RO_0003301 ?entity .
+    }`
                      : null;
         if (sparql) {
             try {
