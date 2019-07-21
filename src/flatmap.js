@@ -245,11 +245,11 @@ class FlatMap
         this._urlToAnnotation.set(url, ann);
     }
 
-    delAnnotation_(ann)
-    //=================
+    delAnnotation_(featureId, ann)
+    //============================
     {
         const url = this.annotationUrl(ann);
-        this._idToAnnotation.delete(ann.featureId);
+        this._idToAnnotation.delete(featureId);
         this._urlToAnnotation.delete(url);
     }
 
@@ -268,9 +268,9 @@ class FlatMap
         const mapFeature = utils.mapFeature(ann.layer, featureId);
         if (featureId in this._metadata) {
             if (ann.text === '') {
-                this.delAnnotation_(ann);
                 this._map.removeFeatureState(mapFeature, "annotated");
                 delete this._metadata[featureId];
+                this.delAnnotation_(featureId, ann);
             } else if (ann.text !== this._metadata[featureId].annotation) {
                 if (ann.layer !== this._metadata[featureId].layer) {
                     console.log(`Annotation layer mismatch: ${ann} and ${this._metadata[featureId]}`);
@@ -289,12 +289,12 @@ class FlatMap
             }
         } else {
             if (ann.text !== '') {
-                this.addAnnotation_(featureId, ann);
                 this._metadata[featureId] = {
                     annotation: ann.text,
                     layer: ann.layer
                 }
                 this._map.setFeatureState(mapFeature, { "annotated": true });
+                this.addAnnotation_(featureId, ann);
             } else {
                 updateAnnotations = false;
             }

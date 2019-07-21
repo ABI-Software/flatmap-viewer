@@ -148,22 +148,30 @@ export class Annotator
         	const annotationField = document.getElementById(this._annotationFieldId);
         	if (annotationField) {
                 const newText = annotationField.value;
-                const newAnn = parser.parseAnnotation(newText);
-                if ('error' in newAnn) {
-                    alert(`Error in annotation: ${newAnn.error}`);
-                    this._dialog.showModal();
-                    return;
-                } else if (this._currentAnn.text !== newText) {
-                    newAnn.layer = this._currentAnn.layer;
-                    if (this._flatmap.uniqueAnnotation(newAnn)) {
-        			    this._flatmap.setAnnotation(this._currentAnn.featureId, newAnn);
-                    } else {
-                        newAnn.error = 'duplicate-id';
-                        alert('Error in annotation: Duplicate ID');
+                if (newText != '') {
+                    const newAnn = parser.parseAnnotation(newText);
+                    if ('error' in newAnn) {
+                        alert(`Error in annotation: ${newAnn.error}`);
                         this._dialog.showModal();
                         return;
-                    }
-        		}
+                    } else if (this._currentAnn.text !== newText) {
+                        newAnn.layer = this._currentAnn.layer;
+                        if (this._flatmap.uniqueAnnotation(newAnn)) {
+            			    this._flatmap.setAnnotation(this._currentAnn.featureId, newAnn);
+                        } else {
+                            newAnn.error = 'duplicate-id';
+                            alert('Error in annotation: Duplicate ID');
+                            this._dialog.showModal();
+                            return;
+                        }
+            		}
+                } else {
+                    this._flatmap.setAnnotation(this._currentAnn.featureId, {
+                        layer: this._currentAnn.layer,
+                        models: [],
+                        text: ''
+                    });
+                }
         	}
         }
         this._map.getContainer().removeChild(this._dialog);
