@@ -93,25 +93,29 @@ SELECT DISTINCT ?edge ?node
           }`
                      : null;
         if (sparql) {
-            const queryResult = await this._engine.query(sparql, {
-                sources: [{
-                    type: 'rdfjsSource',
-                    value: this._store
-                }]
-            })
-            const features = [msg.resource];
-            queryResult.bindingsStream.on('data', data => {
-                for (const d of data.values()) {
-                    features.push(d.value);
-                }
-            });
-            queryResult.bindingsStream.on('end', () => {
-                // We remove any duplicates before broadcasting the results array
-                this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
-            });
-        } else {
-            this._messagePasser.broadcast('flatmap-query-results', []);
+            try {
+                const queryResult = await this._engine.query(sparql, {
+                    sources: [{
+                        type: 'rdfjsSource',
+                        value: this._store
+                    }]
+                })
+                const features = [msg.resource];
+                queryResult.bindingsStream.on('data', data => {
+                    for (const d of data.values()) {
+                        features.push(d.value);
+                    }
+                });
+                queryResult.bindingsStream.on('end', () => {
+                    // We remove any duplicates before broadcasting the results array
+                    this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
+                    return;
+                });
+            } catch (err) {
+                console.log(err);
+            }
         }
+    this._messagePasser.broadcast('flatmap-query-results', []);
     }
 }
 
