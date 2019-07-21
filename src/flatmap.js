@@ -426,22 +426,18 @@ export class MapManager
     findMap_(identifier)
     //==================
     {
-        return new Promise((resolve, reject) => {
+        return new Promise(async(resolve, reject) => {
             if (this._maps === null) {
                 // Find what maps we have available
-                fetch(mapEndpoint(), {
+                const response = await fetch(mapEndpoint(), {
                     headers: { "Accept": "application/json; charset=utf-8" },
                     method: 'GET'
-                }).then(query => {
-                    if (query.ok) {
-                        return query.json();
-                    } else {
-                        reject(new Error(`Cannot access ${mapEndpoint()}`));
-                    }
-                }).then(maps => {
-                     this._maps = maps;
-                     resolve(this.lookupMap_(identifier));
                 });
+                if (!response.ok) {
+                    reject(new Error(`Cannot access ${mapEndpoint()}`));
+                }
+                this._maps = await response.json();
+                resolve(this.lookupMap_(identifier));
             } else {
                 resolve(this.lookupMap_(identifier));
             }
@@ -451,90 +447,86 @@ export class MapManager
     loadMap(identifier, container, options={})
     //========================================
     {
-        return new Promise((resolve, reject) => {
-            this.findMap_(identifier)
-            .then(
-                map => {
-                    if (map === null) {
-                        reject(new Error(`Unknown map for ${JSON.stringify(identifier)}`));
-                    };
-                    return map;
-                },
-                err => {
-                    reject(err);
-                }
-            ).then(map => {
-                // Load the maps index file
+        return new Promise(async(resolve, reject) => {
+            try {
+                const map = await this.findMap_(identifier);
+                if (map === null) {
+                    reject(new Error(`Unknown map for ${JSON.stringify(identifier)}`));
+                };
+                // Load the maps index file (its options)
 
-                fetch(mapEndpoint(`flatmap/${map.id}/`), {
+                const optionsResponse = await fetch(mapEndpoint(`flatmap/${map.id}/`), {
                     headers: { "Accept": "application/json; charset=utf-8" },
                     method: 'GET'
-                }).then(getIndex => {
-                    if (!getIndex.ok) {
-                        reject(new Error(`Missing index file for map '${map.id}'`));
+                });
+                if (!optionsResponse.ok) {
+                    reject(new Error(`Missing index file for map '${map.id}'`));
+                }
+                const mapOptions = await optionsResponse.json();
+
+                if (map.id !== mapOptions.id) {
+                    reject(new Error(`Map '${map.id}' has wrong ID in index`));
+                }
+
+                // Set the map's options
+
+                for (const [name, value] of Object.entries(options)) {
+                    mapOptions[name] = value;
+                }
+
+                // Set layer data if the layer just has an id specified
+
+                for (let n = 0; n < mapOptions.layers.length; ++n) {
+                    const layer = mapOptions.layers[n];
+                    if (typeof layer === 'string') {
+                        mapOptions.layers[n] = {
+                            id: layer,
+                            description: layer.charAt(0).toUpperCase() + layer.slice(1),
+                            selectable: true
+                        };
                     }
-                    return getIndex.json();
-                }).then(mapOptions => {
-                    // Set the map's options
-                    if (map.id !== mapOptions.id) {
-                        reject(new Error(`Map '${map.id}' has wrong ID in index`));
-                    }
-                    for (const [name, value] of Object.entries(options)) {
-                        mapOptions[name] = value;
-                    }
-                    // Set layer data if the layer just has an id specified
+                }
 
-                    for (let n = 0; n < mapOptions.layers.length; ++n) {
-                        const layer = mapOptions.layers[n];
-                        if (typeof layer === 'string') {
-                            mapOptions.layers[n] = {
-                                id: layer,
-                                description: layer.charAt(0).toUpperCase() + layer.slice(1),
-                                selectable: true
-                            };
-                        }
-                    }
-                    // Get the map's style file
+                // Get the map's style file
 
-                    fetch(mapEndpoint(`flatmap/${map.id}/style`), {
-                        headers: { "Accept": "application/json; charset=utf-8" },
-                        method: 'GET'
-                    }).then(getStyle => {
-                        if (!getStyle.ok) {
-                            reject(new Error(`Missing style file for map '${map.id}'`));
-                        }
-                        return getStyle.json();
-                    }).then(mapStyle => {
-                        // Get the map's metadata
+                const styleResponse = await fetch(mapEndpoint(`flatmap/${map.id}/style`), {
+                    headers: { "Accept": "application/json; charset=utf-8" },
+                    method: 'GET'
+                });
+                if (!styleResponse.ok) {
+                    reject(new Error(`Missing style file for map '${map.id}'`));
+                }
+                const mapStyle = await styleResponse.json();
 
-                        fetch(mapEndpoint(`flatmap/${map.id}/metadata`), {
-                            headers: { "Accept": "application/json; charset=utf-8" },
-                            method: 'GET'
-                        }).then(metadata => {
-                            if (!metadata.ok) {
-                                reject(new Error(`Missing metadata for map '${map.id}'`));
-                            }
-                            return metadata.json();
-                        }).then(metadata => {
+                // Get the map's metadata
 
-                            // Display the map
+                const metadataResponse = await fetch(mapEndpoint(`flatmap/${map.id}/metadata`), {
+                    headers: { "Accept": "application/json; charset=utf-8" },
+                    method: 'GET'
+                });
+                if (!metadataResponse.ok) {
+                    reject(new Error(`Missing metadata for map '${map.id}'`));
+                }
+                const metadata = await metadataResponse.json();
 
-                            this._mapNumber += 1;
-                            const flatmap = new FlatMap(container, {
-                                id: map.id,
-                                source: map.source,
-                                describes: map.describes,
-                                style: mapStyle,
-                                options: mapOptions,
-                                metadata: metadata,
-                                serialNumber: this._mapNumber
-                            }, resolve);
+                // Display the map
 
-                            return flatmap;
-                        });
-                    });
-               });
-            });
+                this._mapNumber += 1;
+                const flatmap = new FlatMap(container, {
+                    id: map.id,
+                    source: map.source,
+                    describes: map.describes,
+                    style: mapStyle,
+                    options: mapOptions,
+                    metadata: metadata,
+                    serialNumber: this._mapNumber
+                }, resolve);
+
+                return flatmap;
+
+            } catch (err) {
+                reject(err);
+            }
         });
     }
 }
