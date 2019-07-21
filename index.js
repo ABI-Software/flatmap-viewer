@@ -22,9 +22,18 @@ limitations under the License.
 
 //==============================================================================
 
-import {MapManager} from './src/flatmap.js';
+// Load the SPARQL query engine we use. NB. It's not `npm` compatible and doing
+// this is one way to ensure things work
+
+const COMUNICA_SPARQL_RDFJS = 'http://rdf.js.org/comunica-browser/versions/1/packages/actor-init-sparql-rdfjs/comunica-browser.js';
+
+const comunicaScript = document.createElement('script');
+comunicaScript.setAttribute('src', COMUNICA_SPARQL_RDFJS);
+document.head.appendChild(comunicaScript);
 
 //==============================================================================
+
+import {MapManager} from './src/flatmap.js';
 
 const mapManager = new MapManager();
 
