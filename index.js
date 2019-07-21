@@ -28,8 +28,8 @@ limitations under the License.
 const COMUNICA_SPARQL_RDFJS = 'http://rdf.js.org/comunica-browser/versions/1/packages/actor-init-sparql-rdfjs/comunica-browser.js';
 
 const comunicaScript = document.createElement('script');
-comunicaScript.setAttribute('src', COMUNICA_SPARQL_RDFJS);
 document.head.appendChild(comunicaScript);
+comunicaScript.setAttribute('src', COMUNICA_SPARQL_RDFJS);
 
 //==============================================================================
 
