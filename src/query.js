@@ -93,7 +93,7 @@ SELECT DISTINCT ?edge ?node
                     value: this._store
                 }]
             })
-            const features = [];
+            const features = [msg.resource];
             queryResult.bindingsStream.on('data', data => {
                 for (const d of data.values()) {
                     features.push(d.value);
