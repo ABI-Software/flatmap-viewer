@@ -44,10 +44,6 @@ import * as utils from './utils.js';
 
 //==============================================================================
 
-const queryInterface = new QueryInterface();
-
-//==============================================================================
-
 class FlatMap
 {
     constructor(container, mapDescription, resolve)
@@ -118,6 +114,8 @@ class FlatMap
 
         this._userInteractions = null;
         this._map.on('load', this.finalise_.bind(this));
+
+        this._queryInterface = new QueryInterface(this);
     }
 
     finalise_()

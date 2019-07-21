@@ -22,17 +22,53 @@ limitations under the License.
 
 //==============================================================================
 
+const N3 = require('n3');
+
+//==============================================================================
+
+import {mapEndpoint} from './endpoints.js';
 import {MessagePasser} from './messages.js';
-import {queryEndpoint} from './endpoints.js';
 
 //==============================================================================
 
 export class QueryInterface
 {
-    constructor()
+    constructor(flatmap)
     {
-        this._messagePasser = new MessagePasser('query-interface', json => this.processMessage_(json));
+        this._flatmap = flatmap;
+        this._store = new N3.Store();
+        this._parser = new N3.Parser();
+        this.loadStore_().then(() => {
+            this._engine = Comunica.newEngine();
+            // We only now are ready to start accepting queries...
+            this._messagePasser = new MessagePasser('query-interface', json => this.processMessage_(json));
+        }, err => console.log(err));
     }
+
+    async loadStore_()
+    //================
+    {
+        return new Promise(async(resolve, reject) => {
+            const response = await fetch(mapEndpoint(`flatmap/${this._flatmap.id}/annotations`), {
+                 method: 'GET'
+            });
+            if (!response.ok) {
+                reject(new Error(`Missing RDF for ${this._flatmap.id} map...`));
+            } else {
+                const rdf = await response.text();
+                this._parser.parse(rdf, (error, quad, prefixes) => {
+                    if (error) {
+                        console.log('RDF error:', error);
+                    } else if (quad) {
+                        this._store.addQuad(quad);
+                    } else {
+                        resolve(prefixes);
+                    }
+                });
+            }
+        });
+    }
+
 
     async processMessage_(msg)
     //========================
@@ -51,37 +87,24 @@ SELECT DISTINCT ?edge ?node
           }`
                      : null;
         if (sparql) {
-            const postQuery = await fetch(queryEndpoint(), {
-                headers: {
-                    "Content-Type": "application/json; charset=utf-8",
-                    "Accept": "application/json; charset=utf-8"
-                },
-                method: 'POST',
-                body: JSON.stringify({ sparql: sparql })
-            });
-            if (!postQuery.ok) {
-                const errorMsg = `SPARQL query failed...`;
-                console.log(errorMsg);
-                alert(errorMsg);
-                return;
-            }
-            const results = await postQuery.json();
-            if ('error' in results) {
-                const errorMsg = `SPARQL query failed: ${results.error}`;
-                console.log(errorMsg);
-                alert(errorMsg);
-                return;
-            }
+            const queryResult = await this._engine.query(sparql, {
+                sources: [{
+                    type: 'rdfjsSource',
+                    value: this._store
+                }]
+            })
             const features = [];
-            for (const binding of results.results.bindings) {
-                for (const [name, result] of Object.entries(binding)) {
-                    features.push(result.value);
+            queryResult.bindingsStream.on('data', data => {
+                for (const d of data.values()) {
+                    features.push(d.value);
                 }
-            }
-            if (features.length) {
-                // We remove duplicates before broadcasting the results array
+            });
+            queryResult.bindingsStream.on('end', () => {
+                // We remove any duplicates before broadcasting the results array
                 this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
-            }
+            });
+        } else {
+            this._messagePasser.broadcast('flatmap-query-results', []);
         }
     }
 }
