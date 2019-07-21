@@ -64,6 +64,7 @@ export class UserInteractions
         this._selectedFeature = null;
         this._highlightedFeatures = [];
 
+        this._inQuery = false;
         this._modal = false;
 
         // Add a control to enable annotation if option set
@@ -288,6 +289,7 @@ export class UserInteractions
             if (modelList.length > 0) {
                 this.queryData_([... new Set(modelList)]);
             }
+            this._inQuery = false;
             this._map.getCanvas().style.cursor = '';
         }
     }
@@ -396,7 +398,9 @@ export class UserInteractions
                 this._tooltip.show(position, tooltip(models));
                 result = true;
             }
-        this._map.getCanvas().style.cursor = 'pointer';
+            if (!this._inQuery) {
+                this._map.getCanvas().style.cursor = 'pointer';
+            }
         }
         return result;
     }
@@ -414,7 +418,9 @@ export class UserInteractions
         }
 
         if (feature === null || !this.showTooltip_(event.lngLat, feature)) {
-            this._map.getCanvas().style.cursor = '';
+            if (!this._inQuery) {
+                this._map.getCanvas().style.cursor = '';
+            }
             this._tooltip.hide();
             this.unselectFeatures_();
         }
@@ -521,6 +527,7 @@ export class UserInteractions
             const node_url = this._flatmap.urlForFeature(featureId);
             this._messagePasser.broadcast(`flatmap-query-${type}`, node_url);
             this._map.getCanvas().style.cursor = 'progress';
+            this._inQuery = true;
         }
         this._modal = false;
     }
