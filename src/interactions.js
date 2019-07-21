@@ -397,10 +397,12 @@ export class UserInteractions
             if (models.length) {
                 this._tooltip.show(position, tooltip(models));
                 result = true;
+            } else if (this._layerManager.layerQueryable(ann.layer)) {
+                result = true;
             }
-            if (!this._inQuery) {
-                this._map.getCanvas().style.cursor = 'pointer';
-            }
+        }
+        if (result && !this._inQuery) {
+            this._map.getCanvas().style.cursor = 'pointer';
         }
         return result;
     }
