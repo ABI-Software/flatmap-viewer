@@ -81,7 +81,7 @@ SELECT ?node1 ?edge1 ?edge2
               ?node1 obo:RO_0003301 ?entity .
               <${msg.resource}> obo:RO_0003301 ?entity .
              }
-        UNION {
+       UNION {
             ?edge2 ?route2 <${msg.resource}>  .
         } }`
                      : (msg.action === 'flatmap-query-node-connected') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
