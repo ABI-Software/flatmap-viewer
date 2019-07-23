@@ -217,7 +217,11 @@ const GRAMMER = `
 
     PROPERTY_SPEC
         = MODELS_SPEC
+        / LABEL_SPEC
         / ROUTING_SPEC
+
+    LABEL_SPEC
+        = 'label' _ '(' (.+) ')'
 
     MODELS_SPEC
         = 'models' _ '(' _ ONTOLOGY_ID_LIST _ ')'
