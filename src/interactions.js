@@ -534,7 +534,7 @@ export class UserInteractions
             this.queryData_(this._flatmap.modelsForFeature(featureId));
         } else {
             const ann = this._flatmap.getAnnotation(featureId);
-            this._queryInterface.query(type, ann.url);
+            this._queryInterface.query(type, ann.url, ann.models);
             this._map.getCanvas().style.cursor = 'progress';
             this._inQuery = true;
         }
