@@ -25,7 +25,7 @@ limitations under the License.
 // Load the SPARQL query engine we use. NB. It's not `npm` compatible and doing
 // this is one way to ensure things work
 
-const COMUNICA_SPARQL_RDFJS = 'http://rdf.js.org/comunica-browser/versions/1/packages/actor-init-sparql-rdfjs/comunica-browser.js';
+const COMUNICA_SPARQL_RDFJS = 'https://rdf.js.org/comunica-browser/versions/1/packages/actor-init-sparql-rdfjs/comunica-browser.js';
 
 const comunicaScript = document.createElement('script');
 document.head.appendChild(comunicaScript);
