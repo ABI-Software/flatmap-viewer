@@ -288,7 +288,9 @@ export class UserInteractions
                     }
                 }
             }
-            if (modelList.length > 0) {
+            if ('type' in msg.data
+              && msg.data.type === 'nodes'
+              && modelList.length > 0) {
                 this.queryData_([... new Set(modelList)]);
             }
             this._inQuery = false;

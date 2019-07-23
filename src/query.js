@@ -115,7 +115,7 @@ SELECT ?node2 ?node1 ?edge1 WHERE
                             features.push(resource);
                         }
                         // We remove any duplicates before broadcasting the results array
-                        this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
+                        this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)], {type: type});
                     });
                     result.bindingsStream.on('error', (err) => {
                         console.log(err);
