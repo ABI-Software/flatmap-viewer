@@ -109,16 +109,17 @@ SELECT ?node2 ?node1 ?edge1 WHERE
                     }
                 });
                 queryResult.bindingsStream.on('end', () => {
-                    features.push(msg.resource);
-                    // We remove any duplicates before broadcasting the results array
-                    this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
-                    return;
+                    if (features.length > 0) {
+                        features.push(msg.resource);
+                        // We remove any duplicates before broadcasting the results array
+                        this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
+                    }
                 });
             } catch (err) {
                 console.log(err);
+                this._messagePasser.broadcast('flatmap-query-results', []);
             }
         }
-    this._messagePasser.broadcast('flatmap-query-results', []);
     }
 }
 
