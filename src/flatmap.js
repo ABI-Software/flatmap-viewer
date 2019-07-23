@@ -213,13 +213,6 @@ class FlatMap
         return this._userInteractions.selectedFeatureLayerName;
     }
 
-    urlForFeature(featureId)
-    //======================
-    {
-        const ann = this._idToAnnotation.get(featureId);
-        return (ann) ? ann.url : null;
-    }
-
     modelsForFeature(featureId)
     //=========================
     {

@@ -460,19 +460,19 @@ export class UserInteractions
                 if (ann.models.length > 0) {
                     items.push({
                         id: id,
-                        prompt: 'Find datasets',
+                        prompt: `Search for knowledge about node`,
                         action: this.query_.bind(this, 'data')
                     });
                 }
                 if (this._layerManager.layerQueryable(ann.layer)) {
                     items.push({
                         id: id,
-                        prompt: 'Query node',
+                        prompt: 'Find edges connected to node',
                         action: this.query_.bind(this, 'node-single')
                     });
                     items.push({
                         id: id,
-                        prompt: 'Query connected nodes',
+                        prompt: 'Find nodes and edges connected to node',
                         action: this.query_.bind(this, 'node-connected')
                     });
                 }
@@ -529,8 +529,8 @@ export class UserInteractions
         if (type === 'data') {
             this.queryData_(this._flatmap.modelsForFeature(featureId));
         } else {
-            const node_url = this._flatmap.urlForFeature(featureId);
-            this._messagePasser.broadcast(`flatmap-query-${type}`, node_url);
+            const ann = this._flatmap.getAnnotation(featureId);
+            this._messagePasser.broadcast(`flatmap-query-${type}`, ann.url, { models: ann.models });
             this._map.getCanvas().style.cursor = 'progress';
             this._inQuery = true;
         }
