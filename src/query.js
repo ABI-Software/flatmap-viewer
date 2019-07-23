@@ -102,13 +102,14 @@ SELECT ?node2 ?node1 ?edge1 WHERE
                         value: this._store
                     }]
                 })
-                const features = [msg.resource];
+                const features = [];
                 queryResult.bindingsStream.on('data', data => {
                     for (const d of data.values()) {
                         features.push(d.value);
                     }
                 });
                 queryResult.bindingsStream.on('end', () => {
+                    features.push(msg.resource);
                     // We remove any duplicates before broadcasting the results array
                     this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
                     return;
