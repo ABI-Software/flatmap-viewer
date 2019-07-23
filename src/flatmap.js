@@ -106,7 +106,7 @@ class FlatMap
             this._map.addControl(new mapboxgl.FullscreenControl());
         }
 
-        this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
+        this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'bottom-right');
         this._map.dragRotate.disable();
         this._map.touchZoomRotate.disableRotation();
 
