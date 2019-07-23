@@ -40,7 +40,7 @@ import 'dat.gui/build/dat.gui.css';
 
 //==============================================================================
 
-// Load our stylesheet last so we can ovveride styling rules
+// Load our stylesheet last so we can overide styling rules
 
 import '../static/flatmaps.css';
 
