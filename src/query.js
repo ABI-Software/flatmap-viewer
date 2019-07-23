@@ -33,15 +33,15 @@ import {MessagePasser} from './messages.js';
 
 export class QueryInterface
 {
-    constructor(flatmap)
+    constructor(mapId)
     {
-        this._flatmap = flatmap;
+        this._mapId = mapId;
         this._store = new N3.Store();
         this._parser = new N3.Parser();
         this.loadStore_().then(() => {
             this._engine = Comunica.newEngine();
             // We only now are ready to start accepting queries...
-            this._messagePasser = new MessagePasser('query-interface', json => this.processMessage_(json));
+            this._messagePasser = new MessagePasser('query-interface', json => {});
         }, err => console.log(err));
     }
 
@@ -49,11 +49,11 @@ export class QueryInterface
     //================
     {
         return new Promise(async(resolve, reject) => {
-            const response = await fetch(mapEndpoint(`flatmap/${this._flatmap.id}/annotations`), {
+            const response = await fetch(mapEndpoint(`flatmap/${this._mapId}/annotations`), {
                  method: 'GET'
             });
             if (!response.ok) {
-                reject(new Error(`Missing RDF for ${this._flatmap.id} map...`));
+                reject(new Error(`Missing RDF for ${this._mapId} map...`));
             } else {
                 const rdf = await response.text();
                 this._parser.parse(rdf, (error, quad, prefixes) => {
@@ -70,50 +70,61 @@ export class QueryInterface
     }
 
 
-    async processMessage_(msg)
-    //========================
+    async query(type, resource)
+    //=========================
     {
-        const sparql = (msg.action === 'flatmap-query-node-single') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
+        const sparql = (type === 'edges') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 SELECT ?node1 ?edge1 ?edge2
     WHERE { { ?edge1 a flatmap:Edge .
               ?edge1 ?route1 ?node1 .
               ?node1 obo:RO_0003301 ?entity .
-              <${msg.resource}> obo:RO_0003301 ?entity .
+              <${resource}> obo:RO_0003301 ?entity .
              }
        UNION {
-            ?edge2 ?route2 <${msg.resource}>  .
+            ?edge2 ?route2 <${resource}>  .
         } }`
-                    : (msg.action === 'flatmap-query-node-connected') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
+                    : (type === 'nodes') ? `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 SELECT ?node2 ?node1 ?edge1 WHERE
     { ?edge1 ?route2 ?node2 .
       ?edge1 a flatmap:Edge .
       ?edge1 ?route1 ?node1 .
       ?node1 obo:RO_0003301 ?entity .
-      <${msg.resource}> obo:RO_0003301 ?entity .
+      <${resource}> obo:RO_0003301 ?entity .
     }`
                      : null;
         if (sparql) {
+// also see https://github.com/comunica/jQuery-Widget.js/blob/master/src/ldf-client-worker.js
             try {
-                const queryResult = await this._engine.query(sparql, {
+                const features = [];
+                this._engine.query(sparql, {
                     sources: [{
                         type: 'rdfjsSource',
                         value: this._store
                     }]
                 })
-                const features = [];
-                queryResult.bindingsStream.on('data', data => {
-                    for (const d of data.values()) {
-                        features.push(d.value);
-                    }
-                });
-                queryResult.bindingsStream.on('end', () => {
-                    if (features.length > 0) {
-                        features.push(msg.resource);
+                .then(result => {
+                    result.bindingsStream.on('data', data => {
+                        for (const d of data.values()) {
+                            features.push(d.value);
+                        }
+                    });
+                    result.bindingsStream.on('end', () => {
+                        if (features.length > 0) {
+                            features.push(resource);
+                        }
                         // We remove any duplicates before broadcasting the results array
                         this._messagePasser.broadcast('flatmap-query-results', [... new Set(features)]);
-                    }
+                    });
+                    result.bindingsStream.on('error', (err) => {
+                        console.log(err);
+                        this._messagePasser.broadcast('flatmap-query-results', []);
+                    });
+                })
+                .catch(err => {
+                    console.log(err);
+                    this._messagePasser.broadcast('flatmap-query-results', []);
                 });
             } catch (err) {
                 console.log(err);

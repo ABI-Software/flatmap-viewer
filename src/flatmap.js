@@ -48,7 +48,6 @@ import '../static/flatmaps.css';
 
 import {mapEndpoint} from './endpoints.js';
 import {parser} from './annotation.js';
-import {QueryInterface} from './query.js';
 import {UserInteractions} from './interactions.js';
 
 import * as utils from './utils.js';
@@ -126,8 +125,6 @@ class FlatMap
 
         this._userInteractions = null;
         this._map.on('load', this.finalise_.bind(this));
-
-        this._queryInterface = new QueryInterface(this);
     }
 
     finalise_()

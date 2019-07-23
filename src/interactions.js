@@ -32,6 +32,7 @@ import {ContextMenu} from './contextmenu.js';
 import {LayerManager} from './layers.js';
 import {LayerSwitcher} from './layerswitcher.js'
 import {MessagePasser} from './messages.js';
+import {QueryInterface} from './query.js';
 import {ToolTip} from './tooltip.js';
 
 import * as utils from './utils.js';
@@ -60,6 +61,7 @@ export class UserInteractions
         this._flatmap = flatmap;
         this._map = flatmap.map;
         this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
+        this._queryInterface = new QueryInterface(flatmap.id);
 
         this._selectedFeature = null;
         this._highlightedFeatures = [];
@@ -468,12 +470,12 @@ export class UserInteractions
                     items.push({
                         id: id,
                         prompt: 'Find edges connected to node',
-                        action: this.query_.bind(this, 'node-single')
+                        action: this.query_.bind(this, 'edges')
                     });
                     items.push({
                         id: id,
                         prompt: 'Find nodes and edges connected to node',
-                        action: this.query_.bind(this, 'node-connected')
+                        action: this.query_.bind(this, 'nodes')
                     });
                 }
             }
@@ -530,7 +532,7 @@ export class UserInteractions
             this.queryData_(this._flatmap.modelsForFeature(featureId));
         } else {
             const ann = this._flatmap.getAnnotation(featureId);
-            this._messagePasser.broadcast(`flatmap-query-${type}`, ann.url, { models: ann.models });
+            this._queryInterface.query(type, ann.url);
             this._map.getCanvas().style.cursor = 'progress';
             this._inQuery = true;
         }
