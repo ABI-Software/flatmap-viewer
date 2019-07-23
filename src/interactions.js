@@ -387,7 +387,7 @@ export class UserInteractions
         if (this.annotating) {
             if (ann) {
                 const error = ('error' in ann) ? ann.error : '';
-                this._tooltip.show(position, tooltip([`Zoom: ${this._map.getZoom()}`, ann.featureId, ...ann.text.split(/\s+/), error]));
+                this._tooltip.show(position, tooltip([ann.featureId, ann.label, ...ann.text.split(/\s+/), error]));
             } else {
                 this._tooltip.show(position, tooltip([id, this._map.getFeatureState(feature)['annotated']]));
             }
@@ -395,7 +395,10 @@ export class UserInteractions
         } else if (ann) {
             const models = ann.models;
             if (models.length) {
-                this._tooltip.show(position, tooltip(models));
+                const label = (ann.label && ann.label !== models[0])
+                              ? `${ann.label} (${models[0]})`
+                              : models[0];
+                this._tooltip.show(position, tooltip(['Search for knowledge about', label]));
                 result = true;
             } else if (this._layerManager.layerQueryable(ann.layer)) {
                 result = true;

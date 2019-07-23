@@ -73,6 +73,7 @@ class FlatMap
             if ('error' in metadata && !('error' in ann)) {
                 ann.error = metadata.error;
             }
+            ann.label = metadata.label;
             ann.layer = metadata.layer;
             ann.queryable = metadata.geometry.includes('Polygon')
             this.addAnnotation_(featureId, ann);
