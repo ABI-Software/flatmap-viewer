@@ -79,14 +79,18 @@ export class QueryInterface
             if (models.length > 0) {
                 sparql = `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-SELECT ?node ?edge
-    WHERE { ?edge a flatmap:Edge .
-            ?edge ?route ?node .
-            ?node obo:RO_0003301 ?entity .
-            <${resource}> obo:RO_0003301 ?entity .
-          }`;
-            } else {
-                sparql = `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
+SELECT ?node ?edge ?node2 WHERE {
+    { ?edge a flatmap:Edge .
+      ?edge ?route ?node .
+      ?node obo:RO_0003301 ?entity .
+      <${resource}> obo:RO_0003301 ?entity .
+    } UNION {
+      ?node2 obo:RO_0003301 ?entity .
+      <${resource}> obo:RO_0003301 ?entity .
+    }
+}`;
+      } else {
+          sparql = `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
 SELECT ?edge WHERE { ?edge ?route <${resource}> }`;
             }
@@ -94,20 +98,24 @@ SELECT ?edge WHERE { ?edge ?route <${resource}> }`;
             if (models.length > 0) {
                 sparql = `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
 PREFIX obo: <http://purl.obolibrary.org/obo/>
-SELECT ?node2 ?node1 ?edge1 WHERE
+SELECT ?node2 ?node1 ?edge1 ?node3 WHERE {
     { ?edge1 ?route2 ?node2 .
       ?edge1 a flatmap:Edge .
       ?edge1 ?route1 ?node1 .
       ?node1 obo:RO_0003301 ?entity .
       <${resource}> obo:RO_0003301 ?entity .
-    }`;
+    } UNION {
+      ?node3 obo:RO_0003301 ?entity .
+      <${resource}> obo:RO_0003301 ?entity .
+    }
+}`;
             } else {
                 sparql = `PREFIX flatmap: <http://celldl.org/ontologies/flatmap/>
-SELECT ?node2 ?edge2 WHERE
-    { ?edge2 ?route2 ?node2 .
-      ?edge2 a flatmap:Edge .
-      ?edge2 ?route1 <${resource}> .
-    }`;
+SELECT ?node2 ?edge2 WHERE {
+    ?edge2 ?route2 ?node2 .
+    ?edge2 a flatmap:Edge .
+    ?edge2 ?route1 <${resource}> .
+}`;
             }
         }
         if (sparql) {
