@@ -65,4 +65,12 @@ form.flatmap-annotation div {
     float: right;
 }
 
+/* Tooltips */
+
+.mapboxgl-popup-content {
+    padding: 5px;
+    background-color: #EEE;
+    font-size: 1.2em;
+}
+
 /* End of file */

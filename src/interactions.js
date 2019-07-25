@@ -399,10 +399,7 @@ export class UserInteractions
         } else if (ann) {
             const models = ann.models;
             if (models.length) {
-                const label = (ann.label && ann.label !== models[0])
-                              ? `${ann.label} (${models[0]})`
-                              : models[0];
-                this._tooltip.show(position, tooltip(['Search for knowledge about', label]));
+                this._tooltip.show(position, tooltip([ann.label ? ann.label: models[0]]));
                 result = true;
             } else if (this._layerManager.layerQueryable(ann.layer)) {
                 result = true;
