@@ -74,7 +74,8 @@ class FlatMap
             }
             ann.label = metadata.label;
             ann.layer = metadata.layer;
-            ann.queryable = metadata.geometry.includes('Polygon');
+            ann.queryable = 'geometry' in metadata
+                          && metadata.geometry.includes('Polygon');
             this.addAnnotation_(featureId, ann);
         }
 
