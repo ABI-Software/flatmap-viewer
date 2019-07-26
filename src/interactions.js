@@ -69,6 +69,10 @@ export class UserInteractions
         this._inQuery = false;
         this._modal = false;
 
+        // Fit the map to our window
+
+        flatmap.fitBounds();
+
         // Add a control to enable annotation if option set
 
         if (flatmap.annotatable) {

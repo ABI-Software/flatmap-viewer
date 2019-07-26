@@ -211,6 +211,14 @@ class FlatMap
         return this._userInteractions.selectedFeatureLayerName;
     }
 
+    fitBounds()
+    //=========
+    {
+        if ('bounds' in this._options) {
+            this._map.fitBounds(this._options['bounds'])
+        }
+    }
+
     modelsForFeature(featureId)
     //=========================
     {
