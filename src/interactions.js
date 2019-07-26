@@ -541,6 +541,7 @@ export class UserInteractions
     clickEvent_(event)
     //================
     {
+        this._layerSwitcher.close();
         const feature = this.smallestAnnotatedPolygonAtEvent_(event);
         if (feature !== null) {
             const featureId = feature.properties.id;

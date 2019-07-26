@@ -134,6 +134,12 @@ export class LayerSwitcher
             this._layerControl.setState(layerId, checked);
         }
     }
+
+    close()
+    //=====
+    {
+        this._gui.close();
+    }
 }
 
 //==============================================================================
