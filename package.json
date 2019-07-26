@@ -1,9 +1,10 @@
 {
-  "name": "flatmap-mvt-viewer",
+  "name": "@dbrnz/flatmap-viewer",
   "version": "0.8.7",
   "description": "Flatmap viewer using Mapbox GL",
   "repository": "https://github.com/dbrnz/flatmap-mvt-viewer.git",
-  "main": "index.js",
+  "main": "dist/flatmap-viewer.js",
+  "files": ["dist", "src", "index.html", "index.js"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel index.html --port 1111",
