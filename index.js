@@ -22,7 +22,7 @@ limitations under the License.
 
 //==============================================================================
 
-import {MapManager} from './src/flatmap.js';
+import {MapManager} from './src/flatmap-viewer.js';
 
 const mapManager = new MapManager();
 

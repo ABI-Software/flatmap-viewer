@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "parcel index.html --port 1111",
     "build": "parcel build --no-cache --public-url . --no-source-maps index.html",
+    "package": "parcel build src/flatmap-viewer.js --target node --bundle-node-modules --no-source-maps --no-cache",
     "docs": "./node_modules/.bin/esdoc -c .esdoc.json"
   },
   "author": "David Brooks",
