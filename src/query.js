@@ -23,6 +23,7 @@ limitations under the License.
 //==============================================================================
 
 const N3 = require('n3');
+import {newEngine} from '@comunica/actor-init-sparql';
 
 //==============================================================================
 
@@ -39,7 +40,7 @@ export class QueryInterface
         this._store = new N3.Store();
         this._parser = new N3.Parser();
         this.loadStore_().then(() => {
-            this._engine = Comunica.newEngine();
+            this._engine = newEngine();
             // We only now are ready to start accepting queries...
             this._messagePasser = new MessagePasser('query-interface', json => {});
         }, err => console.log(err));
