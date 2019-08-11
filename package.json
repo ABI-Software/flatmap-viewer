@@ -7,14 +7,15 @@
   "files": ["dist", "src", "index.html", "index.js"],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html --port 1111",
-    "build": "parcel build --no-cache --public-url . --no-source-maps index.html",
+    "start": "webpack-dev-server --mode development --color --progress --client-log-level debug --open",
+    "build": "webpack --mode production",
     "package": "parcel build src/flatmap-viewer.js --target node --bundle-node-modules --no-source-maps --no-cache",
     "docs": "./node_modules/.bin/esdoc -c .esdoc.json"
   },
   "author": "David Brooks",
   "license": "MIT",
   "dependencies": {
+    "@babel/runtime": "^7.5.5",
     "@comunica/actor-init-sparql": "^1.9.1",
     "@comunica/core": "^1.9.0",
     "@comunica/utils-datasource": "^1.9.0",
@@ -28,9 +29,14 @@
     "pegjs": "^0.10.0"
   },
   "devDependencies": {
-    "babel-core": "^6.26.3",
-    "babel-preset-env": "^1.7.0",
-    "parcel-bundler": "^1.12.3",
-    "parcel-plugin-clean-dist": "0.0.6"
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-transform-runtime": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.39.1",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
   }
 }
