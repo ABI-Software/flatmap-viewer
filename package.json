@@ -1,10 +1,15 @@
 {
   "name": "@dbrnz/flatmap-viewer",
-  "version": "0.8.8",
+  "version": "0.8.9",
   "description": "Flatmap viewer using Mapbox GL",
   "repository": "https://github.com/dbrnz/flatmap-mvt-viewer.git",
   "main": "dist/flatmap-viewer.js",
-  "files": ["dist", "src", "index.html", "index.js"],
+  "files": [
+    "dist",
+    "src",
+    "index.html",
+    "index.js"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --mode development --color --progress --client-log-level debug --open",
