@@ -12,7 +12,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app",
     "build": "webpack --mode production",
-    "package": "parcel build src/flatmap-viewer.js --target node --bundle-node-modules --no-source-maps --no-cache",
     "docs": "./node_modules/.bin/esdoc -c .esdoc.json"
   },
   "author": "David Brooks",
