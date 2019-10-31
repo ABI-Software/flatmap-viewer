@@ -18,14 +18,7 @@ limitations under the License.
 
 ******************************************************************************/
 
-'use strict';
+import {MapManager} from 'dist/flatmap-viewer';
 
-//==============================================================================
-
-import {MapManager} from './src/flatmap-viewer.js';
-
-const mapManager = new MapManager();
-
-window.loadMap = mapManager.loadMap.bind(mapManager);
 
 //==============================================================================

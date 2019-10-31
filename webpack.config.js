@@ -1,19 +1,15 @@
+const webpack = require('webpack');
 const path = require('path');
-const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
-  entry: './src/flatmap-viewer.js',
-  externals: [
-    nodeExternals({  // Ignore all modules in node_modules folder
-      // Except non-javascript files with extensions
-      whitelist: [/\.(?!(?:jsx?|json)$).{1,5}$/i],
-    }),
-  ],
+  mode: 'development',
+  entry: './src/main.js',
   output: {
-    path: path.resolve('./dist'),
-    filename: 'flatmap-viewer.js',
-    libraryTarget: 'commonjs2',
+    path: path.join(__dirname, 'app'),
+    publicPath: '/',
+    filename: 'dist/bundle.js'
   },
+  devtool: '#eval-source-map',
   module: {
     rules: [
       {

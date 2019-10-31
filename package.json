@@ -3,14 +3,14 @@
   "version": "0.8.10",
   "description": "Flatmap viewer using Mapbox GL",
   "repository": "https://github.com/dbrnz/flatmap-mvt-viewer.git",
-  "main": "dist/flatmap-viewer.js",
+  "main": "app.js",
   "files": [
     "dist",
     "src"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --mode development --color --progress --client-log-level debug --open",
+    "start": "node app",
     "build": "webpack --mode production",
     "package": "parcel build src/flatmap-viewer.js --target node --bundle-node-modules --no-source-maps --no-cache",
     "docs": "./node_modules/.bin/esdoc -c .esdoc.json"
@@ -27,7 +27,7 @@
     "broadcast-channel": "^2.1.12",
     "dat.gui": "^0.7.6",
     "dialog-polyfill": "^0.5.0",
-    "mapbox-gl": "^1.0.0",
+    "mapbox-gl": "^1.4.1",
     "n3": "^1.1.1",
     "pegjs": "^0.10.0"
   },
@@ -36,10 +36,14 @@
     "@babel/plugin-transform-runtime": "^7.5.5",
     "@babel/preset-env": "^7.5.5",
     "babel-loader": "^8.0.6",
+    "browser-sync": "^2.26.7",
+    "bs-fullscreen-message": "^1.1.0",
     "css-loader": "^3.2.0",
+    "strip-ansi": "^5.2.0",
     "style-loader": "^1.0.0",
-    "webpack": "^4.39.1",
+    "webpack": "^4.39.2",
     "webpack-cli": "^3.3.6",
+    "webpack-dev-middleware": "^3.7.0",
     "webpack-dev-server": "^3.7.2",
     "webpack-node-externals": "^1.7.2"
   }

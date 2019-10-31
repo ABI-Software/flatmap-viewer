@@ -23,21 +23,30 @@
         top: 1%;
         left: 1%;
         width: 96%;
-        height: 96%;
+        height: 70%;
       }
       #map2 {
-        top: 1%;
-        left: 50.5%;
-        width: 48%;
-        height: 96%;
+        top: 72%;
+        left: 1%;
+        width: 96%;
+        height: 26%;
+      }
+      #results {
+        float: left;
+        margin-top: 3%;
+        margin-left: 1%;
+        width: 20%;
+        height: 92%;
+        border: 1px solid red;
+        background-color: #8ff;
+        z-index: 9999;
       }
     </style>
   </head>
   <body>
+<!--    <div id="results">sss</div> -->
     <div id="map1" class="map"></div>
-    <script src="./index.js"></script>
-    <script>
-      loadMap('NCBITaxon:9606', 'map1');
-    </script>
+    <div id="map2" class="map"></div>
+    <script src="dist/bundle.js"></script>
   </body>
 </html>
