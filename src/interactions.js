@@ -23,6 +23,7 @@ limitations under the License.
 //==============================================================================
 
 import {default as turfArea} from '@turf/area';
+import {default as turfBBox} from '@turf/bbox';
 import * as turf from '@turf/helpers';
 
 //==============================================================================
@@ -493,6 +494,14 @@ export class UserInteractions
                 });
             }
             if (items.length) {
+                items.push('-');
+            }
+            items.push({
+                id: id,
+                prompt: 'Zoom to...',
+                action: this.zoomTo_.bind(this, feature)
+            });
+            if (items.length) {
                 this._modal = true;
                 this._contextMenu.show(event.lngLat, items);
                 return;
@@ -513,6 +522,28 @@ export class UserInteractions
         this._annotator.editAnnotation(event.target.getAttribute('id'),
                                        queryableFeature,
                                        () => { this._modal = false; });
+    }
+
+    zoomTo_(feature)
+    //==============
+    {
+        this._contextMenu.hide();
+        let bbox = feature.properties.bbox;
+        if (bbox) {
+            // Bounding box is defined in GeoJSON
+
+            bbox = bbox.split(',');
+        } else {
+            // Get the bounding box of the current polygon. This won't neccessary
+            // be the full feature because of tiling
+
+            const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
+            bbox = turfBBox(polygon);
+        }
+        this._map.fitBounds(bbox, {
+            padding: 30,
+            animate: false
+        });
     }
 
     queryData_(modelList)
