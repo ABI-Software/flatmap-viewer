@@ -12,7 +12,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node app",
     "build": "webpack --mode production",
-    "docs": "./node_modules/.bin/esdoc -c .esdoc.json"
+    "docs": "pipenv run sphinx-autobuild -z src -B docs docs/_build/html"
   },
   "author": "David Brooks",
   "license": "MIT",
@@ -39,6 +39,7 @@
     "browser-sync": "^2.26.7",
     "bs-fullscreen-message": "^1.1.0",
     "css-loader": "^3.2.0",
+    "jsdoc": "^3.5.5",
     "strip-ansi": "^5.2.0",
     "style-loader": "^1.0.0",
     "webpack": "^4.39.2",
