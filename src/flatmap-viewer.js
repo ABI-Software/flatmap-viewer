@@ -441,7 +441,9 @@ export class MapManager
         let latestMap = null;
         let lastCreatedTime = '';
         for (const map of this._maps) {
-            if (mapDescribes == map.describes || mapDescribes === map.source) {
+            if (mapDescribes === map.describes
+             || mapDescribes === map.id
+             || mapDescribes === map.source) {
                 if ('created' in map) {
                     if (lastCreatedTime < map.created) {
                         lastCreatedTime = map.created;
