@@ -29,26 +29,18 @@ import * as turf from '@turf/helpers';
 //==============================================================================
 
 import {ContextMenu} from './contextmenu.js';
+import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
 import {QueryInterface} from './query.js';
-import {ToolTip} from './tooltip.js';
 import {SearchControl} from './search.js';
 
 import * as utils from './utils.js';
 
 //==============================================================================
 
-function tooltip(valuesList)
 function bounds(feature)
 //======================
 {
-    const tooltipElement = document.createElement('div');
-    tooltipElement.className = 'flatmap-feature-tooltip';
-    for (const value of valuesList) {
-        const valueElement = document.createElement('div');
-        valueElement.className = 'flatmap-feature-property';
-        valueElement.textContent = value;
-        tooltipElement.appendChild(valueElement);
     // Find the feature's bounding box
 
     let bounds = ('bounds' in feature.properties) ? feature.properties.bounds
@@ -64,7 +56,6 @@ function bounds(feature)
         const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
         return turfBBox(polygon);
     }
-    return tooltipElement;
 }
 
 //==============================================================================
@@ -104,7 +95,13 @@ export class UserInteractions
             this._map.addControl(new SearchControl(flatmap.searchIndex));
         }
 
+        // Show information about features
 
+        if (flatmap.options.featureInfo) {
+            this._infoControl = new InfoControl(flatmap);
+            this._map.addControl(this._infoControl);
+            this._map.on('mousemove', e => this._infoControl.mouseMove(e));
+        }
 
          // Manage our layers
 
@@ -149,11 +146,6 @@ export class UserInteractions
                 console.log(`Annotation error, ${ann.layer}: ${ann.error} (${ann.text})`);
             }
         }
-
-        // Display a tooltip at the mouse pointer
-
-        this._tooltip = new ToolTip(flatmap);
-        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
 
         // Display a context menu on right-click
 
@@ -338,65 +330,6 @@ export class UserInteractions
         return smallestFeature;
     }
 
-    smallestAnnotatedPolygonAtEvent_(event)
-    //=====================================
-    {
-        // Get the smallest polygon feature covering the event's point
-
-        return this.smallestAnnotatedPolygonFeature_(this.activeFeaturesAtEvent_(event));
-    }
-
-    showTooltip_(position, feature)
-    //=============================
-    {
-        let result = false;
-        const id = feature.properties.id;
-        const ann = this._flatmap.getAnnotation(id);
-        this.selectFeature_(feature);
-        if (this.annotating) {
-            if (ann) {
-                const error = ('error' in ann) ? ann.error : '';
-                this._tooltip.show(position, tooltip([ann.featureId, ann.label, ...ann.text.split(/\s+/), error]));
-            } else {
-                this._tooltip.show(position, tooltip([id, this._map.getFeatureState(feature)['annotated']]));
-            }
-            result = true;
-        } else if (ann) {
-            const models = ann.models;
-            if (models.length) {
-                this._tooltip.show(position, tooltip([ann.label ? ann.label: models[0]]));
-                result = true;
-            } else if (this._layerManager.layerQueryable(ann.layer)) {
-                result = true;
-            }
-        }
-        if (result && !this._inQuery) {
-            this._map.getCanvas().style.cursor = 'pointer';
-        }
-        return result;
-    }
-
-    mouseMoveEvent_(event)
-    //====================
-    {
-        if (this._modal) {
-            return;
-        }
-        const features = this.activeFeaturesAtEvent_(event);
-        let feature = this.smallestAnnotatedPolygonFeature_(features);
-        if (feature === null && this.annotating && features.length) {
-            feature = features[0];
-        }
-
-        if (feature === null || !this.showTooltip_(event.lngLat, feature)) {
-            if (!this._inQuery) {
-                this._map.getCanvas().style.cursor = '';
-            }
-            this._tooltip.hide();
-            this.unselectFeatures_();
-        }
-    }
-
     contextMenuEvent_(event)
     //======================
     {
@@ -416,7 +349,6 @@ export class UserInteractions
             const id = feature.properties.id;
             const ann = this._flatmap.getAnnotation(id);
             this.selectFeature_(feature);
-            this._tooltip.hide();
             const items = [];
             if (ann) {
                 if (ann.models.length > 0) {

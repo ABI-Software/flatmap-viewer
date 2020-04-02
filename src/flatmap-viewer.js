@@ -520,6 +520,9 @@ export class MapManager
     * @arg options {Object} Configurable options for the map.
     * @arg options.debug {boolean} Enable debugging mode (currently only shows the map's
     *                              position in the web page's URL).
+    * @arg options.featureInfo {boolean} Show information about features as a tooltip. The tooltip is active
+    *                                    on highlighted features and, for non-highlighted features, when the
+    *                                    ``info`` control is enabled. More details are shown in debug mode.
     * @arg options.searchable {boolean} Add a control to search for features on a map.
     * @example
     * const humanMap1 = mapManager.loadMap('humanV1', 'div-1');
