@@ -90,7 +90,7 @@ class FlatMap
                 source.url = this.addUrlBase_(source.url);
             }
             if (source.tiles) {
-                const tiles = []
+                const tiles = [];
                 for (const tileUrl of source.tiles) {
                     tiles.push(this.addUrlBase_(tileUrl));
                 }
@@ -122,7 +122,7 @@ class FlatMap
             attributionControl: false
         };
 
-        if ('debug' in mapDescription.options) {
+        if (mapDescription.options.debug === true) {
             mapboxOptions.hash = true;
         }
         if ('max-zoom' in mapDescription.options) {
@@ -345,7 +345,7 @@ class FlatMap
     //=========
     {
         if ('bounds' in this._options) {
-            this._map.fitBounds(this._options['bounds'])
+            this._map.fitBounds(this._options['bounds']);
         }
     }
 

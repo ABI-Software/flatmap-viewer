@@ -103,7 +103,7 @@ export class UserInteractions
             this._map.on('mousemove', e => this._infoControl.mouseMove(e));
         }
 
-         // Manage our layers
+        // Manage our layers
 
         this._layerManager = new LayerManager(flatmap);
 
@@ -259,7 +259,7 @@ export class UserInteractions
     //=====================
     {
         this.unselectFeatures_(false);
-        this._map.setFeatureState(feature, { "selected": true })
+        this._map.setFeatureState(feature, { 'selected': true });
         this._selectedFeature = feature;
     }
 
@@ -267,7 +267,7 @@ export class UserInteractions
     //===========================
     {
         if (this._selectedFeature !== null) {
-            this._map.removeFeatureState(this._selectedFeature, "selected");
+            this._map.removeFeatureState(this._selectedFeature, 'selected');
             if (reset) {
                 this._selectedFeature = null;
             }
@@ -280,7 +280,7 @@ export class UserInteractions
         if (this._selectedFeature !== null) {
             const layerId = this._selectedFeature.layer.id;
             if (layerId.includes('-')) {
-                return layerId.split('-').slice(0, -1).join('-')
+                return layerId.split('-').slice(0, -1).join('-');
             } else {
                 return layerId;
             }
@@ -292,7 +292,7 @@ export class UserInteractions
     //==============================
     {
         for (const feature of this._highlightedFeatures) {
-            this._map.removeFeatureState(feature, "highlighted");
+            this._map.removeFeatureState(feature, 'highlighted');
         }
         this._highlightedFeatures = [];
     }
@@ -354,7 +354,7 @@ export class UserInteractions
                 if (ann.models.length > 0) {
                     items.push({
                         id: id,
-                        prompt: `Search for knowledge about node`,
+                        prompt: 'Search for knowledge about node',
                         action: this.query_.bind(this, 'data')
                     });
                 }
