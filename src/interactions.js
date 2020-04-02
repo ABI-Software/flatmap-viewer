@@ -415,14 +415,15 @@ export class UserInteractions
             let bbox = null;
             for (const featureId of featureIds) {
                 const properties = this._flatmap.annotation(featureId);
+                if (properties) {
+                    const feature = utils.mapFeature(properties.layer, featureId);
+                    this._map.setFeatureState(feature, { 'highlighted': true });
+                    this._highlightedFeatures.push(feature);
 
-                const feature = utils.mapFeature(properties.layer, featureId);
-                this._map.setFeatureState(feature, { 'highlighted': true });
-                this._highlightedFeatures.push(feature);
-
-                const bounds = properties.bounds;
-                bbox = (bbox === null) ? bounds
-                                       : expandBounds(bbox, bounds);
+                    const bounds = properties.bounds;
+                    bbox = (bbox === null) ? bounds
+                                           : expandBounds(bbox, bounds);
+                }
             }
 
             // Zoom map to features
