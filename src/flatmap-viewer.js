@@ -54,6 +54,7 @@ class FlatMap
         this._created = mapDescription.created;
         this._describes = mapDescription.describes;
         this._mapNumber = mapDescription.number;
+        this._callback = mapDescription.callback;
         this._resolve = resolve;
 
         this._idToAnnotation = new Map();
@@ -304,6 +305,14 @@ class FlatMap
         return this._userInteractions.selectedFeatureLayerName;
     }
 
+    callback(type, features, ...args)
+    //===============================
+    {
+        if (this._callback) {
+            return this._callback(type, features, ...args);
+        }
+    }
+
     fitBounds()
     //=========
     {
@@ -469,6 +478,9 @@ export class MapManager
     *                                 been generated. If given then this exact map will be
     *                                 loaded.
     * @arg container {string} The id of the HTML container in which to display the map.
+    * @arg callback {function(string, Object)} A callback function, invoked when events occur with the map. The
+    *                                          first parameter gives the type of event, the second provides
+    *                                          details about the feature(s) the event is for.
     * @arg options {Object} Configurable options for the map.
     * @arg options.debug {boolean} Enable debugging mode (currently only shows the map's
     *                              position in the web page's URL).
@@ -483,8 +495,8 @@ export class MapManager
     *                     {source: 'https://models.physiomeproject.org/workspace/585/rawfile/650adf9076538a4bf081609df14dabddd0eb37e7/Human_Body.pptx'},
     *                     'div-4');
     */
-    loadMap(identifier, container, options={})
-    //========================================
+    loadMap(identifier, container, callback, options={})
+    //==================================================
     {
         return new Promise(async(resolve, reject) => {
             try {
@@ -552,14 +564,16 @@ export class MapManager
 
                 this._mapNumber += 1;
                 const flatmap = new FlatMap(container, {
-                    id: map.id,
-                    source: map.source,
-                    describes: map.describes,
-                    style: mapStyle,
-                    options: mapOptions,
-                    metadata: metadata,
-                    number: this._mapNumber
-                }, resolve);
+                        id: map.id,
+                        source: map.source,
+                        describes: map.describes,
+                        style: mapStyle,
+                        options: mapOptions,
+                        metadata: metadata,
+                        number: this._mapNumber,
+                        callback: callback
+                    },
+                    resolve);
 
                 return flatmap;
 

@@ -74,9 +74,7 @@ export class UserInteractions
 
         }
 
-        // To pass messages with other applications
 
-        this._messagePasser = new MessagePasser(flatmap.uniqueId, json => this.processMessage_(json));
 
          // Manage our layers
 
@@ -232,37 +230,6 @@ export class UserInteractions
     {
         for (const layerId of this.activeLayerIds) {
             this.deactivateLayer(layerId);
-        }
-    }
-
-    processMessage_(msg)
-    //==================
-    {
-        if (msg.action === 'flatmap-activate-layer') {
-            this.activateLayer(msg.resource);
-        } else if (msg.action === 'flatmap-deactivate-layer') {
-            this.deactivateLayer(msg.resource);
-        } else if (msg.action === 'flatmap-query-results') {
-            let modelList = [];
-            for (const featureUrl of msg.resource) {
-                const featureId = this._flatmap.featureIdForUrl(featureUrl);
-                if (featureId) {
-                    const ann = this._flatmap.getAnnotation(featureId);
-                    const feature = utils.mapFeature(ann.layer, featureId);
-                    this._map.setFeatureState(feature, { "highlighted": true });
-                    this._highlightedFeatures.push(feature);
-                    if (ann.queryable) {
-                        modelList = modelList.concat(ann.models);
-                    }
-                }
-            }
-            if ('type' in msg.data
-              && msg.data.type === 'nodes'
-              && modelList.length > 0) {
-                this.queryData_([... new Set(modelList)]);
-            }
-            this._inQuery = false;
-            this._map.getCanvas().style.cursor = '';
         }
     }
 
@@ -490,7 +457,7 @@ export class UserInteractions
     //===================
     {
         if (modelList.length > 0) {
-            this._messagePasser.broadcast('query-data', modelList, {
+            this._flatmap.callback('query-data', modelList, {
                 describes: this._flatmap.describes
             });
         }
