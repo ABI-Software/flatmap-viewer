@@ -526,8 +526,8 @@ export class MapManager
     *                                          first parameter gives the type of event, the second provides
     *                                          details about the feature(s) the event is for.
     * @arg options {Object} Configurable options for the map.
-    * @arg options.debug {boolean} Enable debugging mode (currently only shows the map's
-    *                              position in the web page's URL).
+    * @arg options.debug {boolean} Enable debugging mode.
+    * @arg options.fullscreenControl {boolean} Add a ``Show full screen`` button to the map.
     * @arg options.featureInfo {boolean} Show information about features as a tooltip. The tooltip is active
     *                                    on highlighted features and, for non-highlighted features, when the
     *                                    ``info`` control is enabled. More details are shown in debug mode.
