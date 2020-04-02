@@ -282,6 +282,13 @@ class FlatMap
         return this._idToAnnotation;
     }
 
+    addAnnotation_(featureId, ann)
+    //============================
+    {
+        ann.featureId = featureId;
+        this._idToAnnotation.set(featureId, ann);
+    }
+
     get layers()
     //==========
     {
