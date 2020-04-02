@@ -412,28 +412,25 @@ export class UserInteractions
         this.unhighlightFeatures_();
 
         if (featureIds.length) {
+            let bbox = null;
+            for (const featureId of featureIds) {
+                const properties = this._flatmap.annotation(featureId);
 
-            const featureIdFilter = ['in', 'id'];
-            featureIdFilter.splice(2, 0, ...featureIds);
-            const features = this._map.queryRenderedFeatures(null, {
-                filter: featureIdFilter
-            });
-            if (features.length) {
-                let bbox = null;
-                for (const feature of features) {
-                    this._map.setFeatureState(feature, { 'highlighted': true });
-                    this._highlightedFeatures.push(feature);
-                    bbox = (bbox === null) ? bounds(feature)
-                                           : expandBounds(bbox, bounds(feature));
-                }
+                const feature = utils.mapFeature(properties.layer, featureId);
+                this._map.setFeatureState(feature, { 'highlighted': true });
+                this._highlightedFeatures.push(feature);
 
-                // Zoom map to features
-
-                this._map.fitBounds(bbox, {
-                    padding: 100,
-                    animate: false
-                });
+                const bounds = properties.bounds;
+                bbox = (bbox === null) ? bounds
+                                       : expandBounds(bbox, bounds);
             }
+
+            // Zoom map to features
+
+            this._map.fitBounds(bbox, {
+                padding: 100,
+                animate: false
+            });
         }
     }
 

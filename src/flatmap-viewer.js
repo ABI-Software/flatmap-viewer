@@ -64,20 +64,8 @@ class FlatMap
         }
 
         this._idToAnnotation = new Map();
-        this._metadata = mapDescription.metadata;
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
-            const ann = {};
-            if ('error' in metadata && !('error' in ann)) {
-                ann.error = metadata.error;
-            }
-            ann.id = featureId;
-            ann.label = metadata.label;
-            ann.layer = metadata.layer;
-            ann.models = metadata.models;
-            ann.queryable = 'geometry' in metadata
-                          && metadata.geometry.includes('Polygon');
-            ann.text = metadata.annotation;
-            this.addAnnotation_(featureId, ann);
+            this.addAnnotation_(featureId, metadata);
             if (this.options.searchable) {
                 this._searchIndex.indexMetadata(featureId, metadata);
             }
@@ -296,6 +284,12 @@ class FlatMap
         return this._idToAnnotation;
     }
 
+    annotation(featureId)
+    //===================
+    {
+        return this._idToAnnotation.get(featureId);
+    }
+
     addAnnotation_(featureId, ann)
     //============================
     {
@@ -366,19 +360,6 @@ class FlatMap
             label: properties.label
         });
     }
-
-    getAnnotation(featureId)
-    //======================
-    {
-        return this._idToAnnotation.get(featureId);
-    }
-
-    annotationUrl(ann)
-    //================
-    {
-        return `${this._source}/${ann.layer}/${ann.id}`;
-    }
-
 
     resize()
     //======
