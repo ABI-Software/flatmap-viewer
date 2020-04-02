@@ -139,6 +139,12 @@ class FlatMap
 
         this._map = new mapboxgl.Map(mapboxOptions);
 
+        // Show tile boundaries if debugging
+
+        if (mapDescription.options.debug === true) {
+            this._map.showTileBoundaries = true;
+        }
+
         // Don't wrap around at +/-180 degrees
 
         this._map.setRenderWorldCopies(false);
