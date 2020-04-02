@@ -589,6 +589,12 @@ export class MapManager
                 }
                 const mapStyle = await styleResponse.json();
 
+                // Make sure the style has glyphs defined
+
+                if (!('glyphs' in mapStyle)) {
+                    mapStyle.glyphs = 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf';
+                }
+
                 // Get the map's metadata
 
                 const metadataResponse = await fetch(mapEndpoint(`flatmap/${map.id}/metadata`), {
