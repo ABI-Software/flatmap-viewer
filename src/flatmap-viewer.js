@@ -38,6 +38,7 @@ import '../static/flatmap-viewer.css';
 import {mapEndpoint} from './endpoints.js';
 import {UserInteractions} from './interactions.js';
 
+import * as images from './images.js';
 import * as utils from './utils.js';
 
 //==============================================================================
@@ -91,8 +92,22 @@ class FlatMap
         }
 
         // Save the map description as our options
+        // Ensure rounded background image (for feature labels) is loaded
 
         this._options = mapDescription.options;
+        if (!('images' in mapDescription.options)) {
+            mapDescription.options.images = [];
+        }
+
+        mapDescription.options.images.push({
+            id: 'rounded-background',
+            url: images.ROUNDED_RECT,
+            options: {
+                content: [3, 3, 13, 13],
+                stretchX: [[7, 9]],
+                stretchY: [[7, 9]]
+            }
+        });
 
         // Set options for the Mapbox map
 
@@ -141,9 +156,15 @@ class FlatMap
         this._map.on('load', this.finalise_.bind(this));
     }
 
-    finalise_()
-    //=========
+    async finalise_()
+    //===============
     {
+        // Load any images required by the map
+
+        for (const image of this._options.images) {
+            await this.addImage(image.id, image.url, '', image.options);
+        }
+
         // Layers have now loaded so finish setting up
 
         this._userInteractions = new UserInteractions(this, ui => {
@@ -157,6 +178,41 @@ class FlatMap
                 this._resolve(this);
             }
         });
+    }
+
+    /**
+     * Load images and patterns/textures referenced in style rules.
+     */
+    loadImage_(url)
+    //=============
+    {
+        return new Promise((resolve, reject) => {
+            this._map.loadImage(url, (error, image) => {
+                if (error) reject(error);
+                else resolve(image);
+            });
+        });
+    }
+
+    loadEncodedImage_(encodedImageUrl)
+    //================================
+    {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.src = encodedImageUrl;
+            image.onload = (e) => resolve(e.target);
+        });
+    }
+
+    async addImage(id, path, baseUrl, options={})
+    //===========================================
+    {
+        if (!this._map.hasImage(id)) {
+            const image = await (path.startsWith('data:image') ? this.loadEncodedImage_(path)
+                                                               : this.loadImage_(path.startsWith('/') ? this.addUrlBase_(path)
+                                                                                                      : new URL(path, baseUrl)));
+            this._map.addImage(id, image, options);
+        }
     }
 
     addUrlBase_(url)
