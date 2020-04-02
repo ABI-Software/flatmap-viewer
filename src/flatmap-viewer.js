@@ -36,7 +36,6 @@ import '../static/flatmap-viewer.css';
 //==============================================================================
 
 import {mapEndpoint} from './endpoints.js';
-import {parser} from './annotation.js';
 import {UserInteractions} from './interactions.js';
 
 import * as utils from './utils.js';
@@ -62,14 +61,17 @@ class FlatMap
         this._urlToAnnotation = new Map();
         this._metadata = mapDescription.metadata;
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
-            const ann = parser.parseAnnotation(metadata.annotation);
+            const ann = {};
             if ('error' in metadata && !('error' in ann)) {
                 ann.error = metadata.error;
             }
+            ann.id = featureId;
             ann.label = metadata.label;
             ann.layer = metadata.layer;
+            ann.models = metadata.models;
             ann.queryable = 'geometry' in metadata
                           && metadata.geometry.includes('Polygon');
+            ann.text = metadata.annotation;
             this.addAnnotation_(featureId, ann);
         }
 
@@ -218,12 +220,6 @@ class FlatMap
         return this._userInteractions.activeLayerNames;
     }
 
-    get annotatable()
-    //===============
-    {
-        return this._options.annotatable === true;
-    }
-
     get annotations()
     //===============
     {
@@ -289,95 +285,6 @@ class FlatMap
         return `${this._source}/${ann.layer}/${ann.id}`;
     }
 
-    addAnnotation_(featureId, ann)
-    //============================
-    {
-        const url = this.annotationUrl(ann);
-        ann.url = url;
-        ann.featureId = featureId;
-        this._idToAnnotation.set(featureId, ann);
-        this._urlToAnnotation.set(url, ann);
-    }
-
-    delAnnotation_(featureId, ann)
-    //============================
-    {
-        const url = this.annotationUrl(ann);
-        this._idToAnnotation.delete(featureId);
-        this._urlToAnnotation.delete(url);
-    }
-
-    uniqueAnnotation(ann)
-    //===================
-    {
-        const url = this.annotationUrl(ann);
-        const storedAnn = this._urlToAnnotation.get(url);
-        return (storedAnn === undefined || storedAnn.id === ann.id);
-    }
-
-    async setAnnotation(featureId, ann)
-    //=================================
-    {
-        let updateAnnotations = true;
-        const mapFeature = utils.mapFeature(ann.layer, featureId);
-        if (featureId in this._metadata) {
-            if (ann.text === '') {
-                delete this._metadata[featureId];
-                this.delAnnotation_(featureId, ann);
-                this._map.removeFeatureState(mapFeature);
-            } else if (ann.text !== this._metadata[featureId].annotation) {
-                if (ann.layer !== this._metadata[featureId].layer) {
-                    console.log(`Annotation layer mismatch: ${ann} and ${this._metadata[featureId]}`);
-                }
-                const oldAnn = this.getAnnotation(featureId);
-                if (oldAnn
-                 && oldAnn.id !== ann.id
-                 && oldAnn.error !== 'duplicate-id') {
-                    const url = this.annotationUrl(oldAnn);
-                    this._urlToAnnotation.delete(url);
-                }
-                this.addAnnotation_(featureId, ann);
-                this._metadata[featureId].annotation = ann.text;
-            } else {
-                updateAnnotations = false;
-            }
-        } else {
-            if (ann.text !== '') {
-                this._metadata[featureId] = {
-                    annotation: ann.text,
-                    geometry: ann.queryable ? 'Polygon' : 'LineString',
-                    layer: ann.layer
-                }
-                this.addAnnotation_(featureId, ann);
-                this._map.setFeatureState(mapFeature, { 'annotated': true });
-            } else {
-                updateAnnotations = false;
-            }
-        }
-
-        if ('error' in ann) {
-            this._metadata[featureId].error = ann.error;
-            this._map.setFeatureState(mapFeature, { 'annotation-error': true });
-        } else {
-            if (featureId in this._metadata) {
-                delete this._metadata[featureId].error;
-            }
-            this._map.removeFeatureState(mapFeature, 'annotation-error');
-        }
-
-        if (updateAnnotations) {
-            const postAnnotations = await fetch(mapEndpoint(`flatmap/${this.id}/metadata`), {
-                headers: { "Content-Type": "application/json; charset=utf-8" },
-                method: 'POST',
-                body: JSON.stringify(this._metadata)
-            });
-            if (!postAnnotations.ok) {
-                const errorMsg = `Unable to update metadata for '${this.id}' map`;
-                console.log(errorMsg);
-                alert(errorMsg);
-            }
-        }
-    }
 
     resize()
     //======
@@ -513,9 +420,6 @@ export class MapManager
     *                                 loaded.
     * @arg container {string} The id of the HTML container in which to display the map.
     * @arg options {Object} Configurable options for the map.
-    * @arg options.annotatable {boolean} Allow features on a map to be annotated (this
-    *                                    requires the map server to run in ``annotate``
-    *                                    mode and is only for authoring).
     * @arg options.debug {boolean} Enable debugging mode (currently only shows the map's
     *                              position in the web page's URL).
     * @example

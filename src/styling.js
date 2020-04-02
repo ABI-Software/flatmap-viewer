@@ -33,7 +33,7 @@ export const PAINT_STYLES = {
 
 //==============================================================================
 
-export function borderColour(layerActive=false, annotating=false)
+export function borderColour(layerActive=false)
 {
     return [
         'case',
@@ -43,10 +43,10 @@ export function borderColour(layerActive=false, annotating=false)
     ];
 }
 
-export function borderOpacity(layerActive=false, annotating=false)
+export function borderOpacity(layerActive=false)
 {
     if (layerActive) {
-        return annotating ? 1 : [
+        return [
             'case',
             ['boolean', ['feature-state', 'selected'], false], 1,
             ['boolean', ['feature-state', 'highlighted'], false], 1,
@@ -60,7 +60,7 @@ export function borderOpacity(layerActive=false, annotating=false)
 
 //==============================================================================
 
-export function lineColour(layerActive=false, annotating=false)
+export function lineColour(layerActive=false)
 {
     return [
         'case',
@@ -70,10 +70,10 @@ export function lineColour(layerActive=false, annotating=false)
     ];
 }
 
-export function lineOpacity(layerActive=false, annotating=false)
+export function lineOpacity(layerActive=false)
 {
     if (layerActive) {
-        return annotating ? 1 : [
+        return [
             'case',
             ['boolean', ['feature-state', 'annotation-error'], false], 0.8,
             ['boolean', ['feature-state', 'highlighted'], false], 0.4,
@@ -90,7 +90,7 @@ export function lineOpacity(layerActive=false, annotating=false)
 
 class LineWidth
 {
-    static scale(width, annotating=false)   // width at zoom 3
+    static scale(width)   // width at zoom 3
     {
         return [
             "let", "linewidth", [
@@ -99,7 +99,7 @@ class LineWidth
                 ['boolean', ['feature-state', 'highlighted'], false], 2*width,
                 ['boolean', ['feature-state', 'selected'], false], 3*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
-                annotating ? width : 0
+                0
             ],
             ["interpolate",
             ["exponential", 1.4],
@@ -113,10 +113,10 @@ class LineWidth
 
 //==============================================================================
 
-function lineWidth_(width, layerActive=false, annotating=false)
+function lineWidth_(width, layerActive=false)
 {
     if (layerActive) {
-        return LineWidth.scale(width, annotating)
+        return LineWidth.scale(width);
     }
     else {
         return 0;
@@ -175,9 +175,9 @@ export class FeatureBorderLayer
         };
     }
 
-    static lineWidth(layerActive=false, annotating=false)
+    static lineWidth(layerActive=false)
     {
-        return lineWidth_(PAINT_STYLES['border-stroke-width'], layerActive, annotating);
+        return lineWidth_(PAINT_STYLES['border-stroke-width'], layerActive);
     }
 }
 
@@ -205,9 +205,9 @@ export class FeatureLineLayer
         };
     }
 
-    static lineWidth(layerActive=false, annotating=false)
+    static lineWidth(layerActive=false)
     {
-        return lineWidth_(PAINT_STYLES['line-stroke-width'], layerActive, annotating);
+        return lineWidth_(PAINT_STYLES['line-stroke-width'], layerActive);
     }
 }
 

@@ -66,37 +66,37 @@ class MapFeatureLayer
         return this._id;
     }
 
-    setBorderProperties_(layerActive=false, annotating=false)
-    //=======================================================
+    setBorderProperties_(layerActive=false)
+    //=====================================
     {
         this._map.setPaintProperty(this._borderLayerId, 'line-color',
-                                   style.borderColour(layerActive, annotating));
+                                   style.borderColour(layerActive));
         this._map.setPaintProperty(this._borderLayerId, 'line-opacity',
-                                   style.borderOpacity(layerActive, annotating));
+                                   style.borderOpacity(layerActive));
         this._map.setPaintProperty(this._borderLayerId, 'line-width',
-                                   style.FeatureBorderLayer.lineWidth(layerActive, annotating));
+                                   style.FeatureBorderLayer.lineWidth(layerActive));
     }
 
-    setLineProperties_(layerActive=false, annotating=false)
-    //=====================================================
+    setLineProperties_(layerActive=false)
+    //===================================
     {
         this._map.setPaintProperty(this._lineLayerId, 'line-color',
-                                   style.lineColour(layerActive, annotating));
+                                   style.lineColour(layerActive));
         this._map.setPaintProperty(this._lineLayerId, 'line-opacity',
-                                   style.lineOpacity(layerActive, annotating));
+                                   style.lineOpacity(layerActive));
         this._map.setPaintProperty(this._lineLayerId, 'line-width',
-                                   style.FeatureLineLayer.lineWidth(layerActive, annotating));
+                                   style.FeatureLineLayer.lineWidth(layerActive));
     }
 
-    activate(annotating=false)
-    //========================
+    activate()
+    //========
     {
         for (const l of this._backgroundLayers) {
             l.activate();
         }
         this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
-        this.setBorderProperties_(true, annotating);
-        this.setLineProperties_(true, annotating);
+        this.setBorderProperties_(true);
+        this.setLineProperties_(true);
     }
 
     deactivate()
@@ -238,12 +238,12 @@ export class LayerManager
         return layer['queryable-nodes'];
     }
 
-    activate(layerId, annotating=false)
-    //=================================
+    activate(layerId)
+    //===============
     {
         const layer = this._layers.get(layerId);
         if (layer !== undefined) {
-            layer.activate(annotating);
+            layer.activate();
             if (this._activeLayers.indexOf(layer) < 0) {
                 this._activeLayers.push(layer);
                 this._activeLayerNames.push(layer.id);

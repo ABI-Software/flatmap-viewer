@@ -28,7 +28,6 @@ import * as turf from '@turf/helpers';
 
 //==============================================================================
 
-import {AnnotationControl, Annotator} from './annotation.js';
 import {ContextMenu} from './contextmenu.js';
 import {LayerManager} from './layers.js';
 import {LayerSwitcher} from './layerswitcher.js'
@@ -74,10 +73,7 @@ export class UserInteractions
 
         flatmap.fitBounds();
 
-        // Add a control to enable annotation if option set
 
-        if (flatmap.annotatable) {
-            this._annotator = new Annotator(flatmap, this);
         }
 
         // To pass messages with other applications
@@ -222,12 +218,6 @@ export class UserInteractions
         }
     }
 
-    get annotating()
-    //==============
-    {
-        return this._flatmap.annotatable && this._annotator.enabled;
-    }
-
     get activeLayerNames()
     //====================
     {
@@ -247,7 +237,7 @@ export class UserInteractions
     activateLayer(layerId)
     //====================
     {
-        this._layerManager.activate(layerId, this.annotating);
+        this._layerManager.activate(layerId);
     }
 
     activateLayers(layerIds)
@@ -366,7 +356,7 @@ export class UserInteractions
         let smallestFeature = null;
         for (const feature of features) {
             if (feature.geometry.type.includes('Polygon')
-             && (this.annotating || this._map.getFeatureState(feature)['annotated'])) {
+             && this._map.getFeatureState(feature)['annotated']) {
                 const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
                 const area = turfArea(polygon);
                 if (smallestFeature === null || smallestArea > area) {
@@ -452,10 +442,6 @@ export class UserInteractions
 
         const features = this.activeFeaturesAtEvent_(event);
         let feature = this.smallestAnnotatedPolygonFeature_(features);
-        if (feature === null && this.annotating && features.length) {
-            feature = features[0];
-        }
-
         if (feature !== null) {
             const id = feature.properties.id;
             const ann = this._flatmap.getAnnotation(id);
@@ -483,16 +469,6 @@ export class UserInteractions
                     });
                 }
             }
-            if (this.annotating) {
-                if (items.length) {
-                    items.push('-');
-                }
-                items.push({
-                    id: id,
-                    prompt: 'Annotate',
-                    action: this.annotate_.bind(this, feature.geometry.type.includes('Polygon'))
-                });
-            }
             if (items.length) {
                 items.push('-');
             }
@@ -513,15 +489,6 @@ export class UserInteractions
     //=======================
     {
         this._modal = false;
-    }
-
-    annotate_(queryableFeature, event)
-    //================================
-    {
-        this._contextMenu.hide();
-        this._annotator.editAnnotation(event.target.getAttribute('id'),
-                                       queryableFeature,
-                                       () => { this._modal = false; });
     }
 
     zoomTo_(feature)

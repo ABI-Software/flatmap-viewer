@@ -27,42 +27,12 @@ li.flatmap-contextmenu-item:hover {
     background: #58E;
 }
 
-/* Control annotating mode */
 
-.flatmap-annotation-control {
-    width: 28px;
-    text-align: center;
-    padding-right: 1px;
-    cursor: pointer;
-    border: 1px solid #CCC;
-}
 
-/* Annotation dialog */
 
-/* Annotator */
-
-form.flatmap-annotation {
-    padding: 4px;
-}
-form.flatmap-annotation div {
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-.flatmap-annotation-input {
-    margin-left: 6px;
-    float: right;
-    width: 300px;
-}
-.flatmap-annotation label {
     display: inline-block;
 }
-.flatmap-annotation input[type="submit"] {
-    background-color: #DDD;
-    text-align: centre;
-    margin-left: 10px;
 }
-.flatmap-annotation .flatmap-buttons {
-    float: right;
 }
 
 /* Tooltips */
