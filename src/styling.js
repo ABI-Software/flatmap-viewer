@@ -217,6 +217,81 @@ export class FeatureLineLayer
 
 //==============================================================================
 
+export class FeatureLargeSymbolLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-large-symbol`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
+            'type': 'symbol',
+            'minzoom': 3,
+            'maxzoom': 7,
+            'filter': [
+                'all',
+                ['<', 'scale', 4],
+                ['has', 'label']
+            ],
+            'layout': {
+                'visibility': 'visible',
+                'icon-allow-overlap': true,
+                'icon-image': 'rounded-background',
+                'text-allow-overlap': true,
+                'text-field': '{label}',
+                'text-font': ['Open Sans Regular'],
+                'text-line-height': 1,
+                'text-max-width': 5,
+                'text-size': 16,
+                'icon-text-fit': 'both'
+            },
+            'paint': {
+                'text-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'highlighted'], false], '#f00',
+                    '#000'
+                ]
+            }
+        };
+    }
+}
+
+//==============================================================================
+
+export class FeatureSmallSymbolLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-small-symbol`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
+            'type': 'symbol',
+            'minzoom': 6,
+            'filter': [
+                'all',
+                ['has', 'label'],
+                ['>', 'scale', 5]
+            ],
+            'layout': {
+                'visibility': 'visible',
+                'icon-allow-overlap': true,
+                'icon-image': 'rounded-background',
+                'text-allow-overlap': true,
+                'text-field': '{label}',
+                'text-font': ['Open Sans Regular'],
+                'text-line-height': 1,
+                'text-max-width': 5,
+                'text-size': {'stops': [[5, 8], [7, 12], [9, 20]]},
+                'icon-text-fit': 'both'
+            },
+            'paint': {}
+        };
+    }
+}
+
+//==============================================================================
+
 export class ImageLayer
 {
     static style(sourceLayer, opacity=0)

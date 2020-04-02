@@ -41,6 +41,9 @@ class MapFeatureLayer
         this._borderLayerId = this.addStyleLayer_(style.FeatureBorderLayer.style);
 
         this._lineLayerId = this.addStyleLayer_(style.FeatureLineLayer.style);
+
+        this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);
+        this.addStyleLayer_(style.FeatureSmallSymbolLayer.style);
     }
 
     get id()
