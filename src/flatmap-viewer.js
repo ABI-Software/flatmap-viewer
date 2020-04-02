@@ -151,9 +151,11 @@ class FlatMap
 
         // Add navigation controls and disable rotation
 
-        this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'bottom-right');
-        this._map.dragRotate.disable();
-        this._map.touchZoomRotate.disableRotation();
+        if (mapDescription.options.navigationControl === true) {
+            this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'bottom-right');
+            this._map.dragRotate.disable();
+            this._map.touchZoomRotate.disableRotation();
+        }
 
         // Finish initialisation when all sources have loaded
 
@@ -523,6 +525,7 @@ export class MapManager
     * @arg options.featureInfo {boolean} Show information about features as a tooltip. The tooltip is active
     *                                    on highlighted features and, for non-highlighted features, when the
     *                                    ``info`` control is enabled. More details are shown in debug mode.
+    * @arg options.navigationControl {boolean} Add navigation controls (zoom buttons) to the map.
     * @arg options.searchable {boolean} Add a control to search for features on a map.
     * @example
     * const humanMap1 = mapManager.loadMap('humanV1', 'div-1');
