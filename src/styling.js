@@ -27,11 +27,11 @@ const FEATURE_SOURCE_ID = 'features';
 //==============================================================================
 
 export const PAINT_STYLES = {
-    'background-opacity': 0.3,
-    'layer-background-opacity': 0.5,
+    'background-opacity': 0.8,
+    'layer-background-opacity': 1.0,
     'fill-color': '#fff',
     'border-stroke-width': 0.5,
-    'line-stroke-opacity': 0,
+    'line-stroke-opacity': 0.7,
     'line-stroke-width': 0.5
 };
 
@@ -148,7 +148,7 @@ export class FeatureFillLayer
                 'fill-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'highlighted'], false], 0.5,
-                    0
+                    0.05
                 ]
             }
         };
@@ -173,8 +173,12 @@ export class FeatureBorderLayer
             ],
             'paint': {
                 'line-color': borderColour(),
-                'line-opacity': borderOpacity(),
-                'line-width': lineWidth_(PAINT_STYLES['border-stroke-width'])
+                'line-opacity': [   // borderOpacity(),
+                    'case',
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    0.1
+                ],
+                'line-width': 2 // lineWidth_(PAINT_STYLES['border-stroke-width'])
             }
         };
     }
@@ -203,8 +207,8 @@ export class FeatureLineLayer
             ],
             'paint': {
                 'line-color': lineColour(),
-                'line-opacity': lineOpacity(),
-                'line-width': lineWidth_(PAINT_STYLES['line-stroke-width'])
+                'line-opacity': 0.3, // lineOpacity(),
+                'line-width': 1.5 // lineWidth_(PAINT_STYLES['line-stroke-width'])
             }
         };
     }
@@ -294,7 +298,7 @@ export class FeatureSmallSymbolLayer
 
 export class ImageLayer
 {
-    static style(sourceLayer, opacity=0)
+    static style(sourceLayer, opacity=0.8)
     {
         return {
             'id': `${sourceLayer}-image`,
