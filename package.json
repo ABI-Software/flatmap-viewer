@@ -27,7 +27,6 @@
     "mapbox-gl": "^1.5.0",
     "n3": "^1.3.4",
     "minisearch": "^2.2.1",
-    "pegjs": "^0.10.0"
   },
   "devDependencies": {
     "@babel/core": "^7.5.5",
