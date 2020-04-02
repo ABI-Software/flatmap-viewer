@@ -22,7 +22,7 @@ limitations under the License.
 
 //==============================================================================
 
-const FEATURE_SOURCE_ID = 'features';
+import { FEATURE_SOURCE_ID } from './utils.js';
 
 //==============================================================================
 
