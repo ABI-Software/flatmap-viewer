@@ -22,6 +22,10 @@ limitations under the License.
 
 //==============================================================================
 
+const FEATURE_SOURCE_ID = 'features';
+
+//==============================================================================
+
 export const PAINT_STYLES = {
     'background-opacity': 0.3,
     'layer-background-opacity': 0.5,
@@ -127,12 +131,12 @@ function lineWidth_(width, layerActive=false)
 
 export class FeatureFillLayer
 {
-    static style(id, source_id, layer_id)
+    static style(sourceLayer)
     {
         return {
-            'id': id,
-            'source': source_id,
-            'source-layer': layer_id,
+            'id': `${sourceLayer}-fill`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
             'type': 'fill',
             'filter': [
                 '==',
@@ -155,12 +159,12 @@ export class FeatureFillLayer
 
 export class FeatureBorderLayer
 {
-    static style(id, source_id, layer_id)
+    static style(sourceLayer)
     {
         return {
-            'id': id,
-            'source': source_id,
-            'source-layer': layer_id,
+            'id': `${sourceLayer}-border`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
                 '==',
@@ -185,12 +189,12 @@ export class FeatureBorderLayer
 
 export class FeatureLineLayer
 {
-    static style(id, source_id, layer_id)
+    static style(sourceLayer)
     {
         return {
-            'id': id,
-            'source': source_id,
-            'source-layer': layer_id,
+            'id': `${sourceLayer}-line`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
                 '==',
@@ -215,11 +219,11 @@ export class FeatureLineLayer
 
 export class ImageLayer
 {
-    static style(id, source_id, opacity=0)
+    static style(sourceLayer, opacity=0)
     {
         return {
-            'id': id,
-            'source': source_id,
+            'id': `${sourceLayer}-image`,
+            'source': `${sourceLayer}-image`,
             'type': 'raster',
             'paint': {
                 'raster-opacity': opacity
