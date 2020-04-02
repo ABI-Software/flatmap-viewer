@@ -30,8 +30,6 @@ import * as turf from '@turf/helpers';
 
 import {ContextMenu} from './contextmenu.js';
 import {LayerManager} from './layers.js';
-import {LayerSwitcher} from './layerswitcher.js'
-import {MessagePasser} from './messages.js';
 import {QueryInterface} from './query.js';
 import {ToolTip} from './tooltip.js';
 
@@ -112,19 +110,6 @@ export class UserInteractions
             }
         }
 
-        // Add a layer switcher if we have more than one selectable layer
-
-        this._layerSwitcher = null;
-        if (this._layerManager.selectableLayerCount > 1) {
-            this._layerSwitcher = new LayerSwitcher(flatmap, 'Select system',
-                                                    this.layerSwitcherActiveCallback_.bind(this));
-            this._map.addControl(this._layerSwitcher);
-        } else if (this._layerManager.selectableLayerCount === 1) {
-            const selectableLayerId = this._layerManager.lastSelectableLayerId;
-            this.activateLayer(selectableLayerId);
-            this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
-        }
-
         // Flag features that have annotations
         // Also flag those features that are models of something
 
@@ -162,8 +147,7 @@ export class UserInteractions
 
         this._map.on('click', this.clickEvent_.bind(this));
 
-        if (this._layerSwitcher === null
-         && this._userInterfaceLoadedCallback !== null) {
+        if (this._userInterfaceLoadedCallback !== null) {
             this._userInterfaceLoadedCallback(this);
             this._userInterfaceLoadedCallback = null;
         }
@@ -194,17 +178,6 @@ export class UserInteractions
     //=============
     {
         // Restore the map to a saved state
-
-        if ('layers' in state) {
-            // We tell the layer manager the required state of a layer
-            // and its controller will broadcast activation/deactivation messages
-            for (const layerId of this.activeLayerIds) {
-                this._layerSwitcher.setState(layerId, false);
-            }
-            for (name of state.layers) {
-                this._layerSwitcher.setState(this._flatmap.mapLayerId(name), true);
-            }
-        }
         const options = {};
         if ('center' in state) {
             options['center'] = state.center;
