@@ -32,12 +32,15 @@ import {ContextMenu} from './contextmenu.js';
 import {LayerManager} from './layers.js';
 import {QueryInterface} from './query.js';
 import {ToolTip} from './tooltip.js';
+import {SearchControl} from './search.js';
 
 import * as utils from './utils.js';
 
 //==============================================================================
 
 function tooltip(valuesList)
+function bounds(feature)
+//======================
 {
     const tooltipElement = document.createElement('div');
     tooltipElement.className = 'flatmap-feature-tooltip';
@@ -46,8 +49,32 @@ function tooltip(valuesList)
         valueElement.className = 'flatmap-feature-property';
         valueElement.textContent = value;
         tooltipElement.appendChild(valueElement);
+    // Find the feature's bounding box
+
+    let bounds = ('bounds' in feature.properties) ? feature.properties.bounds
+                                                  : feature.properties.bbox;
+    if (bounds) {
+        // Bounding box is defined in GeoJSON
+
+        return JSON.parse(bounds);
+    } else {
+        // Get the bounding box of the current polygon. This won't neccessary
+        // be the full feature because of tiling
+
+        const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
+        return turfBBox(polygon);
     }
     return tooltipElement;
+}
+
+//==============================================================================
+
+function expandBounds(bbox1, bbox2)
+//=================================
+{
+    return [Math.min(bbox1[0], bbox2[0]), Math.min(bbox1[1], bbox2[1]),
+            Math.max(bbox1[2], bbox2[2]), Math.max(bbox1[3], bbox2[3])
+           ];
 }
 
 //==============================================================================
@@ -71,7 +98,10 @@ export class UserInteractions
 
         flatmap.fitBounds();
 
+        // Add a control to search annotations if option set
 
+        if (flatmap.options.searchable) {
+            this._map.addControl(new SearchControl(flatmap.searchIndex));
         }
 
 
@@ -435,22 +465,50 @@ export class UserInteractions
     //==============
     {
         this._contextMenu.hide();
-        let bbox = feature.properties.bbox;
-        if (bbox) {
-            // Bounding box is defined in GeoJSON
 
-            bbox = bbox.split(',');
-        } else {
-            // Get the bounding box of the current polygon. This won't neccessary
-            // be the full feature because of tiling
+        // Zoom map to feature
 
-            const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
-            bbox = turfBBox(polygon);
-        }
-        this._map.fitBounds(bbox, {
-            padding: 30,
+        this._map.fitBounds(bounds(feature), {
+            padding: 100,
             animate: false
         });
+    }
+
+    zoomToFeatures(featureIds)
+    //========================
+    {
+        this.unhighlightFeatures_();
+
+        if (featureIds.length) {
+
+            const featureIdFilter = ['in', 'id'];
+            featureIdFilter.splice(2, 0, ...featureIds);
+            const features = this._map.queryRenderedFeatures(null, {
+                filter: featureIdFilter
+            });
+            if (features.length) {
+                let bbox = null;
+                for (const feature of features) {
+                    this._map.setFeatureState(feature, { 'highlighted': true });
+                    this._highlightedFeatures.push(feature);
+                    bbox = (bbox === null) ? bounds(feature)
+                                           : expandBounds(bbox, bounds(feature));
+                }
+
+                // Zoom map to features
+
+                this._map.fitBounds(bbox, {
+                    padding: 100,
+                    animate: false
+                });
+            }
+        }
+    }
+
+    clearResults()
+    //============
+    {
+        this.unhighlightFeatures_();
     }
 
     queryData_(modelList)

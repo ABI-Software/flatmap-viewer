@@ -34,6 +34,7 @@ import '../static/flatmap-viewer.css';
 //==============================================================================
 
 import {mapEndpoint} from './endpoints.js';
+import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
 
 import * as images from './images.js';
@@ -58,6 +59,10 @@ class FlatMap
         this._options = mapDescription.options;
         this._resolve = resolve;
 
+        if (this.options.searchable) {
+            this._searchIndex = new SearchIndex(this);
+        }
+
         this._idToAnnotation = new Map();
         this._metadata = mapDescription.metadata;
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
@@ -73,6 +78,9 @@ class FlatMap
                           && metadata.geometry.includes('Polygon');
             ann.text = metadata.annotation;
             this.addAnnotation_(featureId, ann);
+            if (this.options.searchable) {
+                this._searchIndex.indexMetadata(featureId, metadata);
+            }
         }
 
         // Set base of source URLs in map's style
@@ -305,6 +313,12 @@ class FlatMap
         return this._options;
     }
 
+    get searchIndex()
+    //===============
+    {
+        return this._options.searchable ? this._searchIndex : null;
+    }
+
     get selectedFeatureLayerName()
     //============================
     {
@@ -387,6 +401,22 @@ class FlatMap
     {
         if (this._userInteractions !== null) {
             this._userInteractions.setState(state);
+        }
+    }
+
+    clearResults()
+    //============
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.clearResults();
+        }
+    }
+
+    zoomToFeatures(featureIds)
+    //========================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.zoomToFeatures(featureIds);
         }
     }
 }
@@ -490,6 +520,7 @@ export class MapManager
     * @arg options {Object} Configurable options for the map.
     * @arg options.debug {boolean} Enable debugging mode (currently only shows the map's
     *                              position in the web page's URL).
+    * @arg options.searchable {boolean} Add a control to search for features on a map.
     * @example
     * const humanMap1 = mapManager.loadMap('humanV1', 'div-1');
     *
