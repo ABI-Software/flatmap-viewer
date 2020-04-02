@@ -55,6 +55,7 @@ class FlatMap
         this._describes = mapDescription.describes;
         this._mapNumber = mapDescription.number;
         this._callback = mapDescription.callback;
+        this._options = mapDescription.options;
         this._resolve = resolve;
 
         this._idToAnnotation = new Map();
@@ -89,10 +90,8 @@ class FlatMap
             }
         }
 
-        // Save the map description as our options
         // Ensure rounded background image (for feature labels) is loaded
 
-        this._options = mapDescription.options;
         if (!('images' in mapDescription.options)) {
             mapDescription.options.images = [];
         }
@@ -165,15 +164,16 @@ class FlatMap
 
         // Layers have now loaded so finish setting up
 
+        const flatmap = this;
         this._userInteractions = new UserInteractions(this, ui => {
-            if ('state' in this._options) {
+            if ('state' in flatmap._options) {
                 // This is to ensure the layer switcher has been fully initialised...
                 setTimeout(() => {
-                    ui.setState(this._options.state);
-                    this._resolve(this);
+                    ui.setState(flatmap._options.state);
+                    flatmap._resolve(flatmap);
                 }, 200);
             } else {
-                this._resolve(this);
+                flatmap._resolve(flatmap);
             }
         });
     }
@@ -297,6 +297,12 @@ class FlatMap
     //=======
     {
         return this._map;
+    }
+
+    get options()
+    //===========
+    {
+        return this._options;
     }
 
     get selectedFeatureLayerName()
