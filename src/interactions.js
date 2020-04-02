@@ -473,14 +473,12 @@ export class UserInteractions
     clickEvent_(event)
     //================
     {
-        this._layerSwitcher.close();
-        const feature = this.smallestAnnotatedPolygonAtEvent_(event);
-        if (feature !== null) {
-            const featureId = feature.properties.id;
-            this.selectFeature_(feature);
-            this.queryData_(this._flatmap.modelsForFeature(featureId));
+        const symbolFeatures = this._map.queryRenderedFeatures(event.point)
+                                        .filter(f => (f.layer.type === 'symbol'));
+        for (const feature of symbolFeatures) {
+            this._flatmap.featureEvent('click', feature);
+            const properties = feature.properties;
         }
-        this.unhighlightFeatures_();
     }
 }
 

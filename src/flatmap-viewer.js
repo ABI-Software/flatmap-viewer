@@ -356,8 +356,15 @@ class FlatMap
         return ann ? ann.models : [];
     }
 
-
+    featureEvent(eventType, feature)
+    //==============================
     {
+        const properties = feature.properties;
+        this.callback(eventType, {
+            id: properties.id,
+            models: properties.models,
+            label: properties.label
+        });
     }
 
     getAnnotation(featureId)
