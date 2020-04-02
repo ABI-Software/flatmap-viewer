@@ -57,7 +57,6 @@ class FlatMap
         this._resolve = resolve;
 
         this._idToAnnotation = new Map();
-        this._urlToAnnotation = new Map();
         this._metadata = mapDescription.metadata;
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
             const ann = {};
@@ -320,18 +319,8 @@ class FlatMap
         return ann ? ann.models : [];
     }
 
-    featureIdForUrl(url)
-    //==================
-    {
-        const ann = this._urlToAnnotation.get(url);
-        return (ann) ? ann.featureId : null;
-    }
 
-    layerIdForUrl(url)
-    //=================
     {
-        const ann = this._urlToAnnotation.get(url);
-        return (ann) ? ann.layer : null;
     }
 
     getAnnotation(featureId)
