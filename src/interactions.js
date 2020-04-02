@@ -31,7 +31,7 @@ import * as turf from '@turf/helpers';
 import {ContextMenu} from './contextmenu.js';
 import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
-import {QueryInterface} from './query.js';
+//import {QueryInterface} from './query.js';
 import {SearchControl} from './search.js';
 
 import * as utils from './utils.js';
@@ -77,7 +77,7 @@ export class UserInteractions
         this._flatmap = flatmap;
         this._map = flatmap.map;
         this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
-        this._queryInterface = new QueryInterface(flatmap.id);
+//        this._queryInterface = new QueryInterface(flatmap.id);
 
         this._selectedFeature = null;
         this._highlightedFeatures = [];
@@ -463,7 +463,7 @@ export class UserInteractions
             this.queryData_(this._flatmap.modelsForFeature(featureId));
         } else {
             const ann = this._flatmap.getAnnotation(featureId);
-            this._queryInterface.query(type, ann.url, ann.models);
+            //this._queryInterface.query(type, ann.url, ann.models);
             this._map.getCanvas().style.cursor = 'progress';
             this._inQuery = true;
         }
