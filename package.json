@@ -5,8 +5,8 @@
   "repository": "https://github.com/ABI-Software/flatmap-mvt-viewer.git",
   "main": "app.js",
   "files": [
-    "dist",
-    "src"
+    "src",
+    "static"
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
