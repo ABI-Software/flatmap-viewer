@@ -22,6 +22,8 @@ limitations under the License.
 
 //==============================================================================
 
+import mapboxgl from 'mapbox-gl';
+
 import {default as turfArea} from '@turf/area';
 import {default as turfBBox} from '@turf/bbox';
 import * as turf from '@turf/helpers';
@@ -81,6 +83,8 @@ export class UserInteractions
 
         this._selectedFeature = null;
         this._highlightedFeatures = [];
+        this._lastClickedLocation = null;
+        this._currentPopup = null;
 
         this._inQuery = false;
         this._modal = false;
@@ -288,6 +292,13 @@ export class UserInteractions
         return null;
     }
 
+    highlightFeature_(feature)
+    //========================
+    {
+        this._map.setFeatureState(feature, { 'highlighted': true });
+        this._highlightedFeatures.push(feature);
+    }
+
     unhighlightFeatures_(reset=true)
     //==============================
     {
@@ -416,10 +427,7 @@ export class UserInteractions
             for (const featureId of featureIds) {
                 const properties = this._flatmap.annotation(featureId);
                 if (properties) {
-                    const feature = utils.mapFeature(properties.layer, featureId);
-                    this._map.setFeatureState(feature, { 'highlighted': true });
-                    this._highlightedFeatures.push(feature);
-
+                    this.highlightFeature_(utils.mapFeature(properties.layer, featureId));
                     const bounds = properties.bounds;
                     bbox = (bbox === null) ? bounds
                                            : expandBounds(bbox, bounds);
@@ -468,14 +476,56 @@ export class UserInteractions
         this._modal = false;
     }
 
+    showPopup(featureId, content, options)
+    //====================================
+    {
+        const properties = this._flatmap.annotation(featureId);
+
+        if (properties) {  // The feature exists
+
+            // Remove any existing popup
+
+            if (this._currentPopup) {
+                this._currentPopup.remove();
+            }
+
+            // Highlight the feature
+
+            this.unhighlightFeatures_();
+            this.highlightFeature_(utils.mapFeature(properties.layer, featureId));
+
+            // Position popup at last clicked location if we have it,
+            // otherwise at the feature's centroid
+
+            const location = (this._lastClickedLocation === null) ? properties.centroid
+                                                                  : this._lastClickedLocation;
+
+            // Make sure the feature is on screen
+
+            if (!this._map.getBounds().contains(location)) {
+                this._map.panTo(location);
+            }
+
+            this._currentPopup = new mapboxgl.Popup(options).addTo(this._map);
+            this._currentPopup.setLngLat(location);
+            if (typeof content === 'object') {
+                this._currentPopup.setDOMContent(content);
+            } else {
+                this._currentPopup.setText(content);
+            }
+        }
+    }
+
     clickEvent_(event)
     //================
     {
         const symbolFeatures = this._map.queryRenderedFeatures(event.point)
                                         .filter(f => (f.layer.type === 'symbol'));
-        for (const feature of symbolFeatures) {
-            this._flatmap.featureEvent('click', feature);
-            const properties = feature.properties;
+        if (symbolFeatures.length) {
+            this._lastClickedLocation = event.lngLat;
+            for (const feature of symbolFeatures) {
+                this._flatmap.featureEvent('click', feature);
+            }
         }
     }
 }

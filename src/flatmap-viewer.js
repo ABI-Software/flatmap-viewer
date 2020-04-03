@@ -58,7 +58,6 @@ class FlatMap
         this._callback = mapDescription.callback;
         this._options = mapDescription.options;
         this._resolve = resolve;
-        this._currentPopup = null;
 
         if (this.options.searchable) {
             this._searchIndex = new SearchIndex(this);
@@ -412,29 +411,8 @@ class FlatMap
     showPopup(featureId, content, options)
     //====================================
     {
-        const properties = this.annotation(featureId);
-
-        if (properties) {  // The feature exists
-
-            // Remove any existing popup
-
-            if (this._currentPopup) {
-                this._currentPopup.remove();
-            }
-
-            // Highlight feature and make sure it is in viewport
-
-            this._userInteractions.zoomToFeatures([featureId], 200);
-
-            // Create a new popup positioned at the feature's centroid
-
-            this._currentPopup = new mapboxgl.Popup(options).addTo(this._map);
-            this._currentPopup.setLngLat(properties.centroid);
-            if (typeof content === 'object') {
-                this._currentPopup.setDOMContent(content);
-            } else {
-                this._currentPopup.setText(content);
-            }
+        if (this._userInteractions !== null) {
+            this._userInteractions.showPopup(featureId, content, options);
         }
     }
 
