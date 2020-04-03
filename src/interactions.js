@@ -406,8 +406,8 @@ export class UserInteractions
         });
     }
 
-    zoomToFeatures(featureIds)
-    //========================
+    zoomToFeatures(featureIds, padding=100)
+    //=====================================
     {
         this.unhighlightFeatures_();
 
@@ -429,7 +429,7 @@ export class UserInteractions
             // Zoom map to features
 
             this._map.fitBounds(bbox, {
-                padding: 100,
+                padding: padding,
                 animate: false
             });
         }
