@@ -597,7 +597,7 @@ export class MapManager
                 // Make sure the style has glyphs defined
 
                 if (!('glyphs' in mapStyle)) {
-                    mapStyle.glyphs = 'http://fonts.openmaptiles.org/{fontstack}/{range}.pbf';
+                    mapStyle.glyphs = 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf';
                 }
 
                 // Get the map's metadata
