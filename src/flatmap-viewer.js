@@ -143,12 +143,15 @@ class FlatMap
             this._map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
         }
 
-        // Add navigation controls and disable rotation
+        // Disable map rotation
+
+        this._map.dragRotate.disable();
+        this._map.touchZoomRotate.disableRotation();
+
+        // Add navigation controls if option set
 
         if (mapDescription.options.navigationControl === true) {
             this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'bottom-right');
-            this._map.dragRotate.disable();
-            this._map.touchZoomRotate.disableRotation();
         }
 
         // Finish initialisation when all sources have loaded
