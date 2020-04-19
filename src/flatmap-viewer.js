@@ -554,8 +554,12 @@ export class MapManager
 
                 const mapOptions = Object.assign({}, this._options, options);
 
+                // If bounds are not specified in options then set them
 
                 // Set layer data if the layer just has an id specified
+                if (!('bounds' in options) && ('bounds' in mapIndex)) {
+                    mapOptions['bounds'] = mapIndex['bounds'];
+                }
 
                 for (let n = 0; n < mapOptions.layers.length; ++n) {
                     const layer = mapOptions.layers[n];
