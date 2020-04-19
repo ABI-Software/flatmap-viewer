@@ -144,8 +144,12 @@ class FlatMap
 
         // Add navigation controls if option set
 
-        if (mapDescription.options.navigationControl === true) {
-            this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'bottom-right');
+        if (mapDescription.options.navigationControl) {
+            const value = mapDescription.options.navigationControl;
+            const position = ((typeof value === 'string')
+                           && (['top-left', 'top-right', 'bottom-right', 'bottom-left'].indexOf(value) >= 0))
+                           ? value : 'bottom-right';
+            this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), position);
         }
 
         // Finish initialisation when all sources have loaded
