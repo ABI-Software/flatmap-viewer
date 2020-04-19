@@ -104,6 +104,9 @@ class FlatMap
         if (mapDescription.options.debug === true) {
             mapboxOptions.hash = true;
         }
+        if ('center' in mapDescription.options) {
+            mapboxOptions.center = mapDescription.options['center'];
+        }
         if ('max-zoom' in mapDescription.options) {
             mapboxOptions.maxZoom = mapDescription.options['max-zoom'];
         }
