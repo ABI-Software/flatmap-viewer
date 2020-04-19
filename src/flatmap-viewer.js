@@ -56,6 +56,7 @@ class FlatMap
         this._describes = mapDescription.describes;
         this._mapNumber = mapDescription.number;
         this._callback = mapDescription.callback;
+        this._layers = mapDescription.layers;
         this._options = mapDescription.options;
         this._resolve = resolve;
 
@@ -301,7 +302,7 @@ class FlatMap
     get layers()
     //==========
     {
-        return this._options.layers;
+        return this._layers;
     }
 
     get map()
@@ -563,20 +564,28 @@ export class MapManager
 
                 // If bounds are not specified in options then set them
 
-                // Set layer data if the layer just has an id specified
                 if (!('bounds' in options) && ('bounds' in mapIndex)) {
                     mapOptions['bounds'] = mapIndex['bounds'];
                 }
 
-                for (let n = 0; n < mapOptions.layers.length; ++n) {
-                    const layer = mapOptions.layers[n];
-                    if (typeof layer === 'string') {
-                        mapOptions.layers[n] = {
-                            id: layer,
-                            description: layer.charAt(0).toUpperCase() + layer.slice(1),
-                            selectable: true
-                        };
+                // Get details about the map's layers
+
+                let mapLayers = [];
+                if (mapIndex.version === 1.0) {
+                    for (const layer of mapIndex.layers) {
+                        // Set layer data if the layer just has an id specified
+                        if (typeof layer === 'string') {
+                            mapLayers.push({
+                                id: layer,
+                                description: layer.charAt(0).toUpperCase() + layer.slice(1),
+                                selectable: true
+                            });
+                        } else {
+                            mapLayers.push(layer);
+                        }
                     }
+                } else {
+                    mapLayers = await loadJSON(`flatmap/${map.id}/layers`);
                 }
 
                 // Get the map's style file
@@ -602,6 +611,7 @@ export class MapManager
                         describes: map.describes,
                         style: mapStyle,
                         options: mapOptions,
+                        layers: mapLayers,
                         metadata: metadata,
                         number: this._mapNumber,
                         callback: callback
