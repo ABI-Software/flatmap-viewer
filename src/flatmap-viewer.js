@@ -91,16 +91,7 @@ class FlatMap
         if (!('images' in mapDescription.options)) {
             mapDescription.options.images = [];
         }
-
-        mapDescription.options.images.push({
-            id: 'rounded-background',
-            url: images.ROUNDED_RECT,
-            options: {
-                content: [3, 3, 13, 13],
-                stretchX: [[7, 9]],
-                stretchY: [[7, 9]]
-            }
-        });
+        mapDescription.options.images.push(images.ROUNDED_RECT);
 
         // Set options for the Mapbox map
 
