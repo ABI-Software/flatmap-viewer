@@ -33,7 +33,7 @@ import '../static/flatmap-viewer.css';
 
 //==============================================================================
 
-import {mapEndpoint} from './endpoints.js';
+import {loadJSON, mapEndpoint} from './endpoints.js';
 import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
 
@@ -552,17 +552,10 @@ export class MapManager
                 if (map === null) {
                     throw new Error(`Unknown map for ${JSON.stringify(identifier)}`);
                 };
-                // Load the maps index file (its options)
 
-                const optionsResponse = await fetch(mapEndpoint(`flatmap/${map.id}/`), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!optionsResponse.ok) {
-                    throw new Error(`Missing index file for map '${map.id}'`);
-                }
-                const mapOptions = await optionsResponse.json();
+                // Load the maps index file (its default options)
 
+                const mapOptions = await await loadJSON(`flatmap/${map.id}/`);
                 if (map.id !== mapOptions.id) {
                     throw new Error(`Map '${map.id}' has wrong ID in index`);
                 }
@@ -588,14 +581,7 @@ export class MapManager
 
                 // Get the map's style file
 
-                const styleResponse = await fetch(mapEndpoint(`flatmap/${map.id}/style`), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!styleResponse.ok) {
-                    throw new Error(`Missing style file for map '${map.id}'`);
-                }
-                const mapStyle = await styleResponse.json();
+                const mapStyle = await loadJSON(`flatmap/${map.id}/style`);
 
                 // Make sure the style has glyphs defined
 
@@ -605,14 +591,7 @@ export class MapManager
 
                 // Get the map's metadata
 
-                const metadataResponse = await fetch(mapEndpoint(`flatmap/${map.id}/metadata`), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!metadataResponse.ok) {
-                    reject(new Error(`Missing metadata for map '${map.id}'`));
-                }
-                const metadata = await metadataResponse.json();
+                const metadata = await loadJSON(`flatmap/${map.id}/metadata`);
 
                 // Display the map
 
