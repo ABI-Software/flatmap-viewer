@@ -438,8 +438,9 @@ class FlatMap
 export class MapManager
 {
     /* Create a MapManager */
-    constructor()
+    constructor(options={})
     {
+        this._options = options;
         this._maps = null;
         this._mapNumber = 0;
     }
@@ -553,18 +554,15 @@ export class MapManager
                     throw new Error(`Unknown map for ${JSON.stringify(identifier)}`);
                 };
 
-                // Load the maps index file (its default options)
+                // Load the maps index file
 
-                const mapOptions = await await loadJSON(`flatmap/${map.id}/`);
-                if (map.id !== mapOptions.id) {
+                const mapIndex = await await loadJSON(`flatmap/${map.id}/`);
+                if (map.id !== mapIndex.id) {
                     throw new Error(`Map '${map.id}' has wrong ID in index`);
                 }
 
-                // Set the map's options
+                const mapOptions = Object.assign({}, this._options, options);
 
-                for (const [name, value] of Object.entries(options)) {
-                    mapOptions[name] = value;
-                }
 
                 // Set layer data if the layer just has an id specified
 
