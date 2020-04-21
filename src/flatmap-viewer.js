@@ -556,7 +556,7 @@ export class MapManager
 
                 // Load the maps index file
 
-                const mapIndex = await await loadJSON(`flatmap/${map.id}/`);
+                const mapIndex = await loadJSON(`flatmap/${map.id}/`);
                 if (map.id !== mapIndex.id) {
                     throw new Error(`Map '${map.id}' has wrong ID in index`);
                 }
