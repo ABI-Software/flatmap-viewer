@@ -37,7 +37,6 @@ export class InfoControl
         this._flatmap = flatmap;
         this._map = undefined;
         this._active = false;
-        this._popup = null;
     }
 
     getDefaultPosition()
@@ -86,27 +85,16 @@ export class InfoControl
         }
     }
 
-    removePopup_()
-    //============
+    featureInformation(features)
+    //==========================
     {
-        if (this._popup) {
-            this._popup.remove();
-            this._popup = null;
-        }
-    }
+        // Get all features if the control is active otherwise just the highlighted ones
 
-    mouseMove(e)
-    //==========
-    {
-        this.removePopup_();
+        const featureList = (this._active || this._flatmap.options.debug) ? features
+                            : features.filter(feature => this._map.getFeatureState(feature)['highlighted']);
 
-        // Get all the features at the current point if control is active
-        // otherwise just the highlighted ones
-
-        const features = this._map.queryRenderedFeatures(e.point)
-                             .filter(feature => (this._active || this._map.getFeatureState(feature)['highlighted']));
-        if (features.length === 0) {
-            return;
+        if (featureList.length === 0) {
+            return '';
         }
 
         let html = '';
@@ -128,7 +116,7 @@ export class InfoControl
             // Do we filter for smallest properties.area (except lines have area == 0)
             // with lines having precedence... ??
 
-            const displayFeatures = features.map(feat => {
+            const displayFeatures = featureList.map(feat => {
                 const displayFeat = {};
                 displayProperties.forEach(prop => {
                     displayFeat[prop] = feat[prop];
@@ -145,7 +133,7 @@ export class InfoControl
             html = `<pre class="info-control-features">${JSON.stringify(e.lngLat)}\n${content}</pre>`;
         } else {
             const displayValues = new Map();
-            for (const feature of features) {
+            for (const feature of featureList) {
                 if (!displayValues.has(feature.properties.id)) {
                     const values = {};
                     indexedProperties.forEach(prop => {
@@ -179,18 +167,7 @@ export class InfoControl
 
             html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
         }
-
-        // Show as a tooltip
-
-        this._popup = new mapboxgl.Popup({
-            closeButton: false,
-            closeOnClick: false,
-            maxWidth: 'none'
-        });
-        this._popup
-            .setLngLat(e.lngLat)
-            .setHTML(html)
-            .addTo(this._map);
+        return html;
     }
 }
 

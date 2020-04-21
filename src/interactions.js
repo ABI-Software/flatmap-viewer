@@ -85,6 +85,8 @@ export class UserInteractions
         this._highlightedFeatures = [];
         this._lastClickedLocation = null;
         this._currentPopup = null;
+        this._infoControl = null;
+        this._tooltip = null;
 
         this._inQuery = false;
         this._modal = false;
@@ -104,7 +106,6 @@ export class UserInteractions
         if (flatmap.options.featureInfo) {
             this._infoControl = new InfoControl(flatmap);
             this._map.addControl(this._infoControl);
-            this._map.on('mousemove', e => this._infoControl.mouseMove(e));
         }
 
         // Manage our layers
@@ -167,8 +168,9 @@ export class UserInteractions
             }
         });
 
-        // Handle mouse click events
+        // Handle mouse events
 
+        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
         this._map.on('click', this.clickEvent_.bind(this));
 
         if (this._userInterfaceLoadedCallback !== null) {
@@ -513,6 +515,58 @@ export class UserInteractions
             } else {
                 this._currentPopup.setText(content);
             }
+        }
+    }
+
+    removeTooltip_()
+    //==============
+    {
+        if (this._tooltip) {
+            this._tooltip.remove();
+            this._tooltip = null;
+        }
+    }
+
+
+    mouseMoveEvent_(event)
+    //====================
+    {
+        // Remove any existing tooltip
+
+        this.removeTooltip_();
+
+        // Get all the features at the current point
+
+        const features = this._map.queryRenderedFeatures(event.point);
+        if (features.length === 0) {
+            return;
+        }
+
+        let html = '';
+        if (this._infoControl) {
+            html = this._infoControl.featureInformation(features);  // Do this in control's constructor...
+        }
+
+        if (html === '' && this._flatmap.options.tooltips) {
+            // We should really find smallest polygon if 'fill' layer
+            const labelledFeatures = features.filter(feature => 'label' in feature.properties);
+            if (labelledFeatures.length > 0) {
+                html = `<div class='flatmap-feature-label'>${labelledFeatures[0].properties.label}</div>`;
+            }
+        }
+
+        if (html !== '') {
+            // Show a tooltip
+
+            this._tooltip = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false,
+                maxWidth: 'none'
+            });
+            this._tooltip
+                .setLngLat(event.lngLat)
+                .setHTML(html)
+                .addTo(this._map);
         }
     }
 
