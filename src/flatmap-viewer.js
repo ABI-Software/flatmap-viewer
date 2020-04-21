@@ -574,7 +574,7 @@ export class MapManager
                 // Get details about the map's layers
 
                 let mapLayers = [];
-                if (mapIndex.version === 1.0) {
+                if (mapIndex.version <= 1.0) {
                     for (const layer of mapIndex.layers) {
                         // Set layer data if the layer just has an id specified
                         if (typeof layer === 'string') {
