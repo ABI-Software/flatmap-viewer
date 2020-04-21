@@ -92,9 +92,9 @@ export class UserInteractions
         this._inQuery = false;
         this._modal = false;
 
-        // Fit the map to our window
+        // Fit the map to its initial position
 
-        flatmap.fitBounds();
+        flatmap.setInitialPosition();
 
         // Add a control to search annotations if option set
 

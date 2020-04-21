@@ -105,17 +105,11 @@ class FlatMap
         if (mapDescription.options.debug === true) {
             mapboxOptions.hash = true;
         }
-        if ('center' in mapDescription.options) {
-            mapboxOptions.center = mapDescription.options['center'];
-        }
         if ('max-zoom' in mapDescription.options) {
             mapboxOptions.maxZoom = mapDescription.options['max-zoom'];
         }
         if ('min-zoom' in mapDescription.options) {
             mapboxOptions.minZoom = mapDescription.options['min-zoom'];
-        }
-        if ('zoom' in mapDescription.options) {
-            mapboxOptions.zoom = mapDescription.options['zoom'];
         }
 
         // Create the map
@@ -337,12 +331,19 @@ class FlatMap
         }
     }
 
-    fitBounds()
-    //=========
+    setInitialPosition()
+    //==================
     {
         if ('bounds' in this._options) {
             this._map.fitBounds(this._options['bounds']);
         }
+        if ('center' in this._options) {
+            this._map.setCenter(this._options['center']);
+        }
+        if ('zoom' in this._options) {
+            this._map.setZoom(this._options['zoom']);
+        }
+
     }
 
     modelsForFeature(featureId)
