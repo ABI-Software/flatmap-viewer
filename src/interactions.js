@@ -104,9 +104,11 @@ export class UserInteractions
 
         // Show information about features
 
-        if (flatmap.options.featureInfo) {
+        if (flatmap.options.featureInfo || flatmap.options.searchable) {
             this._infoControl = new InfoControl(flatmap);
-            this._map.addControl(this._infoControl);
+            if (flatmap.options.featureInfo) {
+                this._map.addControl(this._infoControl);
+            }
         }
 
         // Manage our layers
