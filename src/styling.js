@@ -147,7 +147,8 @@ export class FeatureFillLayer
                 'fill-color': PAINT_STYLES['fill-color'],
                 'fill-opacity': [
                     'case',
-                    ['boolean', ['feature-state', 'highlighted'], false], 0.5,
+                    ['boolean', ['feature-state', 'active'], false], 0.3,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.3,
                     0.05
                 ]
             }
@@ -175,6 +176,7 @@ export class FeatureBorderLayer
                 'line-color': borderColour(),
                 'line-opacity': [   // borderOpacity(),
                     'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     0.1
                 ],
@@ -207,7 +209,12 @@ export class FeatureLineLayer
             ],
             'paint': {
                 'line-color': lineColour(),
-                'line-opacity': 0.3, // lineOpacity(),
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    0.3
+                ],
                 'line-width': 1.5 // lineWidth_(PAINT_STYLES['line-stroke-width'])
             }
         };
@@ -252,7 +259,7 @@ export class FeatureLargeSymbolLayer
             'paint': {
                 'text-color': [
                     'case',
-                    ['boolean', ['feature-state', 'highlighted'], false], '#f00',
+                    ['boolean', ['feature-state', 'active'], false], '#fff',
                     '#000'
                 ]
             }
@@ -289,7 +296,13 @@ export class FeatureSmallSymbolLayer
                 'text-size': {'stops': [[5, 8], [7, 12], [9, 20]]},
                 'icon-text-fit': 'both'
             },
-            'paint': {}
+            'paint': {
+                'text-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], '#fff',
+                    '#000'
+                ]
+            }
         };
     }
 }

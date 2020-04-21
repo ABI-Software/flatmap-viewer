@@ -81,6 +81,7 @@ export class UserInteractions
         this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
 //        this._queryInterface = new QueryInterface(flatmap.id);
 
+        this._activeFeature = null;
         this._selectedFeature = null;
         this._highlightedFeatures = [];
         this._lastClickedLocation = null;
@@ -535,6 +536,13 @@ export class UserInteractions
 
         this.removeTooltip_();
 
+        // Reset any active feature
+
+        if (this._activeFeature !== null) {
+            this._map.removeFeatureState(this._activeFeature, 'active');
+            this._activeFeature = null;
+        }
+
         // Get all the features at the current point
 
         const features = this._map.queryRenderedFeatures(event.point);
@@ -547,11 +555,17 @@ export class UserInteractions
             html = this._infoControl.featureInformation(features);  // Do this in control's constructor...
         }
 
-        if (html === '' && this._flatmap.options.tooltips) {
+        if (html === '') {
             // We should really find smallest polygon if 'fill' layer
             const labelledFeatures = features.filter(feature => 'label' in feature.properties);
             if (labelledFeatures.length > 0) {
-                html = `<div class='flatmap-feature-label'>${labelledFeatures[0].properties.label}</div>`;
+                const feature = labelledFeatures[0];
+                this._activeFeature = feature;
+                this._map.setFeatureState(this._activeFeature, { active: true });
+                } else if (this._flatmap.options.tooltips) {
+                if (this._flatmap.options.tooltips) {
+                    html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
+                }
             }
         }
 
