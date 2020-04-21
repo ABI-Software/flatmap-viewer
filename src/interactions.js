@@ -536,6 +536,10 @@ export class UserInteractions
 
         this.removeTooltip_();
 
+        // Reset cursor
+
+        this._map.getCanvas().style.cursor = 'default';
+
         // Reset any active feature
 
         if (this._activeFeature !== null) {
@@ -562,8 +566,9 @@ export class UserInteractions
                 const feature = labelledFeatures[0];
                 this._activeFeature = feature;
                 this._map.setFeatureState(this._activeFeature, { active: true });
+                if (feature.layer.type === 'symbol') {
+                    this._map.getCanvas().style.cursor = 'pointer';
                 } else if (this._flatmap.options.tooltips) {
-                if (this._flatmap.options.tooltips) {
                     html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
                 }
             }
