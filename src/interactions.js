@@ -22,35 +22,52 @@ limitations under the License.
 
 //==============================================================================
 
+import mapboxgl from 'mapbox-gl';
+
 import {default as turfArea} from '@turf/area';
 import {default as turfBBox} from '@turf/bbox';
 import * as turf from '@turf/helpers';
 
 //==============================================================================
 
-import {AnnotationControl, Annotator} from './annotation.js';
 import {ContextMenu} from './contextmenu.js';
+import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
-import {LayerSwitcher} from './layerswitcher.js'
-import {MessagePasser} from './messages.js';
-import {QueryInterface} from './query.js';
-import {ToolTip} from './tooltip.js';
+//import {QueryInterface} from './query.js';
+import {SearchControl} from './search.js';
 
 import * as utils from './utils.js';
 
 //==============================================================================
 
-function tooltip(valuesList)
+function bounds(feature)
+//======================
 {
-    const tooltipElement = document.createElement('div');
-    tooltipElement.className = 'flatmap-feature-tooltip';
-    for (const value of valuesList) {
-        const valueElement = document.createElement('div');
-        valueElement.className = 'flatmap-feature-property';
-        valueElement.textContent = value;
-        tooltipElement.appendChild(valueElement);
+    // Find the feature's bounding box
+
+    let bounds = ('bounds' in feature.properties) ? feature.properties.bounds
+                                                  : feature.properties.bbox;
+    if (bounds) {
+        // Bounding box is defined in GeoJSON
+
+        return JSON.parse(bounds);
+    } else {
+        // Get the bounding box of the current polygon. This won't neccessary
+        // be the full feature because of tiling
+
+        const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
+        return turfBBox(polygon);
     }
-    return tooltipElement;
+}
+
+//==============================================================================
+
+function expandBounds(bbox1, bbox2)
+//=================================
+{
+    return [Math.min(bbox1[0], bbox2[0]), Math.min(bbox1[1], bbox2[1]),
+            Math.max(bbox1[2], bbox2[2]), Math.max(bbox1[3], bbox2[3])
+           ];
 }
 
 //==============================================================================
@@ -62,29 +79,39 @@ export class UserInteractions
         this._flatmap = flatmap;
         this._map = flatmap.map;
         this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
-        this._queryInterface = new QueryInterface(flatmap.id);
+//        this._queryInterface = new QueryInterface(flatmap.id);
 
+        this._activeFeature = null;
         this._selectedFeature = null;
         this._highlightedFeatures = [];
+        this._lastClickedLocation = null;
+        this._currentPopup = null;
+        this._infoControl = null;
+        this._tooltip = null;
 
         this._inQuery = false;
         this._modal = false;
 
-        // Fit the map to our window
+        // Fit the map to its initial position
 
-        flatmap.fitBounds();
+        flatmap.setInitialPosition();
 
-        // Add a control to enable annotation if option set
+        // Add a control to search annotations if option set
 
-        if (flatmap.annotatable) {
-            this._annotator = new Annotator(flatmap, this);
+        if (flatmap.options.searchable) {
+            this._map.addControl(new SearchControl(flatmap.searchIndex));
         }
 
-        // To pass messages with other applications
+        // Show information about features
 
-        this._messagePasser = new MessagePasser(flatmap.uniqueId, json => this.processMessage_(json));
+        if (flatmap.options.featureInfo || flatmap.options.searchable) {
+            this._infoControl = new InfoControl(flatmap);
+            if (flatmap.options.featureInfo) {
+                this._map.addControl(this._infoControl);
+            }
+        }
 
-         // Manage our layers
+        // Manage our layers
 
         this._layerManager = new LayerManager(flatmap);
 
@@ -116,19 +143,6 @@ export class UserInteractions
             }
         }
 
-        // Add a layer switcher if we have more than one selectable layer
-
-        this._layerSwitcher = null;
-        if (this._layerManager.selectableLayerCount > 1) {
-            this._layerSwitcher = new LayerSwitcher(flatmap, 'Select system',
-                                                    this.layerSwitcherActiveCallback_.bind(this));
-            this._map.addControl(this._layerSwitcher);
-        } else if (this._layerManager.selectableLayerCount === 1) {
-            const selectableLayerId = this._layerManager.lastSelectableLayerId;
-            this.activateLayer(selectableLayerId);
-            this._messagePasser.broadcast('flatmap-activate-layer', selectableLayerId);
-        }
-
         // Flag features that have annotations
         // Also flag those features that are models of something
 
@@ -140,11 +154,6 @@ export class UserInteractions
                 console.log(`Annotation error, ${ann.layer}: ${ann.error} (${ann.text})`);
             }
         }
-
-        // Display a tooltip at the mouse pointer
-
-        this._tooltip = new ToolTip(flatmap);
-        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
 
         // Display a context menu on right-click
 
@@ -162,12 +171,12 @@ export class UserInteractions
             }
         });
 
-        // Handle mouse click events
+        // Handle mouse events
 
+        this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
         this._map.on('click', this.clickEvent_.bind(this));
 
-        if (this._layerSwitcher === null
-         && this._userInterfaceLoadedCallback !== null) {
+        if (this._userInterfaceLoadedCallback !== null) {
             this._userInterfaceLoadedCallback(this);
             this._userInterfaceLoadedCallback = null;
         }
@@ -198,17 +207,6 @@ export class UserInteractions
     //=============
     {
         // Restore the map to a saved state
-
-        if ('layers' in state) {
-            // We tell the layer manager the required state of a layer
-            // and its controller will broadcast activation/deactivation messages
-            for (const layerId of this.activeLayerIds) {
-                this._layerSwitcher.setState(layerId, false);
-            }
-            for (name of state.layers) {
-                this._layerSwitcher.setState(this._flatmap.mapLayerId(name), true);
-            }
-        }
         const options = {};
         if ('center' in state) {
             options['center'] = state.center;
@@ -220,12 +218,6 @@ export class UserInteractions
         if (Object.keys(options).length > 0) {
             this._map.jumpTo(options);
         }
-    }
-
-    get annotating()
-    //==============
-    {
-        return this._flatmap.annotatable && this._annotator.enabled;
     }
 
     get activeLayerNames()
@@ -247,7 +239,7 @@ export class UserInteractions
     activateLayer(layerId)
     //====================
     {
-        this._layerManager.activate(layerId, this.annotating);
+        this._layerManager.activate(layerId);
     }
 
     activateLayers(layerIds)
@@ -272,42 +264,11 @@ export class UserInteractions
         }
     }
 
-    processMessage_(msg)
-    //==================
-    {
-        if (msg.action === 'flatmap-activate-layer') {
-            this.activateLayer(msg.resource);
-        } else if (msg.action === 'flatmap-deactivate-layer') {
-            this.deactivateLayer(msg.resource);
-        } else if (msg.action === 'flatmap-query-results') {
-            let modelList = [];
-            for (const featureUrl of msg.resource) {
-                const featureId = this._flatmap.featureIdForUrl(featureUrl);
-                if (featureId) {
-                    const ann = this._flatmap.getAnnotation(featureId);
-                    const feature = utils.mapFeature(ann.layer, featureId);
-                    this._map.setFeatureState(feature, { "highlighted": true });
-                    this._highlightedFeatures.push(feature);
-                    if (ann.queryable) {
-                        modelList = modelList.concat(ann.models);
-                    }
-                }
-            }
-            if ('type' in msg.data
-              && msg.data.type === 'nodes'
-              && modelList.length > 0) {
-                this.queryData_([... new Set(modelList)]);
-            }
-            this._inQuery = false;
-            this._map.getCanvas().style.cursor = '';
-        }
-    }
-
     selectFeature_(feature)
     //=====================
     {
         this.unselectFeatures_(false);
-        this._map.setFeatureState(feature, { "selected": true })
+        this._map.setFeatureState(feature, { 'selected': true });
         this._selectedFeature = feature;
     }
 
@@ -315,7 +276,7 @@ export class UserInteractions
     //===========================
     {
         if (this._selectedFeature !== null) {
-            this._map.removeFeatureState(this._selectedFeature, "selected");
+            this._map.removeFeatureState(this._selectedFeature, 'selected');
             if (reset) {
                 this._selectedFeature = null;
             }
@@ -328,7 +289,7 @@ export class UserInteractions
         if (this._selectedFeature !== null) {
             const layerId = this._selectedFeature.layer.id;
             if (layerId.includes('-')) {
-                return layerId.split('-').slice(0, -1).join('-')
+                return layerId.split('-').slice(0, -1).join('-');
             } else {
                 return layerId;
             }
@@ -336,11 +297,18 @@ export class UserInteractions
         return null;
     }
 
+    highlightFeature_(feature)
+    //========================
+    {
+        this._map.setFeatureState(feature, { 'highlighted': true });
+        this._highlightedFeatures.push(feature);
+    }
+
     unhighlightFeatures_(reset=true)
     //==============================
     {
         for (const feature of this._highlightedFeatures) {
-            this._map.removeFeatureState(feature, "highlighted");
+            this._map.removeFeatureState(feature, 'highlighted');
         }
         this._highlightedFeatures = [];
     }
@@ -366,7 +334,7 @@ export class UserInteractions
         let smallestFeature = null;
         for (const feature of features) {
             if (feature.geometry.type.includes('Polygon')
-             && (this.annotating || this._map.getFeatureState(feature)['annotated'])) {
+             && this._map.getFeatureState(feature)['annotated']) {
                 const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
                 const area = turfArea(polygon);
                 if (smallestFeature === null || smallestArea > area) {
@@ -376,65 +344,6 @@ export class UserInteractions
             }
         }
         return smallestFeature;
-    }
-
-    smallestAnnotatedPolygonAtEvent_(event)
-    //=====================================
-    {
-        // Get the smallest polygon feature covering the event's point
-
-        return this.smallestAnnotatedPolygonFeature_(this.activeFeaturesAtEvent_(event));
-    }
-
-    showTooltip_(position, feature)
-    //=============================
-    {
-        let result = false;
-        const id = feature.properties.id;
-        const ann = this._flatmap.getAnnotation(id);
-        this.selectFeature_(feature);
-        if (this.annotating) {
-            if (ann) {
-                const error = ('error' in ann) ? ann.error : '';
-                this._tooltip.show(position, tooltip([ann.featureId, ann.label, ...ann.text.split(/\s+/), error]));
-            } else {
-                this._tooltip.show(position, tooltip([id, this._map.getFeatureState(feature)['annotated']]));
-            }
-            result = true;
-        } else if (ann) {
-            const models = ann.models;
-            if (models.length) {
-                this._tooltip.show(position, tooltip([ann.label ? ann.label: models[0]]));
-                result = true;
-            } else if (this._layerManager.layerQueryable(ann.layer)) {
-                result = true;
-            }
-        }
-        if (result && !this._inQuery) {
-            this._map.getCanvas().style.cursor = 'pointer';
-        }
-        return result;
-    }
-
-    mouseMoveEvent_(event)
-    //====================
-    {
-        if (this._modal) {
-            return;
-        }
-        const features = this.activeFeaturesAtEvent_(event);
-        let feature = this.smallestAnnotatedPolygonFeature_(features);
-        if (feature === null && this.annotating && features.length) {
-            feature = features[0];
-        }
-
-        if (feature === null || !this.showTooltip_(event.lngLat, feature)) {
-            if (!this._inQuery) {
-                this._map.getCanvas().style.cursor = '';
-            }
-            this._tooltip.hide();
-            this.unselectFeatures_();
-        }
     }
 
     contextMenuEvent_(event)
@@ -452,21 +361,16 @@ export class UserInteractions
 
         const features = this.activeFeaturesAtEvent_(event);
         let feature = this.smallestAnnotatedPolygonFeature_(features);
-        if (feature === null && this.annotating && features.length) {
-            feature = features[0];
-        }
-
         if (feature !== null) {
             const id = feature.properties.id;
             const ann = this._flatmap.getAnnotation(id);
             this.selectFeature_(feature);
-            this._tooltip.hide();
             const items = [];
             if (ann) {
                 if (ann.models.length > 0) {
                     items.push({
                         id: id,
-                        prompt: `Search for knowledge about node`,
+                        prompt: 'Search for knowledge about node',
                         action: this.query_.bind(this, 'data')
                     });
                 }
@@ -482,16 +386,6 @@ export class UserInteractions
                         action: this.query_.bind(this, 'nodes')
                     });
                 }
-            }
-            if (this.annotating) {
-                if (items.length) {
-                    items.push('-');
-                }
-                items.push({
-                    id: id,
-                    prompt: 'Annotate',
-                    action: this.annotate_.bind(this, feature.geometry.type.includes('Polygon'))
-                });
             }
             if (items.length) {
                 items.push('-');
@@ -515,42 +409,63 @@ export class UserInteractions
         this._modal = false;
     }
 
-    annotate_(queryableFeature, event)
-    //================================
-    {
-        this._contextMenu.hide();
-        this._annotator.editAnnotation(event.target.getAttribute('id'),
-                                       queryableFeature,
-                                       () => { this._modal = false; });
-    }
-
     zoomTo_(feature)
     //==============
     {
+        // Hide context menu if it's open
+
         this._contextMenu.hide();
-        let bbox = feature.properties.bbox;
-        if (bbox) {
-            // Bounding box is defined in GeoJSON
 
-            bbox = bbox.split(',');
-        } else {
-            // Get the bounding box of the current polygon. This won't neccessary
-            // be the full feature because of tiling
+        // Highlight the feature
 
-            const polygon = turf.geometry(feature.geometry.type, feature.geometry.coordinates);
-            bbox = turfBBox(polygon);
-        }
-        this._map.fitBounds(bbox, {
-            padding: 30,
+        this.unhighlightFeatures_();
+        this.highlightFeature_(feature);
+
+        // Zoom map to feature
+
+        this._map.fitBounds(bounds(feature), {
+            padding: 100,
             animate: false
         });
+    }
+
+    zoomToFeatures(featureIds, padding=100)
+    //=====================================
+    {
+        this.unhighlightFeatures_();
+
+        if (featureIds.length) {
+            let bbox = null;
+            for (const featureId of featureIds) {
+                const properties = this._flatmap.annotation(featureId);
+                if (properties) {
+                    this.highlightFeature_(utils.mapFeature(properties.layer, featureId));
+                    const bounds = properties.bounds;
+                    bbox = (bbox === null) ? bounds
+                                           : expandBounds(bbox, bounds);
+                }
+            }
+
+            // Zoom map to features
+
+            this._map.fitBounds(bbox, {
+                padding: padding,
+                animate: false
+            });
+        }
+    }
+
+    clearResults()
+    //============
+    {
+        this.unhighlightFeatures_();
     }
 
     queryData_(modelList)
     //===================
     {
         if (modelList.length > 0) {
-            this._messagePasser.broadcast('query-data', modelList, {
+            this._flatmap.callback('query-data', modelList, {
                 describes: this._flatmap.describes
             });
         }
@@ -566,24 +481,134 @@ export class UserInteractions
             this.queryData_(this._flatmap.modelsForFeature(featureId));
         } else {
             const ann = this._flatmap.getAnnotation(featureId);
-            this._queryInterface.query(type, ann.url, ann.models);
+            //this._queryInterface.query(type, ann.url, ann.models);
             this._map.getCanvas().style.cursor = 'progress';
             this._inQuery = true;
         }
         this._modal = false;
     }
 
+    showPopup(featureId, content, options)
+    //====================================
+    {
+        const properties = this._flatmap.annotation(featureId);
+
+        if (properties) {  // The feature exists
+
+            // Remove any existing popup
+
+            if (this._currentPopup) {
+                this._currentPopup.remove();
+            }
+
+            // Highlight the feature
+
+            this.unhighlightFeatures_();
+            this.highlightFeature_(utils.mapFeature(properties.layer, featureId));
+
+            // Position popup at last clicked location if we have it,
+            // otherwise at the feature's centroid
+
+            const location = (this._lastClickedLocation === null) ? properties.centroid
+                                                                  : this._lastClickedLocation;
+
+            // Make sure the feature is on screen
+
+            if (!this._map.getBounds().contains(location)) {
+                this._map.panTo(location);
+            }
+
+            this._currentPopup = new mapboxgl.Popup(options).addTo(this._map);
+            this._currentPopup.setLngLat(location);
+            if (typeof content === 'object') {
+                this._currentPopup.setDOMContent(content);
+            } else {
+                this._currentPopup.setText(content);
+            }
+        }
+    }
+
+    removeTooltip_()
+    //==============
+    {
+        if (this._tooltip) {
+            this._tooltip.remove();
+            this._tooltip = null;
+        }
+    }
+
+
+    mouseMoveEvent_(event)
+    //====================
+    {
+        // Remove any existing tooltip
+
+        this.removeTooltip_();
+
+        // Reset cursor
+
+        this._map.getCanvas().style.cursor = 'default';
+
+        // Reset any active feature
+
+        if (this._activeFeature !== null) {
+            this._map.removeFeatureState(this._activeFeature, 'active');
+            this._activeFeature = null;
+        }
+
+        // Get all the features at the current point
+
+        const features = this._map.queryRenderedFeatures(event.point);
+        if (features.length === 0) {
+            return;
+        }
+
+        let html = '';
+        if (this._infoControl) {
+            html = this._infoControl.featureInformation(features);  // Do this in control's constructor...
+        }
+
+        if (html === '') {
+            // We should really find smallest polygon if 'fill' layer
+            const labelledFeatures = features.filter(feature => 'label' in feature.properties);
+            if (labelledFeatures.length > 0) {
+                const feature = labelledFeatures[0];
+                this._activeFeature = feature;
+                this._map.setFeatureState(this._activeFeature, { active: true });
+                if (feature.layer.type === 'symbol') {
+                    this._map.getCanvas().style.cursor = 'pointer';
+                } else if (this._flatmap.options.tooltips) {
+                    html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
+                }
+            }
+        }
+
+        if (html !== '') {
+            // Show a tooltip
+
+            this._tooltip = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false,
+                maxWidth: 'none'
+            });
+            this._tooltip
+                .setLngLat(event.lngLat)
+                .setHTML(html)
+                .addTo(this._map);
+        }
+    }
+
     clickEvent_(event)
     //================
     {
-        this._layerSwitcher.close();
-        const feature = this.smallestAnnotatedPolygonAtEvent_(event);
-        if (feature !== null) {
-            const featureId = feature.properties.id;
-            this.selectFeature_(feature);
-            this.queryData_(this._flatmap.modelsForFeature(featureId));
+        const symbolFeatures = this._map.queryRenderedFeatures(event.point)
+                                        .filter(f => (f.layer.type === 'symbol'));
+        if (symbolFeatures.length) {
+            this._lastClickedLocation = event.lngLat;
+            for (const feature of symbolFeatures) {
+                this._flatmap.featureEvent('click', feature);
+            }
         }
-        this.unhighlightFeatures_();
     }
 }
 

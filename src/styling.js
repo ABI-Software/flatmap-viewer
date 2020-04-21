@@ -22,18 +22,22 @@ limitations under the License.
 
 //==============================================================================
 
+import { FEATURE_SOURCE_ID } from './utils.js';
+
+//==============================================================================
+
 export const PAINT_STYLES = {
-    'background-opacity': 0.3,
-    'layer-background-opacity': 0.5,
+    'background-opacity': 0.8,
+    'layer-background-opacity': 1.0,
     'fill-color': '#fff',
     'border-stroke-width': 0.5,
-    'line-stroke-opacity': 0,
+    'line-stroke-opacity': 0.7,
     'line-stroke-width': 0.5
 };
 
 //==============================================================================
 
-export function borderColour(layerActive=false, annotating=false)
+export function borderColour(layerActive=false)
 {
     return [
         'case',
@@ -43,10 +47,10 @@ export function borderColour(layerActive=false, annotating=false)
     ];
 }
 
-export function borderOpacity(layerActive=false, annotating=false)
+export function borderOpacity(layerActive=false)
 {
     if (layerActive) {
-        return annotating ? 1 : [
+        return [
             'case',
             ['boolean', ['feature-state', 'selected'], false], 1,
             ['boolean', ['feature-state', 'highlighted'], false], 1,
@@ -60,7 +64,7 @@ export function borderOpacity(layerActive=false, annotating=false)
 
 //==============================================================================
 
-export function lineColour(layerActive=false, annotating=false)
+export function lineColour(layerActive=false)
 {
     return [
         'case',
@@ -70,10 +74,10 @@ export function lineColour(layerActive=false, annotating=false)
     ];
 }
 
-export function lineOpacity(layerActive=false, annotating=false)
+export function lineOpacity(layerActive=false)
 {
     if (layerActive) {
-        return annotating ? 1 : [
+        return [
             'case',
             ['boolean', ['feature-state', 'annotation-error'], false], 0.8,
             ['boolean', ['feature-state', 'highlighted'], false], 0.4,
@@ -90,7 +94,7 @@ export function lineOpacity(layerActive=false, annotating=false)
 
 class LineWidth
 {
-    static scale(width, annotating=false)   // width at zoom 3
+    static scale(width)   // width at zoom 3
     {
         return [
             "let", "linewidth", [
@@ -99,7 +103,7 @@ class LineWidth
                 ['boolean', ['feature-state', 'highlighted'], false], 2*width,
                 ['boolean', ['feature-state', 'selected'], false], 3*width,
                 ['boolean', ['feature-state', 'annotated'], false], width,
-                annotating ? width : 0
+                0
             ],
             ["interpolate",
             ["exponential", 1.4],
@@ -113,10 +117,10 @@ class LineWidth
 
 //==============================================================================
 
-function lineWidth_(width, layerActive=false, annotating=false)
+function lineWidth_(width, layerActive=false)
 {
     if (layerActive) {
-        return LineWidth.scale(width, annotating)
+        return LineWidth.scale(width);
     }
     else {
         return 0;
@@ -127,12 +131,12 @@ function lineWidth_(width, layerActive=false, annotating=false)
 
 export class FeatureFillLayer
 {
-    static style(id, source_id, layer_id)
+    static style(sourceLayer)
     {
         return {
-            'id': id,
-            'source': source_id,
-            'source-layer': layer_id,
+            'id': `${sourceLayer}-fill`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
             'type': 'fill',
             'filter': [
                 '==',
@@ -143,8 +147,9 @@ export class FeatureFillLayer
                 'fill-color': PAINT_STYLES['fill-color'],
                 'fill-opacity': [
                     'case',
-                    ['boolean', ['feature-state', 'highlighted'], false], 0.5,
-                    0
+                    ['boolean', ['feature-state', 'active'], false], 0.3,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.3,
+                    0.05
                 ]
             }
         };
@@ -155,12 +160,12 @@ export class FeatureFillLayer
 
 export class FeatureBorderLayer
 {
-    static style(id, source_id, layer_id)
+    static style(sourceLayer)
     {
         return {
-            'id': id,
-            'source': source_id,
-            'source-layer': layer_id,
+            'id': `${sourceLayer}-border`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
                 '==',
@@ -169,15 +174,20 @@ export class FeatureBorderLayer
             ],
             'paint': {
                 'line-color': borderColour(),
-                'line-opacity': borderOpacity(),
-                'line-width': lineWidth_(PAINT_STYLES['border-stroke-width'])
+                'line-opacity': [   // borderOpacity(),
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    0.1
+                ],
+                'line-width': 2 // lineWidth_(PAINT_STYLES['border-stroke-width'])
             }
         };
     }
 
-    static lineWidth(layerActive=false, annotating=false)
+    static lineWidth(layerActive=false)
     {
-        return lineWidth_(PAINT_STYLES['border-stroke-width'], layerActive, annotating);
+        return lineWidth_(PAINT_STYLES['border-stroke-width'], layerActive);
     }
 }
 
@@ -185,12 +195,12 @@ export class FeatureBorderLayer
 
 export class FeatureLineLayer
 {
-    static style(id, source_id, layer_id)
+    static style(sourceLayer)
     {
         return {
-            'id': id,
-            'source': source_id,
-            'source-layer': layer_id,
+            'id': `${sourceLayer}-line`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
                 '==',
@@ -199,15 +209,101 @@ export class FeatureLineLayer
             ],
             'paint': {
                 'line-color': lineColour(),
-                'line-opacity': lineOpacity(),
-                'line-width': lineWidth_(PAINT_STYLES['line-stroke-width'])
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    0.3
+                ],
+                'line-width': 1.5 // lineWidth_(PAINT_STYLES['line-stroke-width'])
             }
         };
     }
 
-    static lineWidth(layerActive=false, annotating=false)
+    static lineWidth(layerActive=false)
     {
-        return lineWidth_(PAINT_STYLES['line-stroke-width'], layerActive, annotating);
+        return lineWidth_(PAINT_STYLES['line-stroke-width'], layerActive);
+    }
+}
+
+//==============================================================================
+
+export class FeatureLargeSymbolLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-large-symbol`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
+            'type': 'symbol',
+            'minzoom': 3,
+            //'maxzoom': 7,
+            'filter': [
+                'all',
+                ['<=', 'scale', 6],
+                ['has', 'label']
+            ],
+            'layout': {
+                'visibility': 'visible',
+                'icon-allow-overlap': true,
+                'icon-image': 'label-background',
+                'text-allow-overlap': true,
+                'text-field': '{label}',
+                'text-font': ['Open Sans Regular'],
+                'text-line-height': 1,
+                'text-max-width': 5,
+                'text-size': 16,
+                'icon-text-fit': 'both'
+            },
+            'paint': {
+                'text-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], '#fff',
+                    '#000'
+                ]
+            }
+        };
+    }
+}
+
+//==============================================================================
+
+export class FeatureSmallSymbolLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-small-symbol`,
+            'source': FEATURE_SOURCE_ID,
+            'source-layer': sourceLayer,
+            'type': 'symbol',
+            'minzoom': 6,
+            'filter': [
+                'all',
+                ['has', 'label'],
+                ['>', 'scale', 5]
+            ],
+            'layout': {
+                'visibility': 'visible',
+                'icon-allow-overlap': true,
+                'icon-image': 'label-background',
+                'text-allow-overlap': true,
+                'text-field': '{label}',
+                'text-font': ['Open Sans Regular'],
+                'text-line-height': 1,
+                'text-max-width': 5,
+                'text-size': {'stops': [[5, 8], [7, 12], [9, 20]]},
+                'icon-text-fit': 'both'
+            },
+            'paint': {
+                'text-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], '#fff',
+                    '#000'
+                ]
+            }
+        };
     }
 }
 
@@ -215,11 +311,11 @@ export class FeatureLineLayer
 
 export class ImageLayer
 {
-    static style(id, source_id, opacity=0)
+    static style(sourceLayer, opacity=0.8)
     {
         return {
-            'id': id,
-            'source': source_id,
+            'id': `${sourceLayer}-image`,
+            'source': `${sourceLayer}-image`,
             'type': 'raster',
             'paint': {
                 'raster-opacity': opacity

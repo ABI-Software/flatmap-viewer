@@ -10,7 +10,7 @@
     display: none;
 }
 
-.flatmap-contextmenu .mapboxgl-popup-content {
+.flatmap-contextmenu {
     padding: 0;
     background: #EEE;
     box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
@@ -27,50 +27,55 @@ li.flatmap-contextmenu-item:hover {
     background: #58E;
 }
 
-/* Control annotating mode */
+/* Custom control buttons */
 
-.flatmap-annotation-control {
-    width: 28px;
-    text-align: center;
-    padding-right: 1px;
-    cursor: pointer;
-    border: 1px solid #CCC;
-}
-
-/* Annotation dialog */
-
-/* Annotator */
-
-form.flatmap-annotation {
-    padding: 4px;
-}
-form.flatmap-annotation div {
-    padding-top: 4px;
-    padding-bottom: 4px;
-}
-.flatmap-annotation-input {
-    margin-left: 6px;
-    float: right;
-    width: 300px;
-}
-.flatmap-annotation label {
+.control-button {
     display: inline-block;
+    vertical-align: middle;
+    margin-left: 5px;
 }
-.flatmap-annotation input[type="submit"] {
-    background-color: #DDD;
-    text-align: centre;
-    margin-left: 10px;
-}
-.flatmap-annotation .flatmap-buttons {
-    float: right;
-}
-
-/* Tooltips */
-
-.mapboxgl-popup-content {
-    padding: 5px;
-    background-color: #EEE;
-    font-size: 1.2em;
+.control-button svg {
+    width: 20px;
+    height: 20px;
+    margin-top: 2px;
 }
 
+/* Search box */
+
+#search-control-input {
+    line-height: 0;
+    font-size: 1.5em;
+    width: 240px;
+}
+
+/* Feature information */
+
+.info-control .control-button-active,
+.info-control .control-button-active:not(:disabled):hover {
+    background-color: #80c0ff;
+}
+
+#info-control-info {
+    text-align: left;
+    background: rgba(240, 240, 240, 0.6);
+    border: 1px solid #c0c0c0;
+    display: inline-grid;
+    grid-template-columns: 1fr 4fr;
+    column-gap: 10px;
+    row-gap: 0.5em;
+    width: 240px;
+    margin-bottom: 0.5em;
+}
+.info-name {
+    font-weight: bold;
+    text-transform: capitalize;
+}
+
+.info-control-features {
+    width: 600px;
+    margin: 0;
+    overflow: auto;
+    font-size: 0.8em;
+    line-height: 1.1em;
+}
 /* End of file */

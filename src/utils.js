@@ -22,11 +22,15 @@ limitations under the License.
 
 //==============================================================================
 
+export const FEATURE_SOURCE_ID = 'features';
+
+//==============================================================================
+
 export function mapFeature(layer, id)
 {
     return {
         id: id.split('-')[1],
-        source: "features",
+        source: FEATURE_SOURCE_ID,
         sourceLayer: layer
     };
 }

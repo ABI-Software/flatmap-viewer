@@ -25,8 +25,6 @@ limitations under the License.
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
-import 'dat.gui/build/dat.gui.css';
-
 //==============================================================================
 
 // Load our stylesheet last so we can overide styling rules
@@ -35,10 +33,11 @@ import '../static/flatmap-viewer.css';
 
 //==============================================================================
 
-import {mapEndpoint} from './endpoints.js';
-import {parser} from './annotation.js';
+import {loadJSON, mapEndpoint} from './endpoints.js';
+import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
 
+import * as images from './images.js';
 import * as utils from './utils.js';
 
 //==============================================================================
@@ -56,21 +55,21 @@ class FlatMap
         this._created = mapDescription.created;
         this._describes = mapDescription.describes;
         this._mapNumber = mapDescription.number;
+        this._callback = mapDescription.callback;
+        this._layers = mapDescription.layers;
+        this._options = mapDescription.options;
         this._resolve = resolve;
 
+        if (this.options.searchable) {
+            this._searchIndex = new SearchIndex(this);
+        }
+
         this._idToAnnotation = new Map();
-        this._urlToAnnotation = new Map();
-        this._metadata = mapDescription.metadata;
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
-            const ann = parser.parseAnnotation(metadata.annotation);
-            if ('error' in metadata && !('error' in ann)) {
-                ann.error = metadata.error;
+            this.addAnnotation_(featureId, metadata);
+            if (this.options.searchable) {
+                this._searchIndex.indexMetadata(featureId, metadata);
             }
-            ann.label = metadata.label;
-            ann.layer = metadata.layer;
-            ann.queryable = 'geometry' in metadata
-                          && metadata.geometry.includes('Polygon');
-            this.addAnnotation_(featureId, ann);
         }
 
         // Set base of source URLs in map's style
@@ -80,7 +79,7 @@ class FlatMap
                 source.url = this.addUrlBase_(source.url);
             }
             if (source.tiles) {
-                const tiles = []
+                const tiles = [];
                 for (const tileUrl of source.tiles) {
                     tiles.push(this.addUrlBase_(tileUrl));
                 }
@@ -88,9 +87,14 @@ class FlatMap
             }
         }
 
-        // Save the map description as our options
+        // Ensure rounded background images (for feature labels) are loaded
 
-        this._options = mapDescription.options;
+        if (!('images' in mapDescription.options)) {
+            mapDescription.options.images = [];
+        }
+        for (const image of images.LABEL_BACKGROUNDS) {
+            mapDescription.options.images.push(image);
+        }
 
         // Set options for the Mapbox map
 
@@ -100,7 +104,7 @@ class FlatMap
             attributionControl: false
         };
 
-        if ('debug' in mapDescription.options) {
+        if (mapDescription.options.debug === true) {
             mapboxOptions.hash = true;
         }
         if ('max-zoom' in mapDescription.options) {
@@ -109,13 +113,16 @@ class FlatMap
         if ('min-zoom' in mapDescription.options) {
             mapboxOptions.minZoom = mapDescription.options['min-zoom'];
         }
-        if ('zoom' in mapDescription.options) {
-            mapboxOptions.zoom = mapDescription.options['zoom'];
-        }
 
         // Create the map
 
         this._map = new mapboxgl.Map(mapboxOptions);
+
+        // Show tile boundaries if debugging
+
+        if (mapDescription.options.debug === true) {
+            this._map.showTileBoundaries = true;
+        }
 
         // Don't wrap around at +/-180 degrees
 
@@ -127,11 +134,20 @@ class FlatMap
             this._map.addControl(new mapboxgl.FullscreenControl(), 'top-right');
         }
 
-        // Add navigation controls and disable rotation
+        // Disable map rotation
 
-        this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), 'bottom-right');
         this._map.dragRotate.disable();
         this._map.touchZoomRotate.disableRotation();
+
+        // Add navigation controls if option set
+
+        if (mapDescription.options.navigationControl) {
+            const value = mapDescription.options.navigationControl;
+            const position = ((typeof value === 'string')
+                           && (['top-left', 'top-right', 'bottom-right', 'bottom-left'].indexOf(value) >= 0))
+                           ? value : 'bottom-right';
+            this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), position);
+        }
 
         // Finish initialisation when all sources have loaded
 
@@ -139,22 +155,64 @@ class FlatMap
         this._map.on('load', this.finalise_.bind(this));
     }
 
-    finalise_()
-    //=========
+    async finalise_()
+    //===============
     {
+        // Load any images required by the map
+
+        for (const image of this._options.images) {
+            await this.addImage(image.id, image.url, '', image.options);
+        }
+
         // Layers have now loaded so finish setting up
 
+        const flatmap = this;
         this._userInteractions = new UserInteractions(this, ui => {
-            if ('state' in this._options) {
+            if ('state' in flatmap._options) {
                 // This is to ensure the layer switcher has been fully initialised...
                 setTimeout(() => {
-                    ui.setState(this._options.state);
-                    this._resolve(this);
+                    ui.setState(flatmap._options.state);
+                    flatmap._resolve(flatmap);
                 }, 200);
             } else {
-                this._resolve(this);
+                flatmap._resolve(flatmap);
             }
         });
+    }
+
+    /**
+     * Load images and patterns/textures referenced in style rules.
+     */
+    loadImage_(url)
+    //=============
+    {
+        return new Promise((resolve, reject) => {
+            this._map.loadImage(url, (error, image) => {
+                if (error) reject(error);
+                else resolve(image);
+            });
+        });
+    }
+
+    loadEncodedImage_(encodedImageUrl)
+    //================================
+    {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.src = encodedImageUrl;
+            image.onload = (e) => resolve(e.target);
+        });
+    }
+
+    async addImage(id, path, baseUrl, options={})
+    //===========================================
+    {
+        if (!this._map.hasImage(id)) {
+            const image = await (path.startsWith('data:image') ? this.loadEncodedImage_(path)
+                                                               : this.loadImage_(path.startsWith('/') ? this.addUrlBase_(path)
+                                                                                                      : new URL(path, baseUrl)));
+            this._map.addImage(id, image, options);
+        }
     }
 
     addUrlBase_(url)
@@ -218,22 +276,29 @@ class FlatMap
         return this._userInteractions.activeLayerNames;
     }
 
-    get annotatable()
-    //===============
-    {
-        return this._options.annotatable === true;
-    }
-
     get annotations()
     //===============
     {
         return this._idToAnnotation;
     }
 
+    annotation(featureId)
+    //===================
+    {
+        return this._idToAnnotation.get(featureId);
+    }
+
+    addAnnotation_(featureId, ann)
+    //============================
+    {
+        ann.featureId = featureId;
+        this._idToAnnotation.set(featureId, ann);
+    }
+
     get layers()
     //==========
     {
-        return this._options.layers;
+        return this._layers;
     }
 
     get map()
@@ -242,18 +307,45 @@ class FlatMap
         return this._map;
     }
 
+    get options()
+    //===========
+    {
+        return this._options;
+    }
+
+    get searchIndex()
+    //===============
+    {
+        return this._options.searchable ? this._searchIndex : null;
+    }
+
     get selectedFeatureLayerName()
     //============================
     {
         return this._userInteractions.selectedFeatureLayerName;
     }
 
-    fitBounds()
-    //=========
+    callback(type, features, ...args)
+    //===============================
+    {
+        if (this._callback) {
+            return this._callback(type, features, ...args);
+        }
+    }
+
+    setInitialPosition()
+    //==================
     {
         if ('bounds' in this._options) {
-            this._map.fitBounds(this._options['bounds'])
+            this._map.fitBounds(this._options['bounds']);
         }
+        if ('center' in this._options) {
+            this._map.setCenter(this._options['center']);
+        }
+        if ('zoom' in this._options) {
+            this._map.setZoom(this._options['zoom']);
+        }
+
     }
 
     modelsForFeature(featureId)
@@ -263,120 +355,15 @@ class FlatMap
         return ann ? ann.models : [];
     }
 
-    featureIdForUrl(url)
-    //==================
+    featureEvent(eventType, feature)
+    //==============================
     {
-        const ann = this._urlToAnnotation.get(url);
-        return (ann) ? ann.featureId : null;
-    }
-
-    layerIdForUrl(url)
-    //=================
-    {
-        const ann = this._urlToAnnotation.get(url);
-        return (ann) ? ann.layer : null;
-    }
-
-    getAnnotation(featureId)
-    //======================
-    {
-        return this._idToAnnotation.get(featureId);
-    }
-
-    annotationUrl(ann)
-    //================
-    {
-        return `${this._source}/${ann.layer}/${ann.id}`;
-    }
-
-    addAnnotation_(featureId, ann)
-    //============================
-    {
-        const url = this.annotationUrl(ann);
-        ann.url = url;
-        ann.featureId = featureId;
-        this._idToAnnotation.set(featureId, ann);
-        this._urlToAnnotation.set(url, ann);
-    }
-
-    delAnnotation_(featureId, ann)
-    //============================
-    {
-        const url = this.annotationUrl(ann);
-        this._idToAnnotation.delete(featureId);
-        this._urlToAnnotation.delete(url);
-    }
-
-    uniqueAnnotation(ann)
-    //===================
-    {
-        const url = this.annotationUrl(ann);
-        const storedAnn = this._urlToAnnotation.get(url);
-        return (storedAnn === undefined || storedAnn.id === ann.id);
-    }
-
-    async setAnnotation(featureId, ann)
-    //=================================
-    {
-        let updateAnnotations = true;
-        const mapFeature = utils.mapFeature(ann.layer, featureId);
-        if (featureId in this._metadata) {
-            if (ann.text === '') {
-                delete this._metadata[featureId];
-                this.delAnnotation_(featureId, ann);
-                this._map.removeFeatureState(mapFeature);
-            } else if (ann.text !== this._metadata[featureId].annotation) {
-                if (ann.layer !== this._metadata[featureId].layer) {
-                    console.log(`Annotation layer mismatch: ${ann} and ${this._metadata[featureId]}`);
-                }
-                const oldAnn = this.getAnnotation(featureId);
-                if (oldAnn
-                 && oldAnn.id !== ann.id
-                 && oldAnn.error !== 'duplicate-id') {
-                    const url = this.annotationUrl(oldAnn);
-                    this._urlToAnnotation.delete(url);
-                }
-                this.addAnnotation_(featureId, ann);
-                this._metadata[featureId].annotation = ann.text;
-            } else {
-                updateAnnotations = false;
-            }
-        } else {
-            if (ann.text !== '') {
-                this._metadata[featureId] = {
-                    annotation: ann.text,
-                    geometry: ann.queryable ? 'Polygon' : 'LineString',
-                    layer: ann.layer
-                }
-                this.addAnnotation_(featureId, ann);
-                this._map.setFeatureState(mapFeature, { 'annotated': true });
-            } else {
-                updateAnnotations = false;
-            }
-        }
-
-        if ('error' in ann) {
-            this._metadata[featureId].error = ann.error;
-            this._map.setFeatureState(mapFeature, { 'annotation-error': true });
-        } else {
-            if (featureId in this._metadata) {
-                delete this._metadata[featureId].error;
-            }
-            this._map.removeFeatureState(mapFeature, 'annotation-error');
-        }
-
-        if (updateAnnotations) {
-            const postAnnotations = await fetch(mapEndpoint(`flatmap/${this.id}/metadata`), {
-                headers: { "Content-Type": "application/json; charset=utf-8" },
-                method: 'POST',
-                body: JSON.stringify(this._metadata)
-            });
-            if (!postAnnotations.ok) {
-                const errorMsg = `Unable to update metadata for '${this.id}' map`;
-                console.log(errorMsg);
-                alert(errorMsg);
-            }
-        }
+        const properties = feature.properties;
+        this.callback(eventType, {
+            id: properties.id,
+            models: properties.models,
+            label: properties.label
+        });
     }
 
     resize()
@@ -417,6 +404,30 @@ class FlatMap
             this._userInteractions.setState(state);
         }
     }
+
+    clearResults()
+    //============
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.clearResults();
+        }
+    }
+
+    showPopup(featureId, content, options)
+    //====================================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.showPopup(featureId, content, options);
+        }
+    }
+
+    zoomToFeatures(featureIds)
+    //========================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.zoomToFeatures(featureIds);
+        }
+    }
 }
 
 //==============================================================================
@@ -429,8 +440,9 @@ class FlatMap
 export class MapManager
 {
     /* Create a MapManager */
-    constructor()
+    constructor(options={})
     {
+        this._options = options;
         this._maps = null;
         this._mapNumber = 0;
     }
@@ -512,12 +524,17 @@ export class MapManager
     *                                 been generated. If given then this exact map will be
     *                                 loaded.
     * @arg container {string} The id of the HTML container in which to display the map.
+    * @arg callback {function(string, Object)} A callback function, invoked when events occur with the map. The
+    *                                          first parameter gives the type of event, the second provides
+    *                                          details about the feature(s) the event is for.
     * @arg options {Object} Configurable options for the map.
-    * @arg options.annotatable {boolean} Allow features on a map to be annotated (this
-    *                                    requires the map server to run in ``annotate``
-    *                                    mode and is only for authoring).
-    * @arg options.debug {boolean} Enable debugging mode (currently only shows the map's
-    *                              position in the web page's URL).
+    * @arg options.debug {boolean} Enable debugging mode.
+    * @arg options.fullscreenControl {boolean} Add a ``Show full screen`` button to the map.
+    * @arg options.featureInfo {boolean} Show information about features as a tooltip. The tooltip is active
+    *                                    on highlighted features and, for non-highlighted features, when the
+    *                                    ``info`` control is enabled. More details are shown in debug mode.
+    * @arg options.navigationControl {boolean} Add navigation controls (zoom buttons) to the map.
+    * @arg options.searchable {boolean} Add a control to search for features on a map.
     * @example
     * const humanMap1 = mapManager.loadMap('humanV1', 'div-1');
     *
@@ -529,8 +546,8 @@ export class MapManager
     *                     {source: 'https://models.physiomeproject.org/workspace/585/rawfile/650adf9076538a4bf081609df14dabddd0eb37e7/Human_Body.pptx'},
     *                     'div-4');
     */
-    loadMap(identifier, container, options={})
-    //========================================
+    loadMap(identifier, container, callback, options={})
+    //==================================================
     {
         return new Promise(async(resolve, reject) => {
             try {
@@ -538,74 +555,71 @@ export class MapManager
                 if (map === null) {
                     throw new Error(`Unknown map for ${JSON.stringify(identifier)}`);
                 };
-                // Load the maps index file (its options)
 
-                const optionsResponse = await fetch(mapEndpoint(`flatmap/${map.id}/`), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!optionsResponse.ok) {
-                    throw new Error(`Missing index file for map '${map.id}'`);
-                }
-                const mapOptions = await optionsResponse.json();
+                // Load the maps index file
 
-                if (map.id !== mapOptions.id) {
+                const mapIndex = await loadJSON(`flatmap/${map.id}/`);
+                if (map.id !== mapIndex.id) {
                     throw new Error(`Map '${map.id}' has wrong ID in index`);
                 }
 
-                // Set the map's options
+                const mapOptions = Object.assign({}, this._options, options);
 
-                for (const [name, value] of Object.entries(options)) {
-                    mapOptions[name] = value;
+                // If bounds are not specified in options then set them
+
+                if (!('bounds' in options) && ('bounds' in mapIndex)) {
+                    mapOptions['bounds'] = mapIndex['bounds'];
                 }
 
-                // Set layer data if the layer just has an id specified
+                // Get details about the map's layers
 
-                for (let n = 0; n < mapOptions.layers.length; ++n) {
-                    const layer = mapOptions.layers[n];
-                    if (typeof layer === 'string') {
-                        mapOptions.layers[n] = {
-                            id: layer,
-                            description: layer.charAt(0).toUpperCase() + layer.slice(1),
-                            selectable: true
-                        };
+                let mapLayers = [];
+                if (mapIndex.version <= 1.0) {
+                    for (const layer of mapIndex.layers) {
+                        // Set layer data if the layer just has an id specified
+                        if (typeof layer === 'string') {
+                            mapLayers.push({
+                                id: layer,
+                                description: layer.charAt(0).toUpperCase() + layer.slice(1),
+                                selectable: true
+                            });
+                        } else {
+                            mapLayers.push(layer);
+                        }
                     }
+                } else {
+                    mapLayers = await loadJSON(`flatmap/${map.id}/layers`);
                 }
 
                 // Get the map's style file
 
-                const styleResponse = await fetch(mapEndpoint(`flatmap/${map.id}/style`), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!styleResponse.ok) {
-                    throw new Error(`Missing style file for map '${map.id}'`);
+                const mapStyle = await loadJSON(`flatmap/${map.id}/style`);
+
+                // Make sure the style has glyphs defined
+
+                if (!('glyphs' in mapStyle)) {
+                    mapStyle.glyphs = 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf';
                 }
-                const mapStyle = await styleResponse.json();
 
                 // Get the map's metadata
 
-                const metadataResponse = await fetch(mapEndpoint(`flatmap/${map.id}/metadata`), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!metadataResponse.ok) {
-                    reject(new Error(`Missing metadata for map '${map.id}'`));
-                }
-                const metadata = await metadataResponse.json();
+                const metadata = await loadJSON(`flatmap/${map.id}/metadata`);
 
                 // Display the map
 
                 this._mapNumber += 1;
                 const flatmap = new FlatMap(container, {
-                    id: map.id,
-                    source: map.source,
-                    describes: map.describes,
-                    style: mapStyle,
-                    options: mapOptions,
-                    metadata: metadata,
-                    number: this._mapNumber
-                }, resolve);
+                        id: map.id,
+                        source: map.source,
+                        describes: map.describes,
+                        style: mapStyle,
+                        options: mapOptions,
+                        layers: mapLayers,
+                        metadata: metadata,
+                        number: this._mapNumber,
+                        callback: callback
+                    },
+                    resolve);
 
                 return flatmap;
 
