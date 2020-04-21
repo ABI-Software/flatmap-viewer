@@ -414,6 +414,11 @@ export class UserInteractions
     {
         this._contextMenu.hide();
 
+        // Highlight the feature
+
+        this.unhighlightFeatures_();
+        this.highlightFeature_(feature);
+
         // Zoom map to feature
 
         this._map.fitBounds(bounds(feature), {
