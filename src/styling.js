@@ -238,7 +238,7 @@ export class FeatureLargeSymbolLayer
             'source-layer': sourceLayer,
             'type': 'symbol',
             'minzoom': 3,
-            'maxzoom': 7,
+            //'maxzoom': 7,
             'filter': [
                 'all',
                 ['<=', 'scale', 6],
