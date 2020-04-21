@@ -87,12 +87,14 @@ class FlatMap
             }
         }
 
-        // Ensure rounded background image (for feature labels) is loaded
+        // Ensure rounded background images (for feature labels) are loaded
 
         if (!('images' in mapDescription.options)) {
             mapDescription.options.images = [];
         }
-        mapDescription.options.images.push(images.ROUNDED_RECT);
+        for (const image of images.LABEL_BACKGROUNDS) {
+            mapDescription.options.images.push(image);
+        }
 
         // Set options for the Mapbox map
 

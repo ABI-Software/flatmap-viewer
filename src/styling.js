@@ -247,7 +247,7 @@ export class FeatureLargeSymbolLayer
             'layout': {
                 'visibility': 'visible',
                 'icon-allow-overlap': true,
-                'icon-image': 'rounded-background',
+                'icon-image': 'label-background',
                 'text-allow-overlap': true,
                 'text-field': '{label}',
                 'text-font': ['Open Sans Regular'],
@@ -287,7 +287,7 @@ export class FeatureSmallSymbolLayer
             'layout': {
                 'visibility': 'visible',
                 'icon-allow-overlap': true,
-                'icon-image': 'rounded-background',
+                'icon-image': 'label-background',
                 'text-allow-overlap': true,
                 'text-field': '{label}',
                 'text-font': ['Open Sans Regular'],
