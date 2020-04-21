@@ -412,6 +412,8 @@ export class UserInteractions
     zoomTo_(feature)
     //==============
     {
+        // Hide context menu if it's open
+
         this._contextMenu.hide();
 
         // Highlight the feature
