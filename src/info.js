@@ -80,7 +80,6 @@ export class InfoControl
             } else {
                 this._active = false;
                 button.classList.remove('control-button-active');
-                this.removePopup_();
             }
         }
     }
