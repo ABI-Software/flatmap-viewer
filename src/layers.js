@@ -29,9 +29,9 @@ import * as utils from './utils.js';
 
 class MapFeatureLayer
 {
-    constructor(map, layer)
+    constructor(flatmap, layer)
     {
-        this._map = map;
+        this._map = flatmap.map;
         this._id = layer.id;
         this._styleLayerIds = [];
 
@@ -42,8 +42,10 @@ class MapFeatureLayer
 
         this._lineLayerId = this.addStyleLayer_(style.FeatureLineLayer.style);
 
-        this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);
-        this.addStyleLayer_(style.FeatureSmallSymbolLayer.style);
+        if (!flatmap.options.tooltips) {
+            this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);
+            this.addStyleLayer_(style.FeatureSmallSymbolLayer.style);
+        }
     }
 
     get id()
@@ -145,7 +147,7 @@ export class LayerManager
     {
         this._mapLayers.set(layer.id, layer);
 
-        const layers = new MapFeatureLayer(this._map, layer);
+        const layers = new MapFeatureLayer(this._flatmap, layer);
         const layerId = this._flatmap.mapLayerId(layer.id);
         this._layers.set(layerId, layers);
 
