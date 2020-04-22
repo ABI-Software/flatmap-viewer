@@ -104,15 +104,16 @@ class FlatMap
             attributionControl: false
         };
 
-        if (mapDescription.options.debug === true) {
-            mapboxOptions.hash = true;
-        }
         if ('max-zoom' in mapDescription.options) {
             mapboxOptions.maxZoom = mapDescription.options['max-zoom'];
         }
         if ('min-zoom' in mapDescription.options) {
             mapboxOptions.minZoom = mapDescription.options['min-zoom'];
         }
+
+        // Only show location in address bar when debugging
+
+        mapboxOptions.hash = (mapDescription.options.debug === true);
 
         // Create the map
 
