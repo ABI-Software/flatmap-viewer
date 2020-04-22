@@ -569,8 +569,9 @@ export class UserInteractions
         }
 
         if (html === '') {
-            // We should really find smallest polygon if 'fill' layer
-            const labelledFeatures = features.filter(feature => 'label' in feature.properties);
+            // We find smallest feature
+            const labelledFeatures = features.filter(feature => 'label' in feature.properties)
+                                             .sort((a, b) => (a.properties.area - b.properties.area));
             if (labelledFeatures.length > 0) {
                 const feature = labelledFeatures[0];
                 this._activeFeature = feature;
