@@ -34,6 +34,7 @@ import {ContextMenu} from './contextmenu.js';
 import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
 //import {QueryInterface} from './query.js';
+import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
 
 import * as utils from './utils.js';
@@ -564,11 +565,9 @@ export class UserInteractions
         }
 
         let html = '';
-        if (this._infoControl) {
-            html = this._infoControl.featureInformation(features);  // Do this in control's constructor...
-        }
-
-        if (html === '') {
+        if (this._infoControl && this._flatmap.options.debug) {
+            html = this._infoControl.featureInformation(features);
+        } else {
             // We find smallest feature
             const labelledFeatures = features.filter(feature => 'label' in feature.properties)
                                              .sort((a, b) => (a.properties.area - b.properties.area));
@@ -579,7 +578,18 @@ export class UserInteractions
                 if (feature.layer.type === 'symbol') {
                     this._map.getCanvas().style.cursor = 'pointer';
                 } else if (this._flatmap.options.tooltips) {
-                    html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
+                    if (this._infoControl && this._infoControl.active) {
+                        const htmlList = [];
+                        for (const prop of indexedProperties) {
+                            if (prop in feature.properties) {
+                                htmlList.push(`<span class="info-name">${prop}:</span>`);
+                                htmlList.push(`<span class="info-value">${feature.properties[prop]}</span>`);
+                            }
+                        }
+                        html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
+                    } else {
+                        html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
+                    }
                 }
             }
         }

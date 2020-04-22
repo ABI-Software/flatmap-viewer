@@ -39,6 +39,12 @@ export class InfoControl
         this._active = false;
     }
 
+    get active()
+    //==========
+    {
+        return this._active;
+    }
+
     getDefaultPosition()
     //==================
     {
