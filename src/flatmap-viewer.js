@@ -93,7 +93,16 @@ class FlatMap
             mapDescription.options.images = [];
         }
         for (const image of images.LABEL_BACKGROUNDS) {
-            mapDescription.options.images.push(image);
+            let found = false;
+            for (const im of mapDescription.options.images) {
+                if (image.id === im.id) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                mapDescription.options.images.push(image);
+            }
         }
 
         // Set options for the Mapbox map

@@ -26,6 +26,15 @@ limitations under the License.
 
 export const LABEL_BACKGROUNDS = [
     {
+        id: 'label-background', // white-background
+        url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAC8AAAAmCAIAAADbSlUzAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAAJOgAACToAYJjBRwAAACVSURBVFhH7dixDoJAEIThfXqMBcYKrTQ+jkYSStDYkVhZINxyEshJcZXJtC7FfNlmur9eyXb7Vqf6+bI9HUKyWkt5e4RlOF9ycerjsqbqpfefuKzNJawBWIOxBmMNxhqMNRhrMNZgrMFYg7EGYw3GGow1GGuw5dU07y4ua22nUlb3uKxd80IOx1Pjxp+f4P/P+ZButl+YrbXnPs+YmAAAAABJRU5ErkJggg==',
+        options: {
+            content: [21, 4, 28, 33],
+            stretchX: [[21, 28]],
+            stretchY: [[4, 33]]
+        }
+    },
+    {
         id: 'xlabel-background', // active-label
         url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAmCAYAAAD9XArwAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV/TSotUROwg4pChioIFURFHrUIRKoRaoVUHk0s/hCYNSYqLo+BacPBjserg4qyrg6sgCH6AODk6KbpIif9LCi1iPTjux7t7j7t3gFArMc0KjAGabpupRFzMZFfE4CsC6EEIIxiWmWXMSlISbcfXPXx8vYvxrPbn/hxdas5igE8knmGGaROvE09t2gbnfeIIK8oq8TnxqEkXJH7kuuLxG+eCywLPjJjp1BxxhFgstLDSwqxoasSTxFFV0ylfyHisct7irJUqrHFP/sJwTl9e4jrNASSwgEVIEKGggg2UYCNGq06KhRTtx9v4+12/RC6FXBtg5JhHGRpk1w/+B7+7tfIT415SOA50vDjOxyAQ3AXqVcf5Pnac+gngfwau9Ka/XAOmP0mvNrXoEdC9DVxcNzVlD7jcAfqeDNmUXclPU8jngfcz+qYs0HsLdK56vTX2cfoApKmr5A1wcAgMFSh7rc27Q629/Xum0d8PfM1yq13h+DEAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfkBBEJExO2pF7NAAAAqUlEQVQ4y+3OIQ6CYBiH8ef9MDhxc8yABjeP4LwAx3BWTwE3oHkMrBa7JJN3YBogfQkjr0HcDCg0C0/+7f2/AjghycLFj0ECYMarHPRcUoQx25uEJMsR/lUQj4YUtQ+K9aC+1IgABPFc/NjUcy1JYD5++tXM0LEe9rCHPfwXzDu43ChV2qaUKjWWLFLUfkdqLVnkXDiWK4LDkMlckCkwfs8p1cmSbfbs7k+jIi/gASaPYQAAAABJRU5ErkJggg==',
         options: {
@@ -35,7 +44,7 @@ export const LABEL_BACKGROUNDS = [
         }
     },
     {
-        id: 'label-background', // inactive-label
+        id: 'ylabel-background', // inactive-label
         url: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAmCAYAAAD9XArwAAABhWlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV/TSotUROwg4pChioIFURFHrUIRKoRaoVUHk0s/hCYNSYqLo+BacPBjserg4qyrg6sgCH6AODk6KbpIif9LCi1iPTjux7t7j7t3gFArMc0KjAGabpupRFzMZFfE4CsC6EEIIxiWmWXMSlISbcfXPXx8vYvxrPbn/hxdas5igE8knmGGaROvE09t2gbnfeIIK8oq8TnxqEkXJH7kuuLxG+eCywLPjJjp1BxxhFgstLDSwqxoasSTxFFV0ylfyHisct7irJUqrHFP/sJwTl9e4jrNASSwgEVIEKGggg2UYCNGq06KhRTtx9v4+12/RC6FXBtg5JhHGRpk1w/+B7+7tfIT415SOA50vDjOxyAQ3AXqVcf5Pnac+gngfwau9Ka/XAOmP0mvNrXoEdC9DVxcNzVlD7jcAfqeDNmUXclPU8jngfcz+qYs0HsLdK56vTX2cfoApKmr5A1wcAgMFSh7rc27Q629/Xum0d8PfM1yq13h+DEAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfkBBEJEyeXEKp4AAAAwklEQVQ4y+3ULU/DUBhA4XO/2rUgwV1ZBWLJBP9fI0gQuMktWcJSwUq79n68qAoSGnCYHv3oowBD09jz88t1CpGcBQCtFYWz3D3tNuz3EXgojqdWLt0gKWWZSynLpRvkeGqFpinVuf2QsnDc3mz4qe7zyjgF9BQidVWyVF2VTCGicxa0VotQa0XOguaPrXCFK1zhv8D5VkvNt9POGvphXIT9MOKsAbyvfl2z95UCCrw3769vfYjp2+ydNdxvH2sOh/QFh8F7PWWiL5EAAAAASUVORK5CYII=',
         options: {
             content: [4, 4, 5, 33],
