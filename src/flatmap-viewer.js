@@ -444,8 +444,32 @@ export class MapManager
     constructor(options={})
     {
         this._options = options;
-        this._maps = null;
+
+        this._mapList = [];
         this._mapNumber = 0;
+
+        this._initialisingMutex = new utils.Mutex();
+        this._initialised = false;
+    }
+
+    async ensureInitialised_()
+    //========================
+    {
+        return await this._initialisingMutex.dispatch(async () => {
+            if (!this._initialised) {
+                this._mapList = await loadJSON('');
+                this._initialised = true;
+            }
+        });
+    }
+
+    findMap_(identifier)
+    //==================
+    {
+        return new Promise(async(resolve, reject) => {
+            await this.ensureInitialised_();
+            resolve(this.lookupMap_(identifier));
+        });
     }
 
     latestMap_(mapDescribes)
@@ -453,7 +477,7 @@ export class MapManager
     {
         let latestMap = null;
         let lastCreatedTime = '';
-        for (const map of this._maps) {
+        for (const map of this._mapList) {
             if (mapDescribes === map.describes
              || mapDescribes === map.id
              || mapDescribes === map.source) {
@@ -488,27 +512,6 @@ export class MapManager
             mapDescribes = identifier;
         }
         return this.latestMap_(mapDescribes);
-    }
-
-    findMap_(identifier)
-    //==================
-    {
-        return new Promise(async(resolve, reject) => {
-            if (this._maps === null) {
-                // Find what maps we have available
-                const response = await fetch(mapEndpoint(), {
-                    headers: { "Accept": "application/json; charset=utf-8" },
-                    method: 'GET'
-                });
-                if (!response.ok) {
-                    throw new Error(`Cannot access ${mapEndpoint()}`);
-                }
-                this._maps = await response.json();
-                resolve(this.lookupMap_(identifier));
-            } else {
-                resolve(this.lookupMap_(identifier));
-            }
-        });
     }
 
    /**
