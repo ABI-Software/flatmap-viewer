@@ -259,7 +259,7 @@ export class FeatureLargeSymbolLayer
             'paint': {
                 'text-color': [
                     'case',
-                    ['boolean', ['feature-state', 'active'], false], '#fff',
+                    ['boolean', ['feature-state', 'active'], false], '#8300bf',
                     '#000'
                 ]
             }
@@ -299,7 +299,7 @@ export class FeatureSmallSymbolLayer
             'paint': {
                 'text-color': [
                     'case',
-                    ['boolean', ['feature-state', 'active'], false], '#fff',
+                    ['boolean', ['feature-state', 'active'], false], '#8300bf',
                     '#000'
                 ]
             }
