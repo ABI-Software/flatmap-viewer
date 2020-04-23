@@ -463,6 +463,27 @@ export class MapManager
         });
     }
 
+    latestMaps()
+    //==========
+    {
+        return new Promise(async(resolve, reject) => {
+            await this.ensureInitialised_();
+            const latestMaps = {};
+            for (const map of this._mapList) {
+                const describes = ('describes' in map) ? map.describes : map.id;
+                if (!(describes in latestMaps)) {
+                    latestMaps[describes] = map;
+                } else if ('created' in map) {
+                    if (!('created' in latestMaps[describes])
+                      || (latestMaps[describes].created < map.created)) {
+                    latestMaps[describes] = map;
+                    }
+                }
+            }
+            resolve(latestMaps);  // sort/filter id, created
+        });
+    }
+
     findMap_(identifier)
     //==================
     {
