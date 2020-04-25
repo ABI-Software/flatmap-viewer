@@ -59,6 +59,7 @@ class FlatMap
         this._layers = mapDescription.layers;
         this._options = mapDescription.options;
         this._resolve = resolve;
+        this._map = null;
 
         if (this.options.searchable) {
             this._searchIndex = new SearchIndex(this);
@@ -374,6 +375,15 @@ class FlatMap
             models: properties.models,
             label: properties.label
         });
+    }
+
+    close()
+    //=====
+    {
+        if (this._map) {
+            this._map.remove();
+            this._map = null;
+        }
     }
 
     resize()
