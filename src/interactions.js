@@ -578,6 +578,7 @@ export class UserInteractions
                 if (feature.layer.type === 'symbol') {
                     this._map.getCanvas().style.cursor = 'pointer';
                 } else if (this._flatmap.options.tooltips) {
+                    this._map.getCanvas().style.cursor = 'pointer';
                     if (this._infoControl && this._infoControl.active) {
                         const htmlList = [];
                         for (const prop of indexedProperties) {
@@ -612,12 +613,20 @@ export class UserInteractions
     clickEvent_(event)
     //================
     {
-        const symbolFeatures = this._map.queryRenderedFeatures(event.point)
-                                        .filter(f => (f.layer.type === 'symbol'));
-        if (symbolFeatures.length) {
-            this._lastClickedLocation = event.lngLat;
-            for (const feature of symbolFeatures) {
-                this._flatmap.featureEvent('click', feature);
+        // Also click on this._activeFeature
+        if (this._flatmap.options.tooltips) {
+            if (this._activeFeature !== null) {
+                this._lastClickedLocation = this._activeFeature.properties.centroid;
+                this._flatmap.featureEvent('click', this._activeFeature);
+            }
+        } else {
+            const symbolFeatures = this._map.queryRenderedFeatures(event.point)
+                                            .filter(f => (f.layer.type === 'symbol'));
+            if (symbolFeatures.length) {
+                this._lastClickedLocation = event.lngLat;
+                for (const feature of symbolFeatures) {
+                    this._flatmap.featureEvent('click', feature);
+                }
             }
         }
     }
