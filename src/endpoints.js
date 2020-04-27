@@ -40,8 +40,11 @@ export async function loadJSON(relativePath)
 {
     const url = mapEndpoint(relativePath);
     const response = await fetch(url, {
-        headers: { "Accept": "application/json; charset=utf-8" },
-        method: 'GET'
+        method: 'GET',
+        headers: {
+            "Accept": "application/json; charset=utf-8",
+            "Cache-Control": "no-store"
+        }
     });
     if (!response.ok) {
         throw new Error(`Cannot access ${url}`);
