@@ -577,7 +577,7 @@ export class UserInteractions
         if (this._infoControl && this._flatmap.options.debug) {
             html = this._infoControl.featureInformation(features, event.lngLat);
         } else {
-            // We find smallest feature
+            // We find smallest feature that isn't an organ
             const labelledFeatures = features.filter(feature => 'label' in feature.properties)
                                              .sort((a, b) => (a.properties.area - b.properties.area));
             if (labelledFeatures.length > 0) {
@@ -597,7 +597,7 @@ export class UserInteractions
                             }
                         }
                         html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
-                    } else {
+                    } else if (!('organ' in feature.properties)) {
                         html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
                     }
                 }

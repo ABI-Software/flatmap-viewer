@@ -42,8 +42,9 @@ class MapFeatureLayer
 
         this._lineLayerId = this.addStyleLayer_(style.FeatureLineLayer.style);
 
+        this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);
+
         if (!flatmap.options.tooltips) {
-            this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);
             this.addStyleLayer_(style.FeatureSmallSymbolLayer.style);
         }
     }

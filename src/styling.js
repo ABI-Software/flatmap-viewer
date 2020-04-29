@@ -241,7 +241,7 @@ export class FeatureLargeSymbolLayer
             //'maxzoom': 7,
             'filter': [
                 'all',
-                ['<=', 'scale', 6],
+                ['has', 'organ'],
                 ['has', 'label']
             ],
             'layout': {
