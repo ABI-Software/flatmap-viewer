@@ -109,13 +109,27 @@ export class InfoControl
             // Limit the number of properties we're displaying for
             // legibility and performance
             const displayProperties = [
+                'id',
                 'type',
                 'properties',
+                'layer' //,
+                //'source',
+                //'sourceLayer',
+                //'state'
+            ];
+
+            const propertiesProperties = [
                 'id',
-                'layer',
-                'source',
-                'sourceLayer',
-                'state'
+                'class',
+                'label',
+                'area',
+                'length'
+            ];
+
+            const layerProperties = [
+                'id',
+                'type',
+                'filter'
             ];
 
             // Do we filter for smallest properties.area (except lines have area == 0)
@@ -124,7 +138,23 @@ export class InfoControl
             const displayFeatures = featureList.map(feat => {
                 const displayFeat = {};
                 displayProperties.forEach(prop => {
-                    displayFeat[prop] = feat[prop];
+                    if (prop === 'properties') {
+                        const properties = feat[prop];
+                        const propertiesProps = {};
+                        propertiesProperties.forEach(prop => {
+                            propertiesProps[prop] = properties[prop];
+                        });
+                        displayFeat[prop] = propertiesProps;
+                    } else if (prop === 'layer') {
+                        const layer = feat[prop];
+                        const layerProps = {};
+                        layerProperties.forEach(prop => {
+                            layerProps[prop] = layer[prop];
+                        });
+                        displayFeat[prop] = layerProps;
+                    } else {
+                        displayFeat[prop] = feat[prop];
+                    }
                 });
                 return displayFeat;
             });
