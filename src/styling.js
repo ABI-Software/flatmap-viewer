@@ -147,12 +147,17 @@ export class FeatureFillLayer
                 'fill-sort-key': ['get', 'scale']
             },
             'paint': {
-                'fill-color': PAINT_STYLES['fill-color'],
+                'fill-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], '#fcc',
+                    ['boolean', ['feature-state', 'highlighted'], false], '#cfc',
+                    PAINT_STYLES['fill-color']
+                ],
                 'fill-opacity': [
                     'case',
-                    ['boolean', ['feature-state', 'active'], false], 0.3,
-                    ['boolean', ['feature-state', 'highlighted'], false], 0.3,
-                    0.05
+                    ['boolean', ['feature-state', 'active'], false], 0.7,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.5,
+                    0.7
                 ]
             }
         };
@@ -218,7 +223,7 @@ export class FeatureLineLayer
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     0.3
                 ],
-                'line-width': 1.5 // lineWidth_(PAINT_STYLES['line-stroke-width'])
+                'line-width': 7 // lineWidth_(PAINT_STYLES['line-stroke-width'])
             }
         };
     }
