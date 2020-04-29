@@ -482,6 +482,19 @@ export class MapManager
         });
     }
 
+    allMaps()
+    //=======
+    {
+        return new Promise(async(resolve, reject) => {
+            await this.ensureInitialised_();
+            const allMaps = {};
+            for (const map of this._mapList) {
+                allMaps[map.id] = map;
+            }
+            resolve(allMaps);
+        });
+    }
+
     latestMaps()
     //==========
     {
@@ -499,7 +512,7 @@ export class MapManager
                     }
                 }
             }
-            resolve(latestMaps);  // sort/filter id, created
+            resolve(latestMaps);
         });
     }
 

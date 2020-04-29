@@ -15,17 +15,29 @@ window.onload = async function() {
         ]
     });
 
-    const maps = await mapManager.latestMaps();
+    const maps = await mapManager.allMaps();
 
     const options = [];
     const selector = document.getElementById('map-selector');
     for (const map of Object.values(maps)) {
-        const option = ('describes' in map) ? map.describes : map.id;
-        const text = ('describes' in map) ? `${map.id} -- ${map.describes}` : option;
-        options.push(`<option value="${option}">${text}</option>`);
+        const text = [ map.id ];
+        if ('describes' in map) {
+            text.push(map.describes);
+        }
+        let sortKey = '';
+        if ('created' in map) {
+            text.push(map.created);
+            sortKey = map.created;
+        }
+        options.push({
+            option: `<option value="${map.id}">${text.join(' -- ')}</option>`,
+            sortKey: sortKey
+        });
     }
-    options.sort()
-    selector.innerHTML = options.join('');
+    selector.innerHTML = options.sort((a, b) => (a.sortKey < b.sortKey) ?  1
+                                              : (a.sortKey > b.sortKey) ? -1
+                                              : 0)
+                                .map(o => o.option).join('');
 
     let currentMap = null;
     const loadMap = (id) => {
