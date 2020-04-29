@@ -425,14 +425,6 @@ class FlatMap
         }
     }
 
-    clearResults()
-    //============
-    {
-        if (this._userInteractions !== null) {
-            this._userInteractions.clearResults();
-        }
-    }
-
     showPopup(featureId, content, options)
     //====================================
     {
@@ -441,11 +433,19 @@ class FlatMap
         }
     }
 
-    zoomToFeatures(featureIds)
-    //========================
+    clearSearchResults()
+    //==================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.zoomToFeatures(featureIds);
+            this._userInteractions.clearSearchResults();
+        }
+    }
+
+    showSearchResults(featureIds)
+    //===========================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.showSearchResults(featureIds);
         }
     }
 }

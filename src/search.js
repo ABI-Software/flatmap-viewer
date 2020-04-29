@@ -149,7 +149,7 @@ export class SearchIndex
     clearResults()
     //============
     {
-        this._flatmap.clearResults();
+        this._flatmap.clearSearchResults();
     }
 
     search(text)
@@ -159,7 +159,7 @@ export class SearchIndex
             prefix: true
         });
 
-        this._flatmap.zoomToFeatures(results.map(result => this._featureIds[result.id]));
+        this._flatmap.showSearchResults(results.map(result => this._featureIds[result.id]));
     }
 }
 
