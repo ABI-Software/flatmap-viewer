@@ -90,8 +90,8 @@ export class InfoControl
         }
     }
 
-    featureInformation(features)
-    //==========================
+    featureInformation(features, location)
+    //====================================
     {
         // Get all features if the control is active otherwise just the highlighted ones
 
@@ -135,7 +135,7 @@ export class InfoControl
                 2
             );
 
-            html = `<pre class="info-control-features">${JSON.stringify(e.lngLat)}\n${content}</pre>`;
+            html = `<pre class="info-control-features">${JSON.stringify(location)}\n${content}</pre>`;
         } else {
             const displayValues = new Map();
             for (const feature of featureList) {
@@ -153,7 +153,7 @@ export class InfoControl
             const htmlList = [];
 
             if (this._flatmap.options.showPosition) {
-                const position = e.lngLat;
+                const position = location;
                 htmlList.push(`<span class="info-name">Position:</span>`);
                 htmlList.push(`<span class="info-value">(${position.lng}, ${position.lat})</span>`);
             }

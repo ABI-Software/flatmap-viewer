@@ -575,7 +575,7 @@ export class UserInteractions
 
         let html = '';
         if (this._infoControl && this._flatmap.options.debug) {
-            html = this._infoControl.featureInformation(features);
+            html = this._infoControl.featureInformation(features, event.lngLat);
         } else {
             // We find smallest feature
             const labelledFeatures = features.filter(feature => 'label' in feature.properties)
