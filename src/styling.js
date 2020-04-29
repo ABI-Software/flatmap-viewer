@@ -143,6 +143,9 @@ export class FeatureFillLayer
                 '$type',
                 'Polygon'
             ],
+            'layout': {
+                'fill-sort-key': ['get', 'scale']
+            },
             'paint': {
                 'fill-color': PAINT_STYLES['fill-color'],
                 'fill-opacity': [
