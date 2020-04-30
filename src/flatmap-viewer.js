@@ -157,13 +157,21 @@ class FlatMap
             const position = ((typeof value === 'string')
                            && (['top-left', 'top-right', 'bottom-right', 'bottom-left'].indexOf(value) >= 0))
                            ? value : 'bottom-right';
-            this._map.addControl(new mapboxgl.NavigationControl({showCompass: false}), position);
+            this._map.addControl(new mapboxgl.NavigationControl({showCompass: true}), position);
+            this._map.resetNorth = e => this.resetMap();
         }
 
         // Finish initialisation when all sources have loaded
 
         this._userInteractions = null;
         this._map.on('load', this.finalise_.bind(this));
+
+        this._initialState = null;
+        this._map.on('idle', () => {
+            if (this._initialState === null) {
+                this._initialState = this.getState();
+            }
+        });
     }
 
     async finalise_()
@@ -189,6 +197,14 @@ class FlatMap
                 flatmap._resolve(flatmap);
             }
         });
+    }
+
+    resetMap()
+    //========
+    {
+        if (this._initialState !== null) {
+            this.setState(this._initialState);
+        }
     }
 
     /**

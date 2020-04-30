@@ -78,6 +78,13 @@ li.flatmap-contextmenu-item:hover {
     line-height: 1.1em;
 }
 
+
+/* Control buttons */
+
+.mapboxgl-ctrl button.mapboxgl-ctrl-compass .mapboxgl-ctrl-icon {
+    background-image: url("images/reset-map.png");
+}
+
 /* Tooltips */
 
 .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
