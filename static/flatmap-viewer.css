@@ -78,11 +78,43 @@ li.flatmap-contextmenu-item:hover {
     line-height: 1.1em;
 }
 
+/* Navigation control buttons */
 
-/* Control buttons */
-
-.mapboxgl-ctrl button.mapboxgl-ctrl-compass .mapboxgl-ctrl-icon {
-    background-image: url("images/reset-map.png");
+.mapboxgl-ctrl button.navigation-zoom-in {
+    background-image: url("images/zoom-in-button.png");
+}
+.mapboxgl-ctrl button.navigation-zoom-in:active {
+    background-image: url("images/zoom-in-active.png");
+}
+.mapboxgl-ctrl button.navigation-zoom-out {
+    background-image: url("images/zoom-out-button.png");
+}
+.mapboxgl-ctrl button.navigation-zoom-out:active {
+    background-image: url("images/zoom-out-active.png");
+}
+.mapboxgl-ctrl button.navigation-reset {
+    background-image: url("images/reset-map-button.png");
+}
+.mapboxgl-ctrl button.navigation-reset:active {
+    background-image: url("images/reset-map-active.png");
+}
+.navigation-group button {
+    display: block;
+    width:36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: -1px -1px;
+    border: none;
+    box-shadow: none;
+}
+.navigation-group button:focus {
+  outline: 0;
+}
+/* establish desired focus ring appearance for appropriate input modalities */
+.navigation-group button:focus-visible {
+  outline: 2px solid blue;
 }
 
 /* Tooltips */

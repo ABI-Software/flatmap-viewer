@@ -34,6 +34,7 @@ import '../static/flatmap-viewer.css';
 //==============================================================================
 
 import {loadJSON, mapEndpoint} from './endpoints.js';
+import {NavigationControl} from './controls.js';
 import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
 
@@ -157,8 +158,7 @@ class FlatMap
             const position = ((typeof value === 'string')
                            && (['top-left', 'top-right', 'bottom-right', 'bottom-left'].indexOf(value) >= 0))
                            ? value : 'bottom-right';
-            this._map.addControl(new mapboxgl.NavigationControl({showCompass: true}), position);
-            this._map.resetNorth = e => this.resetMap();
+            this._map.addControl(new NavigationControl(this), position);
         }
 
         // Finish initialisation when all sources have loaded
