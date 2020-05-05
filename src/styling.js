@@ -157,7 +157,7 @@ export class FeatureFillLayer
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.7,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.5,
-                    0.7
+                    0.05
                 ]
             }
         };
@@ -223,7 +223,7 @@ export class FeatureLineLayer
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     0.3
                 ],
-                'line-width': 7 // lineWidth_(PAINT_STYLES['line-stroke-width'])
+                'line-width': 1.5 // lineWidth_(PAINT_STYLES['line-stroke-width'])
             }
         };
     }
@@ -249,7 +249,7 @@ export class FeatureLargeSymbolLayer
             //'maxzoom': 7,
             'filter': [
                 'all',
-                ['has', 'organ'],
+                ['<=', 'scale', 6],
                 ['has', 'label']
             ],
             'layout': {
