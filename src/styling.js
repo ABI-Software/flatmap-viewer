@@ -221,9 +221,9 @@ export class FeatureLineLayer
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
-                    0.3
+                    0.1
                 ],
-                'line-width': 7 // lineWidth_(PAINT_STYLES['line-stroke-width'])
+                'line-width': 0.5
             }
         };
     }
