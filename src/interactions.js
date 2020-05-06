@@ -582,7 +582,7 @@ export class UserInteractions
         }
 
         let html = '';
-        if (this._infoControl && this._flatmap.options.debug) {
+        if (this._flatmap.options.debug && this._infoControl && this._infoControl.active) {
             html = this._infoControl.featureInformation(features, event.lngLat);
         } else {
             let labelledFeatures = features.filter(feature => 'label' in feature.properties)
@@ -610,7 +610,7 @@ export class UserInteractions
                     this._map.getCanvas().style.cursor = 'pointer';
                 } else if (this._flatmap.options.tooltips) {
                     this._map.getCanvas().style.cursor = 'pointer';
-                    if (this._infoControl && this._infoControl.active) {
+                    if (this._flatmap.options.debug || (this._infoControl && this._infoControl.active)) {
                         const htmlList = [];
                         for (const prop of indexedProperties) {
                             if (prop in feature.properties) {
