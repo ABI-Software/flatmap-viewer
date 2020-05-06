@@ -41,6 +41,14 @@ import * as utils from './utils.js';
 
 //==============================================================================
 
+
+// smallest `group` features when zoom < SHOW_DETAILS_ZOOM if there are some, otherwise smallest feature
+// if no non-group features then smallest group one
+
+const SHOW_DETAILS_ZOOM = 6;
+
+//==============================================================================
+
 function bounds(feature)
 //======================
 {
@@ -577,11 +585,23 @@ export class UserInteractions
         if (this._infoControl && this._flatmap.options.debug) {
             html = this._infoControl.featureInformation(features, event.lngLat);
         } else {
-            // smallest `group` features when zoom < 7 if there are some, otherwise smallest feature
+            let labelledFeatures = features.filter(feature => 'label' in feature.properties)
+                                           .sort((a, b) => (a.properties.area - b.properties.area));
 
-            // We find smallest feature that isn't an organ
-            const labelledFeatures = features.filter(feature => ('label' in feature.properties && !feature.properties.group))
-                                             .sort((a, b) => (a.properties.area - b.properties.area));
+            if (labelledFeatures.length > 0) {
+                if (this._map.getZoom() >= SHOW_DETAILS_ZOOM) {
+                    const detailFeatures = labelledFeatures.filter(feature => !feature.properties.group);
+                    if (detailFeatures.length) {
+                        labelledFeatures = detailFeatures;
+                    }
+                } else {
+                    const groupFeatures = labelledFeatures.filter(feature => feature.properties.group);
+                    if (groupFeatures.length) {
+                        labelledFeatures = groupFeatures;
+                    }
+                }
+            }
+
             if (labelledFeatures.length > 0) {
                 const feature = labelledFeatures[0];
                 this._activeFeature = feature;
