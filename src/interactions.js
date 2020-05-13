@@ -587,16 +587,14 @@ export class UserInteractions
             let labelledFeatures = features.filter(feature => 'label' in feature.properties)
                                            .sort((a, b) => (a.properties.area - b.properties.area));
             if (labelledFeatures.length > 0) {
-                if (this._map.getZoom() < SHOW_DETAILS_ZOOM) {
-                    // Favour group features
-                    const groupFeatures = labelledFeatures.filter(feature => feature.properties.group);
-                    if (groupFeatures.length) {
-                        labelledFeatures = groupFeatures;
-                    }
+                // Favour group features at low zoom levels
+                const zoomLevel = this._map.getZoom();
+                const groupFeatures = labelledFeatures.filter(feature => (feature.properties.group
+                                                     && zoomLevel < (feature.properties.scale + 1)));
+                if (groupFeatures.length > 0) {
+                    labelledFeatures = groupFeatures;
                 }
-            }
 
-            if (labelledFeatures.length > 0) {
                 if (this._flatmap.options.debug) {
                     const htmlList = [];
                     for (const feature of labelledFeatures) {
