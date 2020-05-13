@@ -90,7 +90,7 @@ export class UserInteractions
         this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
 //        this._queryInterface = new QueryInterface(flatmap.id);
 
-        this._activeFeature = null;
+        this._activeFeatures = [];
         this._selectedFeature = null;
         this._highlightedFeatures = [];
         this._searchResultFeatures = [];
@@ -567,11 +567,10 @@ export class UserInteractions
 
         this._map.getCanvas().style.cursor = 'default';
 
-        // Reset any active feature
+        // Reset any active features
 
-        if (this._activeFeature !== null) {
-            this._map.removeFeatureState(this._activeFeature, 'active');
-            this._activeFeature = null;
+        while (this._activeFeatures.length > 0) {
+            this._map.removeFeatureState(this._activeFeatures.pop(), 'active');
         }
 
         // Get all the features at the current point
@@ -603,24 +602,45 @@ export class UserInteractions
             }
 
             if (labelledFeatures.length > 0) {
-                const feature = labelledFeatures[0];
-                this._activeFeature = feature;
-                this._map.setFeatureState(this._activeFeature, { active: true });
-                if (feature.layer.type === 'symbol') {
-                    this._map.getCanvas().style.cursor = 'pointer';
-                } else if (this._flatmap.options.tooltips) {
-                    this._map.getCanvas().style.cursor = 'pointer';
-                    if (this._flatmap.options.debug || (this._infoControl && this._infoControl.active)) {
-                        const htmlList = [];
+                if (this._flatmap.options.debug) {
+                    const htmlList = [];
+                    for (const feature of labelledFeatures) {
+                        this._map.setFeatureState(feature, { active: true });
+                        this._activeFeatures.push(feature);
                         for (const prop of indexedProperties) {
                             if (prop in feature.properties) {
                                 htmlList.push(`<span class="info-name">${prop}:</span>`);
                                 htmlList.push(`<span class="info-value">${feature.properties[prop]}</span>`);
                             }
                         }
-                        html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
-                    } else if (!('organ' in feature.properties)) {
-                        html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
+                        htmlList.push(`<span class="info-name">Area:</span>`);
+                        htmlList.push(`<span class="info-value">${feature.properties.area/1000000000}</span>`);
+                        htmlList.push(`<span class="info-name">Scale:</span>`);
+                        htmlList.push(`<span class="info-value">${feature.properties.scale}</span>`);
+                    }
+                    html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
+                } else {
+                    const feature = labelledFeatures[0];
+                    this._map.setFeatureState(feature, { active: true });
+                    this._activeFeatures.push(feature);
+                    if (feature.layer.type === 'symbol') {
+                        this._map.getCanvas().style.cursor = 'pointer';
+                    } else if (this._flatmap.options.tooltips) {
+                        this._map.getCanvas().style.cursor = 'pointer';
+                        if (this._infoControl && this._infoControl.active) {
+                            const htmlList = [];
+                            for (const prop of indexedProperties) {
+                                if (prop in feature.properties) {
+                                    htmlList.push(`<span class="info-name">${prop}:</span>`);
+                                    htmlList.push(`<span class="info-value">${feature.properties[prop]}</span>`);
+                                }
+                            }
+                            htmlList.push(`<span class="info-name">Area:</span>`);
+                            htmlList.push(`<span class="info-value">${feature.properties.area/1000000000}</span>`);
+                            html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
+                        } else if (!('organ' in feature.properties)) {
+                            html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
+                        }
                     }
                 }
             }
@@ -644,11 +664,12 @@ export class UserInteractions
     clickEvent_(event)
     //================
     {
-        // Also click on this._activeFeature
+        // Also click on this._activeFeatures[0]
         if (this._flatmap.options.tooltips) {
-            if (this._activeFeature !== null) {
-                this._lastClickedLocation = this._activeFeature.properties.centroid;
-                this._flatmap.featureEvent('click', this._activeFeature);
+            if (this._activeFeatures.length > 0) {
+                const feature = this._activeFeatures[0];
+                this._lastClickedLocation = feature.properties.centroid;
+                this._flatmap.featureEvent('click', feature);
             }
         } else {
             const symbolFeatures = this._map.queryRenderedFeatures(event.point)
