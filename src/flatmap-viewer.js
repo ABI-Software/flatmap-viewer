@@ -52,6 +52,7 @@ class FlatMap
     constructor(container, mapDescription, resolve)
     {
         this._id = mapDescription.id;
+        this._details = mapDescription.details;
         this._source = mapDescription.source;
         this._created = mapDescription.created;
         this._describes = mapDescription.describes;
@@ -284,6 +285,17 @@ class FlatMap
     //======
     {
         return this._id;
+    }
+
+    /**
+     * Full details about the map as returned from the map server
+     *
+     * @type Object
+     */
+    get details()
+    //===========
+    {
+        return this._details;
     }
 
     /**
@@ -683,6 +695,7 @@ export class MapManager
                 this._mapNumber += 1;
                 const flatmap = new FlatMap(container, {
                         id: map.id,
+                        details: mapIndex,
                         source: map.source,
                         describes: map.describes,
                         style: mapStyle,
