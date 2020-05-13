@@ -586,14 +586,9 @@ export class UserInteractions
         } else {
             let labelledFeatures = features.filter(feature => 'label' in feature.properties)
                                            .sort((a, b) => (a.properties.area - b.properties.area));
-
             if (labelledFeatures.length > 0) {
-                if (this._map.getZoom() >= SHOW_DETAILS_ZOOM) {
-                    const detailFeatures = labelledFeatures.filter(feature => !feature.properties.group);
-                    if (detailFeatures.length) {
-                        labelledFeatures = detailFeatures;
-                    }
-                } else {
+                if (this._map.getZoom() < SHOW_DETAILS_ZOOM) {
+                    // Favour group features
                     const groupFeatures = labelledFeatures.filter(feature => feature.properties.group);
                     if (groupFeatures.length) {
                         labelledFeatures = groupFeatures;
