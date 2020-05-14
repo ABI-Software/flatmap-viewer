@@ -186,7 +186,8 @@ export class FeatureBorderLayer
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
-                    0.1
+                    ['boolean', ['get', 'invisible'], false], 0.05,
+                    0.01
                 ],
                 'line-width': 2 // lineWidth_(PAINT_STYLES['border-stroke-width'])
             }
