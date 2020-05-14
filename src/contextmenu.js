@@ -67,7 +67,7 @@ export class ContextMenu
         this._popup = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: true,
-            className: 'flatmap-contextmenu',
+            className: 'flatmap-contextmenu-popup',
             maxWidth: 'none'
         });
         this._popup.on('close', this.popupClose_.bind(this));

@@ -659,7 +659,8 @@ export class UserInteractions
             this._tooltip = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false,
-                maxWidth: 'none'
+                maxWidth: 'none',
+                className: 'flatmap-tooltip-popup'
             });
             this._tooltip
                 .setLngLat(event.lngLat)
