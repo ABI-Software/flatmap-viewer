@@ -60,6 +60,7 @@ class FlatMap
         this._callback = mapDescription.callback;
         this._layers = mapDescription.layers;
         this._options = mapDescription.options;
+        this._pathways = mapDescription.pathways;
         this._resolve = resolve;
         this._map = null;
 
@@ -350,6 +351,12 @@ class FlatMap
     //===========
     {
         return this._options;
+    }
+
+    get pathways()
+    //============
+    {
+        return this._pathways;
     }
 
     get searchIndex()
@@ -686,6 +693,10 @@ export class MapManager
                     mapStyle.glyphs = 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf';
                 }
 
+                // Get the map's pathways
+
+                const pathways = await loadJSON(`flatmap/${map.id}/pathways`);
+
                 // Get the map's metadata
 
                 const metadata = await loadJSON(`flatmap/${map.id}/metadata`);
@@ -703,6 +714,7 @@ export class MapManager
                         layers: mapLayers,
                         metadata: metadata,
                         number: this._mapNumber,
+                        pathways: pathways,
                         callback: callback
                     },
                     resolve);

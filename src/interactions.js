@@ -33,6 +33,7 @@ import * as turf from '@turf/helpers';
 import {ContextMenu} from './contextmenu.js';
 import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
+import {Pathways} from './Pathways.js';
 //import {QueryInterface} from './query.js';
 import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
@@ -120,6 +121,10 @@ export class UserInteractions
                 this._map.addControl(this._infoControl);
             }
         }
+
+        // Manage our pathways
+
+        this._pathways = new Pathways(flatmap);
 
         // Manage our layers
 
@@ -369,46 +374,36 @@ export class UserInteractions
         }
         this._lastContextTime = Date.now();
 
-        const features = this.activeFeaturesAtEvent_(event);
-        let feature = this.smallestAnnotatedPolygonFeature_(features);
+        let feature = null;
+        if (this._flatmap.options.tooltips) {
+            if (this._activeFeatures.length > 0) {
+                feature = this._activeFeatures[0];
+            }
+        } else {
+            const symbolFeatures = this._map.queryRenderedFeatures(event.point)
+                                            .filter(f => (f.layer.type === 'symbol'));
+            if (symbolFeatures.length) {
+                feature = symbolFeatures[0];
+            }
+        }
+
         if (feature !== null) {
             const id = feature.properties.id;
-            const ann = this._flatmap.getAnnotation(id);
-            this.selectFeature_(feature);
-            const items = [];
-            if (ann) {
-                if (ann.models.length > 0) {
-                    items.push({
+            if (this._pathways.isNode(id)) {
+                const items = [
+                    {
                         id: id,
-                        prompt: 'Search for knowledge about node',
-                        action: this.query_.bind(this, 'data')
-                    });
-                }
-                if (this._layerManager.layerQueryable(ann.layer)) {
-                    items.push({
+                        prompt: 'Show paths',
+                        action: this.enablePaths_.bind(this, feature.sourceLayer, true)
+                    },
+                    {
                         id: id,
-                        prompt: 'Find edges connected to node',
-                        action: this.query_.bind(this, 'edges')
-                    });
-                    items.push({
-                        id: id,
-                        prompt: 'Find nodes and edges connected to node',
-                        action: this.query_.bind(this, 'nodes')
-                    });
-                }
-            }
-            if (items.length) {
-                items.push('-');
-            }
-            items.push({
-                id: id,
-                prompt: 'Zoom to...',
-                action: this.zoomTo_.bind(this, feature)
-            });
-            if (items.length) {
+                        prompt: 'Hide paths',
+                        action: this.enablePaths_.bind(this, feature.sourceLayer, false)
+                    }
+                ];
                 this._modal = true;
                 this._contextMenu.show(event.lngLat, items);
-                return;
             }
         }
     }
@@ -418,6 +413,24 @@ export class UserInteractions
     {
         this._modal = false;
     }
+
+    enablePaths_(layer, enable, event)
+    //================================
+    {
+        this._contextMenu.hide();
+        const nodeId = event.target.getAttribute('id');
+        const lines = this._pathways.pathLines(nodeId);
+        for (const lineId of this._pathways.pathLines(nodeId)) {
+            const feature = utils.mapFeature(layer, lineId);
+            if (enable) {
+                this._map.setFeatureState(feature, { 'visible': true });
+            } else {
+                this._map.removeFeatureState(feature, 'visible');
+            }
+        }
+        this._modal = false;
+    }
+
 
     zoomTo_(feature)
     //==============
@@ -631,7 +644,7 @@ export class UserInteractions
                             htmlList.push(`<span class="info-name">Area:</span>`);
                             htmlList.push(`<span class="info-value">${feature.properties.area/1000000000}</span>`);
                             html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
-                        } else if (!('organ' in feature.properties)) {
+                        } else if (!('labelled' in feature.properties)) {
                             html = `<div class='flatmap-feature-label'>${feature.properties.label}</div>`;
                         }
                     }

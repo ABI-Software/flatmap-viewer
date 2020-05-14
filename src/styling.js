@@ -221,9 +221,16 @@ export class FeatureLineLayer
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    ['boolean', ['feature-state', 'visible'], false], 0.9,
+                    ['boolean', ['get', 'invisible'], false], 0.001,
                     0.1
                 ],
-                'line-width': 0.5
+                'line-width': [   // borderOpacity(),
+                    'case',
+                    ['boolean', ['feature-state', 'visible'], false], 4,
+                    ['boolean', ['get', 'invisible'], false], 1,
+                    2
+                ]
             }
         };
     }
@@ -249,7 +256,7 @@ export class FeatureLargeSymbolLayer
             //'maxzoom': 7,
             'filter': [
                 'all',
-                ['has', 'organ'],
+                ['has', 'labelled'],
                 ['has', 'label']
             ],
             'layout': {
