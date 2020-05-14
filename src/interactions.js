@@ -33,7 +33,7 @@ import * as turf from '@turf/helpers';
 import {ContextMenu} from './contextmenu.js';
 import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
-import {Pathways} from './Pathways.js';
+import {Pathways} from './pathways.js';
 //import {QueryInterface} from './query.js';
 import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
