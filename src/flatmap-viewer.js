@@ -495,11 +495,11 @@ class FlatMap
         }
     }
 
-    showSearchResults(featureIds)
-    //===========================
+    showSearchResults(featureIds, padding=100)
+    //========================================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.showSearchResults(featureIds);
+            this._userInteractions.showSearchResults(featureIds, padding);
         }
     }
 }
