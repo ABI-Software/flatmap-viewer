@@ -492,11 +492,12 @@ export class UserInteractions
         }
     }
 
-    queryData_(modelList)
-    //===================
     {
-        if (modelList.length > 0) {
-            this._flatmap.callback('query-data', modelList, {
+    queryData_(model)
+    //===============
+    {
+        if (model) {
+            this._flatmap.callback('query-data', model, {
                 describes: this._flatmap.describes
             });
         }
@@ -509,7 +510,7 @@ export class UserInteractions
         this._contextMenu.hide();
         const featureId = event.target.getAttribute('id');
         if (type === 'data') {
-            this.queryData_(this._flatmap.modelsForFeature(featureId));
+            this.queryData_(this._flatmap.modelForFeature(featureId));
         } else {
             const ann = this._flatmap.getAnnotation(featureId);
             //this._queryInterface.query(type, ann.url, ann.models);

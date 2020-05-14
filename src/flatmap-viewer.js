@@ -354,6 +354,13 @@ class FlatMap
         return features ? features : [];
     }
 
+    modelForFeature(featureId)
+    //========================
+    {
+        const ann = this._idToAnnotation.get(featureId);
+        return (ann && 'models' in ann) ? ann.models : null;
+    }
+
     get layers()
     //==========
     {
@@ -411,13 +418,6 @@ class FlatMap
             this._map.setZoom(this._options['zoom']);
         }
 
-    }
-
-    modelsForFeature(featureId)
-    //=========================
-    {
-        const ann = this._idToAnnotation.get(featureId);
-        return ann ? ann.models : [];
     }
 
     featureEvent(eventType, feature)
