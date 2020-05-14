@@ -69,6 +69,7 @@ class FlatMap
         }
 
         this._idToAnnotation = new Map();
+        this._modelToFeatures = new Map();
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
             this.addAnnotation_(featureId, metadata);
             if (this.options.searchable) {
@@ -333,6 +334,24 @@ class FlatMap
     {
         ann.featureId = featureId;
         this._idToAnnotation.set(featureId, ann);
+        if ('models' in ann) {
+            const modelId = ann.models;
+            if (modelId) {
+                const features = this._modelToFeatures.get(modelId);
+                if (features) {
+                    features.push(featureId);
+                } else {
+                    this._modelToFeatures.set(modelId, [featureId]);
+                }
+            }
+        }
+    }
+
+    featuresForModel(modelId)
+    //=======================
+    {
+        const features = this._modelToFeatures.get(modelId);
+        return features ? features : [];
     }
 
     get layers()
