@@ -223,13 +223,13 @@ export class FeatureLineLayer
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['feature-state', 'visible'], false], 0.9,
                     ['boolean', ['get', 'invisible'], false], 0.001,
-                    0.1
+                    0.08
                 ],
                 'line-width': [   // borderOpacity(),
                     'case',
-                    ['boolean', ['feature-state', 'visible'], false], 4,
+                    ['boolean', ['feature-state', 'visible'], false], 2,
                     ['boolean', ['get', 'invisible'], false], 1,
-                    2
+                    1
                 ]
             }
         };
