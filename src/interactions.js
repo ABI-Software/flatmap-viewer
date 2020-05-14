@@ -492,7 +492,6 @@ export class UserInteractions
         }
     }
 
-    {
     queryData_(model)
     //===============
     {
