@@ -157,7 +157,7 @@ export class FeatureFillLayer
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.7,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.5,
-                    0.7
+                    0.1
                 ]
             }
         };
