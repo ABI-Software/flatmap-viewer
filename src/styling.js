@@ -226,11 +226,12 @@ export class FeatureLineLayer
                     ['boolean', ['get', 'invisible'], false], 0.001,
                     0.08
                 ],
-                'line-width': [   // borderOpacity(),
-                    'case',
-                    ['boolean', ['feature-state', 'visible'], false], 2,
-                    ['boolean', ['get', 'invisible'], false], 1,
-                    1
+                'line-width': [
+                    'interpolate',
+                    ['exponential', 2],
+                    ['zoom'],
+                     2, ["*", 0.1, ["^", 2, -1]],
+                    10, ["*", 0.1, ["^", 2,  7]]
                 ]
             }
         };
