@@ -217,14 +217,18 @@ export class FeatureLineLayer
                 'LineString'
             ],
             'paint': {
-                'line-color': lineColour(),
+                'line-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'visible'], false], 'red',
+                    '#CCC'
+                ],
                 'line-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['feature-state', 'visible'], false], 0.9,
                     ['boolean', ['get', 'invisible'], false], 0.001,
-                    0.08
+                    0.3
                 ],
                 'line-width': [
                     'interpolate',
