@@ -388,6 +388,9 @@ export class UserInteractions
         }
 
         if (feature !== null) {
+            // Remove any tooltip
+            this.removeTooltip_();
+
             const id = feature.properties.id;
             if (this._pathways.isNode(id)) {
                 const items = [
@@ -403,7 +406,7 @@ export class UserInteractions
                     }
                 ];
                 this._modal = true;
-                this._contextMenu.show(event.lngLat, items);
+                this._contextMenu.show(event.lngLat, items, feature.properties.label);
             }
         }
     }
@@ -568,10 +571,15 @@ export class UserInteractions
         }
     }
 
-
     mouseMoveEvent_(event)
     //====================
     {
+        // No tooltip when context menu is open
+
+        if (this._modal) {
+            return;
+        }
+
         // Remove any existing tooltip
 
         this.removeTooltip_();
