@@ -70,6 +70,14 @@ function bounds(feature)
     }
 }
 
+function centroid(feature)
+//========================
+{
+    if ('centroid' in feature.properties) {
+        return JSON.parse(feature.properties.centroid);
+    }
+}
+
 //==============================================================================
 
 function expandBounds(bbox1, bbox2)
@@ -683,7 +691,7 @@ export class UserInteractions
         if (this._flatmap.options.tooltips) {
             if (this._activeFeatures.length > 0) {
                 const feature = this._activeFeatures[0];
-                this._lastClickedLocation = feature.properties.centroid;
+                this._lastClickedLocation = centroid(feature);
                 this._flatmap.featureEvent('click', feature);
             }
         } else {
