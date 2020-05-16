@@ -123,7 +123,9 @@ export class InfoControl
                 'class',
                 'label',
                 'area',
-                'length'
+                'length',
+                'group',
+                'organ'
             ];
 
             const layerProperties = [

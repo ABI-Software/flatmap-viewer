@@ -52,6 +52,7 @@ class FlatMap
     constructor(container, mapDescription, resolve)
     {
         this._id = mapDescription.id;
+        this._details = mapDescription.details;
         this._source = mapDescription.source;
         this._created = mapDescription.created;
         this._describes = mapDescription.describes;
@@ -59,6 +60,7 @@ class FlatMap
         this._callback = mapDescription.callback;
         this._layers = mapDescription.layers;
         this._options = mapDescription.options;
+        this._pathways = mapDescription.pathways;
         this._resolve = resolve;
         this._map = null;
 
@@ -67,6 +69,7 @@ class FlatMap
         }
 
         this._idToAnnotation = new Map();
+        this._modelToFeatures = new Map();
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
             this.addAnnotation_(featureId, metadata);
             if (this.options.searchable) {
@@ -287,6 +290,17 @@ class FlatMap
     }
 
     /**
+     * Full details about the map as returned from the map server
+     *
+     * @type Object
+     */
+    get details()
+    //===========
+    {
+        return this._details;
+    }
+
+    /**
      * A unique identifier for the map within the viewer.
      *
      * @type string
@@ -320,6 +334,31 @@ class FlatMap
     {
         ann.featureId = featureId;
         this._idToAnnotation.set(featureId, ann);
+        if ('models' in ann) {
+            const modelId = ann.models;
+            if (modelId) {
+                const features = this._modelToFeatures.get(modelId);
+                if (features) {
+                    features.push(featureId);
+                } else {
+                    this._modelToFeatures.set(modelId, [featureId]);
+                }
+            }
+        }
+    }
+
+    featuresForModel(modelId)
+    //=======================
+    {
+        const features = this._modelToFeatures.get(modelId);
+        return features ? features : [];
+    }
+
+    modelForFeature(featureId)
+    //========================
+    {
+        const ann = this._idToAnnotation.get(featureId);
+        return (ann && 'models' in ann) ? ann.models : null;
     }
 
     get layers()
@@ -338,6 +377,12 @@ class FlatMap
     //===========
     {
         return this._options;
+    }
+
+    get pathways()
+    //============
+    {
+        return this._pathways;
     }
 
     get searchIndex()
@@ -375,22 +420,20 @@ class FlatMap
 
     }
 
-    modelsForFeature(featureId)
-    //=========================
-    {
-        const ann = this._idToAnnotation.get(featureId);
-        return ann ? ann.models : [];
-    }
-
     featureEvent(eventType, feature)
     //==============================
     {
         const properties = feature.properties;
-        this.callback(eventType, {
-            id: properties.id,
-            models: properties.models,
-            label: properties.label
-        });
+        if ('dataset' in properties) {
+            window.open(properties.dataset);
+        } else {
+            this.callback(eventType, {
+                id: properties.id,
+                models: properties.models,
+                label: properties.label,
+                dataset: properties.dataset
+            });
+        }
     }
 
     close()
@@ -457,11 +500,11 @@ class FlatMap
         }
     }
 
-    showSearchResults(featureIds)
-    //===========================
+    showSearchResults(featureIds, padding=100)
+    //========================================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.showSearchResults(featureIds);
+            this._userInteractions.showSearchResults(featureIds, padding);
         }
     }
 }
@@ -674,6 +717,10 @@ export class MapManager
                     mapStyle.glyphs = 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf';
                 }
 
+                // Get the map's pathways
+
+                const pathways = await loadJSON(`flatmap/${map.id}/pathways`);
+
                 // Get the map's metadata
 
                 const metadata = await loadJSON(`flatmap/${map.id}/metadata`);
@@ -683,6 +730,7 @@ export class MapManager
                 this._mapNumber += 1;
                 const flatmap = new FlatMap(container, {
                         id: map.id,
+                        details: mapIndex,
                         source: map.source,
                         describes: map.describes,
                         style: mapStyle,
@@ -690,6 +738,7 @@ export class MapManager
                         layers: mapLayers,
                         metadata: metadata,
                         number: this._mapNumber,
+                        pathways: pathways,
                         callback: callback
                     },
                     resolve);

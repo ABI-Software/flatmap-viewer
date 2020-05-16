@@ -28,11 +28,20 @@ export const FEATURE_SOURCE_ID = 'features';
 
 export function mapFeature(layer, id)
 {
-    return {
-        id: id.split('-')[1],
-        source: FEATURE_SOURCE_ID,
-        sourceLayer: layer
-    };
+    if (id.indexOf('#') >= 0) {
+        // New style feature IDs
+        return {
+            id: id.split('#')[1],
+            source: FEATURE_SOURCE_ID,
+            sourceLayer: layer
+        };
+    } else {
+        return {
+            id: id.split('-')[1],
+            source: FEATURE_SOURCE_ID,
+            sourceLayer: layer
+        };
+    }
 }
 
 //==============================================================================

@@ -26,7 +26,7 @@ import mapboxgl from 'mapbox-gl';
 
 //==============================================================================
 
-function domContextMenu(items)
+function domContextMenu(items, title)
 {
     const menuElement = document.createElement('ul');
     menuElement.className = 'flatmap-contextmenu';
@@ -65,9 +65,9 @@ export class ContextMenu
         this._map = flatmap.map;
         this._closeCallback = closeCallback;
         this._popup = new mapboxgl.Popup({
-            closeButton: false,
+            closeButton: true,
             closeOnClick: true,
-            className: 'flatmap-contextmenu',
+            className: 'flatmap-contextmenu-popup',
             maxWidth: 'none'
         });
         this._popup.on('close', this.popupClose_.bind(this));
@@ -85,11 +85,11 @@ export class ContextMenu
         this._closeCallback();
     }
 
-    show(position, menuItems)
-    //=======================
+    show(position, menuItems, title)
+    //==============================
     {
         this._popup.setLngLat(position);
-        this._popup.setDOMContent(domContextMenu(menuItems));
+        this._popup.setDOMContent(domContextMenu(menuItems, title));
         this._popup.addTo(this._map);
     }
 }

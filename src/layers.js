@@ -35,7 +35,11 @@ class MapFeatureLayer
         this._id = layer.id;
         this._styleLayerIds = [];
 
-        this._imageLayerId = this.addStyleLayer_(style.ImageLayer.style, style.PAINT_STYLES['layer-background-opacity']);
+        if (flatmap.details['image_layer']) {
+            this._imageLayerId = this.addStyleLayer_(style.ImageLayer.style, style.PAINT_STYLES['layer-background-opacity']);
+        } else {
+            this._imageLayerId = null;
+        }
         this.addStyleLayer_(style.FeatureFillLayer.style);
 
         this._borderLayerId = this.addStyleLayer_(style.FeatureBorderLayer.style);
@@ -95,7 +99,9 @@ class MapFeatureLayer
         for (const l of this._backgroundLayers) {
             l.activate();
         }
-        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
+        if (this._imageLayerId) {
+            this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 1);
+        }
         this.setBorderProperties_(true);
         this.setLineProperties_(true);
     }
@@ -106,7 +112,9 @@ class MapFeatureLayer
         for (const l of this._backgroundLayers) {
             l.deactivate();
         }
-        this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
+        if (this._imageLayerId) {
+            this._map.setPaintProperty(this._imageLayerId, 'raster-opacity', 0);
+        }
         this.setBorderProperties_();
         this.setLineProperties_();
     }
