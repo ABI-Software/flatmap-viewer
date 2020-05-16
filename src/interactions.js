@@ -181,7 +181,7 @@ export class UserInteractions
         // Display a context menu on right-click
 
         this._lastContextTime = 0;
-        this._contextMenu = new ContextMenu(flatmap, this.contextMenuClosed_.bind(this));
+        this._contextMenu = new ContextMenu(flatmap, this.clearModal_.bind(this));
         this._map.on('contextmenu', this.contextMenuEvent_.bind(this));
 
         // Display a context menu with a touch longer than 0.5 second
@@ -413,14 +413,20 @@ export class UserInteractions
                         action: this.enablePaths_.bind(this, feature.sourceLayer, false)
                     }
                 ];
-                this._modal = true;
+                this.setModal_();
                 this._contextMenu.show(event.lngLat, items, feature.properties.label);
             }
         }
     }
 
-    contextMenuClosed_(event)
-    //=======================
+    setModal_(event)
+    //==============
+    {
+        this._modal = true;
+    }
+
+    clearModal_(event)
+    //================
     {
         this._modal = false;
     }
@@ -439,7 +445,7 @@ export class UserInteractions
                 this._map.removeFeatureState(feature, 'visible');
             }
         }
-        this._modal = false;
+        this.clearModal_();
     }
 
 
@@ -527,7 +533,7 @@ export class UserInteractions
             this._map.getCanvas().style.cursor = 'progress';
             this._inQuery = true;
         }
-        this._modal = false;
+        this.clearModal_();
     }
 
     showPopup(featureId, content, options)
@@ -559,8 +565,9 @@ export class UserInteractions
             if (!this._map.getBounds().contains(location)) {
                 this._map.panTo(location);
             }
-
+            this.setModal_();
             this._currentPopup = new mapboxgl.Popup(options).addTo(this._map);
+            this._currentPopup.on('close', this.clearModal_.bind(this));
             this._currentPopup.setLngLat(location);
             if (typeof content === 'object') {
                 this._currentPopup.setDOMContent(content);
