@@ -424,11 +424,16 @@ class FlatMap
     //==============================
     {
         const properties = feature.properties;
-        this.callback(eventType, {
-            id: properties.id,
-            models: properties.models,
-            label: properties.label
-        });
+        if ('dataset' in properties) {
+            window.open(properties.dataset);
+        } else {
+            this.callback(eventType, {
+                id: properties.id,
+                models: properties.models,
+                label: properties.label,
+                dataset: properties.dataset
+            });
+        }
     }
 
     close()
