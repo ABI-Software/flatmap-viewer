@@ -436,8 +436,7 @@ export class UserInteractions
     {
         this._contextMenu.hide();
         const nodeId = event.target.getAttribute('id');
-        const lines = this._pathways.pathLines(nodeId);
-        for (const lineId of this._pathways.pathLines(nodeId)) {
+        for (const lineId of this._pathways.pathFeatures(nodeId)) {
             const feature = utils.mapFeature(layer, lineId);
             if (enable) {
                 this._map.setFeatureState(feature, { 'visible': true });
