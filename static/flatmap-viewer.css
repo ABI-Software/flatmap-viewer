@@ -19,10 +19,11 @@
 }
 ul.flatmap-contextmenu {
     list-style: none;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 6px;
     min-width: 120px;
     margin: 0;
+    font-size: 1.2em;
+    border: 1px solid #888;
 }
 li.flatmap-contextmenu-item:hover {
     background: #58E;
