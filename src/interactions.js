@@ -620,7 +620,9 @@ export class UserInteractions
         if (this._flatmap.options.debug && this._infoControl && this._infoControl.active) {
             html = this._infoControl.featureInformation(features, event.lngLat);
         } else {
-            let labelledFeatures = features.filter(feature => 'label' in feature.properties)
+            let labelledFeatures = features.filter(feature => ('label' in feature.properties
+                                                         && (!('tooltip' in feature.properties)
+                                                            || feature.properties.tooltip)))
                                            .sort((a, b) => (a.properties.area - b.properties.area));
             if (labelledFeatures.length > 0) {
                 // Favour group features at low zoom levels
