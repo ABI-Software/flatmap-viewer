@@ -147,18 +147,8 @@ export class FeatureFillLayer
                 'fill-sort-key': ['get', 'scale']
             },
             'paint': {
-                'fill-color': [
-                    'case',
-                    ['boolean', ['feature-state', 'active'], false], '#fcc',
-                    ['boolean', ['feature-state', 'highlighted'], false], '#cfc',
-                    PAINT_STYLES['fill-color']
-                ],
-                'fill-opacity': [
-                    'case',
-                    ['boolean', ['feature-state', 'active'], false], 0.7,
-                    ['boolean', ['feature-state', 'highlighted'], false], 0.5,
-                    0.1
-                ]
+                'fill-color': PAINT_STYLES['fill-color'],
+                'fill-opacity': 0.01
             }
         };
     }
