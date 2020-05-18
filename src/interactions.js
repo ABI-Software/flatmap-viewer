@@ -382,20 +382,9 @@ export class UserInteractions
         }
         this._lastContextTime = Date.now();
 
-        let feature = null;
-        if (this._flatmap.options.tooltips) {
-            if (this._activeFeatures.length > 0) {
-                feature = this._activeFeatures[0];
-            }
-        } else {
-            const symbolFeatures = this._map.queryRenderedFeatures(event.point)
-                                            .filter(f => (f.layer.type === 'symbol'));
-            if (symbolFeatures.length) {
-                feature = symbolFeatures[0];
-            }
-        }
+        if (this._activeFeatures.length > 0) {
+            const feature = this._activeFeatures[0];
 
-        if (feature !== null) {
             // Remove any tooltip
             this.removeTooltip_();
 
