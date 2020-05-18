@@ -428,7 +428,8 @@ class FlatMap
             id: properties.id,
             models: properties.models,
             label: properties.label,
-            dataset: properties.dataset
+            dataset: properties.dataset,
+            scaffold: properties.scaffold
         });
     }
 
