@@ -27,6 +27,7 @@ export class Pathways
     constructor(flatmap)
     {
         this._pathFeatures = flatmap.pathways['path-features'];
+
         const nodePaths = flatmap.pathways['node-paths'];
         this._nodeStartPaths = nodePaths['start-paths'];
         this._nodeThroughPaths = nodePaths['through-paths'];
@@ -46,7 +47,7 @@ export class Pathways
         if (nodeId in this._nodeStartPaths) {
             for (const path of this._nodeStartPaths[nodeId]) {
                 if (path in this._pathFeatures) {
-                    for (const line of this.__pathFeatures[path]) {
+                    for (const line of this._pathFeatures[path]) {
                         lines.add(line);
                     }
                 }
@@ -54,8 +55,8 @@ export class Pathways
         }
         if (nodeId in this._nodeThroughPaths) {
             for (const path of this._nodeThroughPaths[nodeId]) {
-                if (path in this.__pathFeatures) {
-                    for (const line of this.__pathFeatures[path]) {
+                if (path in this._pathFeatures) {
+                    for (const line of this._pathFeatures[path]) {
                         lines.add(line);
                     }
                 }
@@ -63,8 +64,8 @@ export class Pathways
         }
         if (nodeId in this._nodeEndPaths) {
             for (const path of this._nodeEndPaths[nodeId]) {
-                if (path in this.__pathFeatures) {
-                    for (const line of this.__pathFeatures[path]) {
+                if (path in this._pathFeatures) {
+                    for (const line of this._pathFeatures[path]) {
                         lines.add(line);
                     }
                 }
