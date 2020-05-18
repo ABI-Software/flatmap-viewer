@@ -428,9 +428,10 @@ export class UserInteractions
         for (const lineId of this._pathways.pathFeatures(nodeId)) {
             const feature = utils.mapFeature(layer, lineId);
             if (enable) {
-                this._map.setFeatureState(feature, { 'visible': true });
+                this._map.removeFeatureState(feature, 'hidden');
             } else {
-                this._map.removeFeatureState(feature, 'visible');
+            console.log(feature);
+                this._map.setFeatureState(feature, { 'hidden': true });
             }
         }
         this.clearModal_();

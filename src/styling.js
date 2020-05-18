@@ -209,23 +209,23 @@ export class FeatureLineLayer
             'paint': {
                 'line-color': [
                     'case',
-                    ['boolean', ['feature-state', 'visible'], false], 'red',
-                    '#CCC'
+                    ['boolean', ['feature-state', 'hidden'], false], '#CCC',
+                    'red'
                 ],
                 'line-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
-                    ['boolean', ['feature-state', 'visible'], false], 0.9,
+                    ['boolean', ['feature-state', 'hidden'], false], 0.3,
                     ['boolean', ['get', 'invisible'], false], 0.001,
-                    0.3
+                    0.9
                 ],
                 'line-width': [
                     'interpolate',
                     ['exponential', 2],
                     ['zoom'],
-                     2, ["*", 0.1, ["^", 2, -1]],
-                    10, ["*", 0.1, ["^", 2,  7]]
+                     2, ["*", 0.2, ["^", 2, -1]],
+                    10, ["*", 0.2, ["^", 2,  7]]
                 ]
             }
         };
