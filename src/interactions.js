@@ -107,6 +107,7 @@ export class UserInteractions
         this._currentPopup = null;
         this._infoControl = null;
         this._tooltip = null;
+        this._markers = [];
 
         this._inQuery = false;
         this._modal = false;
@@ -175,6 +176,15 @@ export class UserInteractions
             if ('error' in ann) {
                 this._map.setFeatureState(feature, { 'annotation-error': true });
                 console.log(`Annotation error, ${ann.layer}: ${ann.error} (${ann.text})`);
+            }
+            // Add markers to the map
+            if ('marker' in ann) {
+                const marker = new mapboxgl.Marker()
+                                           .setLngLat(ann.centroid)
+                                           .addTo(this._map);
+                marker.getElement().addEventListener('click',
+                    this.markerClickEvent_.bind(this, id));
+                this._markers.push(marker);
             }
         }
 
@@ -703,6 +713,13 @@ export class UserInteractions
             }
         }
     }
+
+    markerClickEvent_(featureId, event)
+    //=================================
+    {
+        this._flatmap.annotationEvent('click', featureId);
+    }
+
 }
 
 //==============================================================================

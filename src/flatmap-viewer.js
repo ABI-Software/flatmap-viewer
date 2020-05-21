@@ -420,6 +420,17 @@ class FlatMap
 
     }
 
+    annotationEvent(eventType, featureId)
+    //===================================
+    {
+        const ann = this._idToAnnotation.get(featureId);
+        this.callback(eventType, {
+            id: featureId,
+            dataset: ann.dataset,
+            scaffold: ann.scaffold
+        });
+    }
+
     featureEvent(eventType, feature)
     //==============================
     {
