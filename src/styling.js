@@ -79,15 +79,15 @@ export class FeatureBorderLayer
                 'Polygon'
             ],
             'paint': {
-                'line-color': borderColour(),
-                'line-opacity': [   // borderOpacity(),
+                'line-color': 'blue',
+                'line-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['get', 'invisible'], false], 0.05,
                     0.01
                 ],
-                'line-width': 2 // lineWidth_(PAINT_STYLES['border-stroke-width'])
+                'line-width': 2
             }
         };
     }
