@@ -36,7 +36,7 @@ class MapFeatureLayer
         this._styleLayerIds = [];
 
         if (flatmap.details['image_layer']) {
-            this.addStyleLayer_(style.ImageLayer.style, style.PAINT_STYLES['layer-background-opacity']);
+            this.addImageLayer_();
         }
 
         this.addStyleLayer_(style.FeatureFillLayer.style);
@@ -57,6 +57,18 @@ class MapFeatureLayer
     //======
     {
         return this._id;
+    }
+
+    addImageLayer_()
+    //==============
+    {
+        const styleLayer = style.ImageLayer.style(this._id, style.PAINT_STYLES['layer-background-opacity']);
+        if (styleLayer) {
+            this._map.addLayer(styleLayer);
+            this._styleLayerIds.push(styleLayer.id);
+            return styleLayer.id;
+        }
+        return null;
     }
 
     addStyleLayer_(styleFunction, source='features', ...args)
