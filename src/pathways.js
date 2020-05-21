@@ -61,7 +61,7 @@ export class Pathways
                 }
             }
         }
-        this._allLines = lines.values();
+        this._allLines = lines;
     }
 
     allLines()
@@ -109,7 +109,7 @@ export class Pathways
                 }
             }
         }
-        return lines.values();
+        return lines;
     }
 }
 
