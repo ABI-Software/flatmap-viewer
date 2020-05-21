@@ -85,7 +85,7 @@ export class NerveKey
     getDefaultPosition()
     //==================
     {
-        return 'top-right';
+        return 'bottom-right';
     }
 
     onAdd(map)
