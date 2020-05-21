@@ -208,6 +208,9 @@ class FlatMap
         if (this._initialState !== null) {
             this.setState(this._initialState);
         }
+        if (this._userInteractions !== null) {
+            this._userInteractions.reset();
+        }
     }
 
     /**

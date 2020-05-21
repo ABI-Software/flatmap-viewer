@@ -32,9 +32,46 @@ export class Pathways
         this._nodeStartPaths = nodePaths['start-paths'];
         this._nodeThroughPaths = nodePaths['through-paths'];
         this._nodeEndPaths = nodePaths['end-paths'];
+
+        const lines = new Set();
+        for (const paths of Object.values(this._nodeStartPaths)) {
+            for (const path of paths) {
+                if (path in this._pathFeatures) {
+                    for (const line of this._pathFeatures[path]) {
+                        lines.add(line);
+                    }
+                }
+            }
+        }
+        for (const paths of Object.values(this._nodeThroughPaths)) {
+            for (const path of paths) {
+                if (path in this._pathFeatures) {
+                    for (const line of this._pathFeatures[path]) {
+                        lines.add(line);
+                    }
+                }
+            }
+        }
+        for (const paths of Object.values(this._nodeEndPaths)) {
+            for (const path of paths) {
+                if (path in this._pathFeatures) {
+                    for (const line of this._pathFeatures[path]) {
+                        lines.add(line);
+                    }
+                }
+            }
+        }
+        this._allLines = lines.values();
+    }
+
+    allLines()
+    //========
+    {
+        return this._allLines;
     }
 
     isNode(id)
+    //========
     {
         return id in this._nodeStartPaths
             || id in this._nodeThroughPaths
@@ -42,6 +79,7 @@ export class Pathways
     }
 
     pathFeatures(nodeId)
+    //==================
     {
         const lines = new Set();
         if (nodeId in this._nodeStartPaths) {

@@ -428,6 +428,11 @@ export class UserInteractions
         }
     }
 
+    reset()
+    //=====
+    {
+        this.enableLines_(true, this._pathways.allLines())
+    }
 
     zoomTo_(feature)
     //==============
