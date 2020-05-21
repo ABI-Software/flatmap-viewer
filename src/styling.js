@@ -37,98 +37,6 @@ export const PAINT_STYLES = {
 
 //==============================================================================
 
-export function borderColour(layerActive=false)
-{
-    return [
-        'case',
-        ['boolean', ['feature-state', 'annotation-error'], false], 'pink',
-        ['boolean', ['feature-state', 'highlighted'], false], 'green',
-        'blue'
-    ];
-}
-
-export function borderOpacity(layerActive=false)
-{
-    if (layerActive) {
-        return [
-            'case',
-            ['boolean', ['feature-state', 'selected'], false], 1,
-            ['boolean', ['feature-state', 'highlighted'], false], 1,
-            ['boolean', ['feature-state', 'annotated'], false], 1,
-            0
-        ];
-    } else {
-        return 0;
-    }
-}
-
-//==============================================================================
-
-export function lineColour(layerActive=false)
-{
-    return [
-        'case',
-        ['boolean', ['feature-state', 'annotation-error'], false], 'pink',
-        ['boolean', ['feature-state', 'highlighted'], false], 'green',
-        'red'
-    ];
-}
-
-export function lineOpacity(layerActive=false)
-{
-    if (layerActive) {
-        return [
-            'case',
-            ['boolean', ['feature-state', 'annotation-error'], false], 0.8,
-            ['boolean', ['feature-state', 'highlighted'], false], 0.4,
-            ['boolean', ['feature-state', 'selected'], false], 0,
-            ['boolean', ['feature-state', 'annotated'], false], 0,
-            0
-        ];
-    } else {
-        return 0;
-    }
-}
-
-//==============================================================================
-
-class LineWidth
-{
-    static scale(width)   // width at zoom 3
-    {
-        return [
-            "let", "linewidth", [
-                'case',
-                ['boolean', ['feature-state', 'annotation-error'], false], 4*width,
-                ['boolean', ['feature-state', 'highlighted'], false], 2*width,
-                ['boolean', ['feature-state', 'selected'], false], 3*width,
-                ['boolean', ['feature-state', 'annotated'], false], width,
-                0
-            ],
-            ["interpolate",
-            ["exponential", 1.4],
-            ["zoom"],
-            3, ["var", "linewidth"],
-            10, [ "*", 10, ["var", "linewidth"]]
-            ]
-        ];
-    }
-}
-
-//==============================================================================
-
-function lineWidth_(width, layerActive=false)
-{
-    if (layerActive) {
-        return LineWidth.scale(width);
-    }
-    else {
-        return 0;
-    }
-}
-
-//==============================================================================
-
 export class FeatureFillLayer
 {
     static style(sourceLayer)
@@ -183,11 +91,6 @@ export class FeatureBorderLayer
             }
         };
     }
-
-    static lineWidth(layerActive=false)
-    {
-        return lineWidth_(PAINT_STYLES['border-stroke-width'], layerActive);
-    }
 }
 
 //==============================================================================
@@ -202,14 +105,20 @@ export class FeatureLineLayer
             'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
-                '==',
-                '$type',
-                'LineString'
+                 'all',
+                 ['==', '$type', 'LineString'],
+                 ['==', 'type', 'line']
             ],
             'paint': {
                 'line-color': [
                     'case',
                     ['boolean', ['feature-state', 'hidden'], false], '#CCC',
+                    ['==', ['get', 'kind'], 'cns'], '#9B1FC1',
+                    ['==', ['get', 'kind'], 'lcn'], '#F19E38',
+                    ['==', ['get', 'kind'], 'para-pre'], '#3F8F4A',
+                    ['==', ['get', 'kind'], 'somatic'], '#98561D',
+                    ['==', ['get', 'kind'], 'sensory'], '#2A62F6',
+                    ['==', ['get', 'kind'], 'symp-pre'], '#EA3423',
                     'red'
                 ],
                 'line-opacity': [
@@ -230,10 +139,90 @@ export class FeatureLineLayer
             }
         };
     }
+}
 
-    static lineWidth(layerActive=false)
+export class FeatureNerveLayer
+{
+    static style(sourceLayer)
     {
-        return lineWidth_(PAINT_STYLES['line-stroke-width'], layerActive);
+        return {
+            'id': `${sourceLayer}-nerve`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'line',
+            'filter': [
+                 'all',
+                 ['==', '$type', 'LineString'],
+                 ['==', 'type', 'nerve']
+            ],
+            'paint': {
+                'line-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'hidden'], false], '#CCC',
+                    '#888'
+                ],
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    ['boolean', ['feature-state', 'hidden'], false], 0.3,
+                    ['boolean', ['get', 'invisible'], false], 0.001,
+                    0.9
+                ],
+                'line-dasharray': [2, 1],
+                'line-width': [
+                    'interpolate',
+                    ['exponential', 2],
+                    ['zoom'],
+                     2, ["*", 0.6, ["^", 2, -1]],
+                    10, ["*", 0.6, ["^", 2,  7]]
+                ]
+            }
+        };
+    }
+}
+
+
+export class FeatureLineDashLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-line-dash`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'line',
+            'filter': [
+                 'all',
+                 ['==', '$type', 'LineString'],
+                 ['==', 'type', 'line-dash']
+            ],
+            'paint': {
+                'line-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'hidden'], false], '#CCC',
+                    ['==', ['get', 'kind'], 'para-post'], '#3F8F4A',
+                    ['==', ['get', 'kind'], 'symp-post'], '#EA3423',
+                    'red'
+                ],
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    ['boolean', ['feature-state', 'hidden'], false], 0.3,
+                    ['boolean', ['get', 'invisible'], false], 0.001,
+                    0.9
+                ],
+                'line-dasharray': [3, 2],
+                'line-width': [
+                    'interpolate',
+                    ['exponential', 2],
+                    ['zoom'],
+                     2, ["*", 0.2, ["^", 2, -1]],
+                    10, ["*", 0.2, ["^", 2,  7]]
+                ]
+            }
+        };
     }
 }
 
