@@ -37,8 +37,7 @@ import {Pathways} from './pathways.js';
 //import {QueryInterface} from './query.js';
 import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
-
-import * as utils from './utils.js';
+import {VECTOR_TILES_SOURCE} from './styling.js';
 
 //==============================================================================
 
@@ -171,7 +170,7 @@ export class UserInteractions
         // Also flag those features that are models of something
 
         for (const [id, ann] of flatmap.annotations) {
-            const feature = utils.mapFeature(ann.layer, id);
+            const feature = this.mapFeature_(id);
             this._map.setFeatureState(feature, { 'annotated': true });
             if ('error' in ann) {
                 this._map.setFeatureState(feature, { 'annotation-error': true });
@@ -259,42 +258,15 @@ export class UserInteractions
         return this._layerManager.activeLayerNames;
     }
 
-    get activeLayerIds()
-    //==================
-    {
-        const mapLayers = [];
-        for (const name of this._layerManager.activeLayerNames) {
-            mapLayers.push(this._flatmap.mapLayerId(name));
-        }
-        return mapLayers;
-    }
-
-    activateLayer(layerId)
+    mapFeature_(featureId)
     //====================
     {
-        this._layerManager.activate(layerId);
-    }
-
-    activateLayers(layerIds)
-    //======================
-    {
-        for (const layerId of layerIds) {
-            this.activateLayer(layerId);
-        }
-    }
-
-    deactivateLayer(layerId)
-    //======================
-    {
-        this._layerManager.deactivate(layerId);
-    }
-
-    deactivateLayers()
-    //================
-    {
-        for (const layerId of this.activeLayerIds) {
-            this.deactivateLayer(layerId);
-        }
+        const ann = this._flatmap.annotation(featureId);
+        return {
+            id: featureId.split('#')[1],
+            source: VECTOR_TILES_SOURCE,
+            sourceLayer: `${ann.layer}-${ann['tile-layer']}`
+        };
     }
 
     selectFeature_(feature)
@@ -436,7 +408,7 @@ export class UserInteractions
         this._contextMenu.hide();
         const nodeId = event.target.getAttribute('id');
         for (const lineId of this._pathways.pathFeatures(nodeId)) {
-            const feature = utils.mapFeature(layer, lineId);
+            const feature = this.mapFeature_(lineId);
             if (enable) {
                 this._map.removeFeatureState(feature, 'hidden');
             } else {
@@ -488,7 +460,7 @@ export class UserInteractions
                 const annotation = this._flatmap.annotation(featureId);
                 if (annotation) {
                     // Indicate which features are the result of the search
-                    const feature = utils.mapFeature(annotation.layer, featureId);
+                    const feature = this.mapFeature_(featureId);
                     this.highlightFeature_(feature);
                     this._map.setFeatureState(feature, { 'searchresult': true });
                     this._searchResultFeatures.push(feature);
@@ -551,7 +523,7 @@ export class UserInteractions
             // Highlight the feature
 
             this.unhighlightFeatures_();
-            this.highlightFeature_(utils.mapFeature(properties.layer, featureId));
+            this.highlightFeature_(this.mapFeature_(featureId));
 
             // Position popup at last clicked location if we have it,
             // otherwise at the feature's centroid

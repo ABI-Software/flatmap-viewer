@@ -22,30 +22,6 @@ limitations under the License.
 
 //==============================================================================
 
-export const FEATURE_SOURCE_ID = 'features';
-
-//==============================================================================
-
-export function mapFeature(layer, id)
-{
-    if (id.indexOf('#') >= 0) {
-        // New style feature IDs
-        return {
-            id: id.split('#')[1],
-            source: FEATURE_SOURCE_ID,
-            sourceLayer: layer
-        };
-    } else {
-        return {
-            id: id.split('-')[1],
-            source: FEATURE_SOURCE_ID,
-            sourceLayer: layer
-        };
-    }
-}
-
-//==============================================================================
-
 export class List extends Array {
     constructor(iterable=null) {
         super();

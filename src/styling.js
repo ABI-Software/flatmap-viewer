@@ -22,7 +22,7 @@ limitations under the License.
 
 //==============================================================================
 
-import { FEATURE_SOURCE_ID } from './utils.js';
+export const VECTOR_TILES_SOURCE = 'vector-tiles';
 
 //==============================================================================
 
@@ -135,7 +135,7 @@ export class FeatureFillLayer
     {
         return {
             'id': `${sourceLayer}-fill`,
-            'source': FEATURE_SOURCE_ID,
+            'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'fill',
             'filter': [
@@ -162,7 +162,7 @@ export class FeatureBorderLayer
     {
         return {
             'id': `${sourceLayer}-border`,
-            'source': FEATURE_SOURCE_ID,
+            'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
@@ -198,7 +198,7 @@ export class FeatureLineLayer
     {
         return {
             'id': `${sourceLayer}-line`,
-            'source': FEATURE_SOURCE_ID,
+            'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
@@ -245,7 +245,7 @@ export class FeatureLargeSymbolLayer
     {
         return {
             'id': `${sourceLayer}-large-symbol`,
-            'source': FEATURE_SOURCE_ID,
+            'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'symbol',
             'minzoom': 3,
@@ -286,7 +286,7 @@ export class FeatureSmallSymbolLayer
     {
         return {
             'id': `${sourceLayer}-small-symbol`,
-            'source': FEATURE_SOURCE_ID,
+            'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'symbol',
             'minzoom': 6,
