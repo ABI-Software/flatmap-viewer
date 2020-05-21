@@ -380,12 +380,12 @@ export class UserInteractions
                     {
                         id: id,
                         prompt: 'Show paths',
-                        action: this.enablePaths_.bind(this, feature.sourceLayer, true)
+                        action: this.enablePaths_.bind(this, true)
                     },
                     {
                         id: id,
                         prompt: 'Hide paths',
-                        action: this.enablePaths_.bind(this, feature.sourceLayer, false)
+                        action: this.enablePaths_.bind(this, false)
                     }
                 ];
                 this.setModal_();
@@ -406,21 +406,26 @@ export class UserInteractions
         this._modal = false;
     }
 
-    enablePaths_(layer, enable, event)
-    //================================
+    enablePaths_(enable, event)
+    //=========================
     {
         this._contextMenu.hide();
         const nodeId = event.target.getAttribute('id');
-        for (const lineId of this._pathways.pathFeatures(nodeId)) {
+        this.enableLines_(enable, this._pathways.pathFeatures(nodeId));
+        this.clearModal_();
+    }
+
+    enableLines_(enable, lines)
+    //=========================
+    {
+        for (const lineId of lines) {
             const feature = this.mapFeature_(lineId);
             if (enable) {
                 this._map.removeFeatureState(feature, 'hidden');
             } else {
-            console.log(feature);
                 this._map.setFeatureState(feature, { 'hidden': true });
             }
         }
-        this.clearModal_();
     }
 
 
