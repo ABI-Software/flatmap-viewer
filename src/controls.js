@@ -74,3 +74,45 @@ export class NavigationControl
 }
 
 //==============================================================================
+
+export class NerveKey
+{
+    constructor()
+    {
+        this._map = undefined;
+    }
+
+    getDefaultPosition()
+    //==================
+    {
+        return 'top-right';
+    }
+
+    onAdd(map)
+    //========
+    {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl flatmap-nerve-key';
+        this._container.innerHTML = `<div class="flatmap-nerve-grid">
+    <div>CNS</div><div class="nerve-line nerve-cns"></div>
+    <div>Local circuit neuron</div><div class="nerve-line nerve-lcn"></div>
+    <div>Parasympathetic pre-ganglionic</div><div class="nerve-line nerve-para-pre"></div>
+    <div>Parasympathetic post-ganglionic</div><div class="nerve-line nerve-para-post"></div>
+    <div>Sensory (afferent) neuron</div><div class="nerve-line nerve-sensory"></div>
+    <div>Somatic lower motor</div><div class="nerve-line nerve-somatic"></div>
+    <div>Sympathetic pre-ganglionic</div><div class="nerve-line nerve-symp-pre"></div>
+    <div>Sympathetic post-ganglionic</div><div class="nerve-line nerve-symp-post"></div>
+</div>`;
+        return this._container;
+    }
+
+    onRemove()
+    //========
+    {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+}
+
+//==============================================================================

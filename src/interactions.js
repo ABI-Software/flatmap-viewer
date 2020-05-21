@@ -35,6 +35,7 @@ import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
 import {Pathways} from './pathways.js';
 //import {QueryInterface} from './query.js';
+import {NerveKey} from './controls.js';
 import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
 import {VECTOR_TILES_SOURCE} from './styling.js';
@@ -129,6 +130,10 @@ export class UserInteractions
                 this._map.addControl(this._infoControl);
             }
         }
+
+        // Add a key showing nerve types
+
+        this._map.addControl(new NerveKey());
 
         // Manage our pathways
 
