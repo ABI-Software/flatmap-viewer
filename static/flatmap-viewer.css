@@ -148,7 +148,7 @@ li.flatmap-contextmenu-item:hover {
     grid-template-columns: 4fr 1.1fr;
     column-gap: 10px;
     row-gap: 0.2em;
-    width: 240px;
+    width: 300px;
     font-size: 10pt;
 }
 .nerve-line {

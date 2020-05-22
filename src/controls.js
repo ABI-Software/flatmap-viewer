@@ -85,7 +85,7 @@ export class NerveKey
     getDefaultPosition()
     //==================
     {
-        return 'bottom-right';
+        return 'top-right';
     }
 
     onAdd(map)
@@ -94,7 +94,7 @@ export class NerveKey
         this._map = map;
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl flatmap-nerve-key';
-        this._container.innerHTML = `<div class="flatmap-nerve-grid">
+        this._container.innerHTML = `<div class="flatmap-nerve-grid" id="nerve-key-text" style="visibility: hidden">
     <div>CNS</div><div class="nerve-line nerve-cns"></div>
     <div>Local circuit neuron</div><div class="nerve-line nerve-lcn"></div>
     <div>Parasympathetic pre-ganglionic</div><div class="nerve-line nerve-para-pre"></div>
@@ -103,7 +103,9 @@ export class NerveKey
     <div>Somatic lower motor</div><div class="nerve-line nerve-somatic"></div>
     <div>Sympathetic pre-ganglionic</div><div class="nerve-line nerve-symp-pre"></div>
     <div>Sympathetic post-ganglionic</div><div class="nerve-line nerve-symp-post"></div>
-</div>`;
+</div>
+<button class="control-button" id="nerve-key-button">KEY</button>`;
+        this._container.onclick = this.onClick_.bind(this);
         return this._container;
     }
 
@@ -112,6 +114,62 @@ export class NerveKey
     {
         this._container.parentNode.removeChild(this._container);
         this._map = undefined;
+    }
+
+    onClick_(event)
+    //=============
+    {
+        if (event.target.id === 'nerve-key-button') {
+            const nerveText = document.getElementById('nerve-key-text');
+            nerveText.style.visibility = 'visible';
+            event.target.style.display = 'none';
+        } else {
+            const nerveButton = document.getElementById('nerve-key-button');
+            const nerveText = document.getElementById('nerve-key-text');
+            nerveButton.style.display = 'inline';
+            nerveText.style.visibility = 'hidden';
+        }
+    }
+}
+
+//==============================================================================
+
+export class PathControl
+{
+    constructor(ui)
+    {
+        this._ui = ui;
+        this._map = undefined;
+    }
+
+    getDefaultPosition()
+    //==================
+    {
+        return 'top-right';
+    }
+
+    onAdd(map)
+    //========
+    {
+        this._map = map;
+        this._container = document.createElement('div');
+        this._container.className = 'mapboxgl-ctrl flatmap-path-control';
+        this._container.innerHTML = `<button class="control-button" id="path-control-button">PTH</button>`;
+        this._container.onclick = this.onClick_.bind(this);
+        return this._container;
+    }
+
+    onRemove()
+    //========
+    {
+        this._container.parentNode.removeChild(this._container);
+        this._map = undefined;
+    }
+
+    onClick_(event)
+    //=============
+    {
+        this._ui.togglePaths();
     }
 }
 

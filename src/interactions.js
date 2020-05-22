@@ -35,7 +35,7 @@ import {InfoControl} from './info.js';
 import {LayerManager} from './layers.js';
 import {Pathways} from './pathways.js';
 //import {QueryInterface} from './query.js';
-import {NerveKey} from './controls.js';
+import {NerveKey, PathControl} from './controls.js';
 import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
 import {VECTOR_TILES_SOURCE} from './styling.js';
@@ -108,6 +108,7 @@ export class UserInteractions
         this._infoControl = null;
         this._tooltip = null;
         this._markers = [];
+        this._disabledLines = false;
 
         this._inQuery = false;
         this._modal = false;
@@ -131,13 +132,14 @@ export class UserInteractions
             }
         }
 
-        // Add a key showing nerve types
-
-        this._map.addControl(new NerveKey());
-
         // Manage our pathways
 
         this._pathways = new Pathways(flatmap);
+        this._map.addControl(new PathControl(this));
+
+        // Add a key showing nerve types
+
+        this._map.addControl(new NerveKey());
 
         // Manage our layers
 
@@ -434,14 +436,26 @@ export class UserInteractions
                 this._map.removeFeatureState(feature, 'hidden');
             } else {
                 this._map.setFeatureState(feature, { 'hidden': true });
+                this._disabledLines = true;
             }
+        }
+    }
+
+
+    togglePaths()
+    //===========
+    {
+        if (this._disabledLines){
+            this.enableLines_(true, this._pathways.allLines())
+            this._disabledLines = false;
+        } else {
+            this.enableLines_(false, this._pathways.allLines())
         }
     }
 
     reset()
     //=====
     {
-        this.enableLines_(true, this._pathways.allLines())
     }
 
     zoomTo_(feature)
