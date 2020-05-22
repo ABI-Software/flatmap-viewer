@@ -171,6 +171,11 @@ export class UserInteractions
             }
         }
 
+        // Mapbox dynamically sets a transform on marker elements so in
+        // order to apply a scale transform we need to create marker icons
+        // inside the marker container <div>.
+        const markerHTML = new mapboxgl.Marker().getElement().innerHTML;
+
         // Flag features that have annotations
         // Also flag those features that are models of something
 
@@ -183,10 +188,15 @@ export class UserInteractions
             }
             // Add markers to the map
             if ('marker' in ann) {
-                const marker = new mapboxgl.Marker()
+                const markerElement = document.createElement('div');
+                const markerIcon = document.createElement('div');
+                markerIcon.innerHTML = markerHTML;
+                markerIcon.className = 'flatmap-marker';
+                markerElement.appendChild(markerIcon);
+                const marker = new mapboxgl.Marker(markerElement)
                                            .setLngLat(ann.centroid)
                                            .addTo(this._map);
-                marker.getElement().addEventListener('click',
+                markerElement.addEventListener('click',
                     this.markerClickEvent_.bind(this, id));
                 this._markers.push(marker);
             }

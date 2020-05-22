@@ -180,4 +180,11 @@ li.flatmap-contextmenu-item:hover {
     background: repeating-linear-gradient(to right,#EA3423 0,#EA3423 6px,transparent 6px,transparent 9px)
 }
 
+
+/* Markers */
+
+.flatmap-marker {
+    transform: scale(0.5);
+}
+
 /* End of file */
