@@ -427,11 +427,15 @@ class FlatMap
     //===================================
     {
         const ann = this._idToAnnotation.get(featureId);
-        this.callback(eventType, {
-            id: featureId,
-            dataset: ann.dataset,
-            scaffold: ann.scaffold
-        });
+        if (ann) {
+            this.callback(eventType, {
+                id: featureId,
+                label: ann.label,
+                models: ann.models,
+                dataset: ann.dataset,
+                scaffold: ann.scaffold
+            });
+        }
     }
 
     featureEvent(eventType, feature)
