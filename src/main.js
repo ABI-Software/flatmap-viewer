@@ -44,7 +44,7 @@ window.onload = async function() {
         if (currentMap !== null) {
             currentMap.close();
         }
-        mapManager.loadMap(id, 'map-canvas', () => {}, {
+        mapManager.loadMap(id, 'map-canvas', (...args) => console.log(...args), {
             tooltips: true,
             //debug: true,
             navigationControl: 'top-right',
