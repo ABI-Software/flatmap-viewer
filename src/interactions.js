@@ -641,6 +641,12 @@ export class UserInteractions
 
         let html = '';
         if (this._flatmap.options.debug && this._infoControl && this._infoControl.active) {
+
+            for (const feature of features) {
+                this._map.setFeatureState(feature, { active: true });
+                this._activeFeatures.push(feature);
+            }
+
             html = this._infoControl.featureInformation(features, event.lngLat);
         } else {
             const lineFeatures = features.filter(feature => ('type' in feature.properties
