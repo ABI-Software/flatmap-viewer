@@ -104,7 +104,7 @@ export class NerveKey
     <div>Sympathetic pre-ganglionic</div><div class="nerve-line nerve-symp-pre"></div>
     <div>Sympathetic post-ganglionic</div><div class="nerve-line nerve-symp-post"></div>
 </div>
-<button class="control-button" id="nerve-key-button">KEY</button>`;
+<button class="control-button" id="nerve-key-button" type="button" title="Show/hide paths" aria-label="Show/hide paths">KEY</button>`;
         this._container.onclick = this.onClick_.bind(this);
         return this._container;
     }
@@ -154,7 +154,8 @@ export class PathControl
         this._map = map;
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl flatmap-path-control';
-        this._container.innerHTML = `<button class="control-button" id="path-control-button">PTH</button>`;
+        this._container.innerHTML = `<button class="control-button" id="path-control-button"
+                                      type="button" title="Nerve paths legend" aria-label="Nerve paths legend">PTH</button>`;
         this._container.onclick = this.onClick_.bind(this);
         return this._container;
     }
