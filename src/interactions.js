@@ -70,14 +70,6 @@ function bounds(feature)
     }
 }
 
-function centroid(feature)
-//========================
-{
-    if ('centroid' in feature.properties) {
-        return JSON.parse(feature.properties.centroid);
-    }
-}
-
 //==============================================================================
 
 function expandBounds(bbox1, bbox2)
@@ -103,7 +95,6 @@ export class UserInteractions
         this._selectedFeature = null;
         this._highlightedFeatures = [];
         this._searchResultFeatures = [];
-        this._lastClickedLocation = null;
         this._currentPopup = null;
         this._infoControl = null;
         this._tooltip = null;
@@ -545,12 +536,11 @@ export class UserInteractions
         this.clearModal_();
     }
 
-    showPopup(featureId, content, options)
-    //====================================
+    showPopup(featureId, content, options={})
+    //=======================================
     {
-        const properties = this._flatmap.annotation(featureId);
-
-        if (properties) {  // The feature exists
+        const ann = this._flatmap.annotation(featureId);
+        if (ann) {  // The feature exists
 
             // Remove any existing popup
 
@@ -563,11 +553,9 @@ export class UserInteractions
             this.unhighlightFeatures_();
             this.highlightFeature_(this.mapFeature_(featureId));
 
-            // Position popup at last clicked location if we have it,
-            // otherwise at the feature's centroid
+            // Position popup at the feature's centroid
 
-            const location = (this._lastClickedLocation === null) ? properties.centroid
-                                                                  : this._lastClickedLocation;
+            const location = ann.centroid;
 
             // Make sure the feature is on screen
 
