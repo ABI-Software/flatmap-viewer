@@ -95,6 +95,69 @@ export class FeatureBorderLayer
 
 //==============================================================================
 
+export class FeatureDividerBorderLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-divider-border`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'line',
+            'filter': [
+                 'all',
+                 ['!has', 'label'],
+                 ['==', '$type', 'Polygon']
+            ],
+            'paint': {
+                'line-color': '#444',
+                'line-opacity': 0.8,
+                'line-width': [
+                    'let', 'width', 0.1,
+                    [ 'interpolate',
+                        ['exponential', 2],
+                        ['zoom'],
+                         2, ["*", ['var', 'width'], ["^", 2, -1]],
+                        10, ["*", ['var', 'width'], ["^", 2,  5]]
+                    ]
+                ]
+            }
+        };
+    }
+}
+
+export class FeatureDividerLineLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-divider-line`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'line',
+            'filter': [
+                 'all',
+                 ['==', '$type', 'LineString']
+            ],
+            'paint': {
+                'line-color': '#444',
+                'line-opacity': 0.8,
+                'line-width': [
+                    'let', 'width', 0.1,
+                    [ 'interpolate',
+                        ['exponential', 2],
+                        ['zoom'],
+                         2, ["*", ['var', 'width'], ["^", 2, -1]],
+                        10, ["*", ['var', 'width'], ["^", 2,  5]]
+                    ]
+                ]
+            }
+        };
+    }
+}
+
+//==============================================================================
+
 export class FeatureLineLayer
 {
     static style(sourceLayer)

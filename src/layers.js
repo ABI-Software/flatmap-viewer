@@ -39,7 +39,9 @@ class MapFeatureLayer
             this.addImageLayer_();
         }
 
+        this.addStyleLayer_(style.FeatureDividerLineLayer.style);
         this.addStyleLayer_(style.FeatureFillLayer.style);
+        this.addStyleLayer_(style.FeatureDividerBorderLayer.style);
         this.addStyleLayer_(style.FeatureBorderLayer.style);
 
         this.addStyleLayer_(style.FeatureLineLayer.style);
