@@ -50,6 +50,12 @@ export class SearchControl
         return this._container;
     }
 
+    getDefaultPosition()
+    //==================
+    {
+        return 'top-right';
+    }
+
     onRemove()
     //========
     {
