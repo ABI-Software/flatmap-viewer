@@ -167,7 +167,8 @@ export class UserInteractions
         // Mapbox dynamically sets a transform on marker elements so in
         // order to apply a scale transform we need to create marker icons
         // inside the marker container <div>.
-        const markerHTML = new mapboxgl.Marker().getElement().innerHTML;
+        const defaultMarker = new mapboxgl.Marker().getElement().innerHTML;
+        const simulationMarker = new mapboxgl.Marker({color: '#F731D7'}).getElement().innerHTML;
 
         // Flag features that have annotations
         // Also flag those features that are models of something
@@ -183,14 +184,20 @@ export class UserInteractions
             if ('marker' in ann) {
                 const markerElement = document.createElement('div');
                 const markerIcon = document.createElement('div');
-                markerIcon.innerHTML = markerHTML;
+                markerIcon.innerHTML = ('simulation' in ann) ? simulationMarker : defaultMarker;
                 markerIcon.className = 'flatmap-marker';
                 markerElement.appendChild(markerIcon);
                 const marker = new mapboxgl.Marker(markerElement)
                                            .setLngLat(ann.centroid)
                                            .addTo(this._map);
                 markerElement.addEventListener('click',
-                    this.markerClickEvent_.bind(this, id));
+                    this.markerClickEvent_.bind(this, id, marker));
+                markerElement.addEventListener('mouseenter',
+                    this.markerMouseEvent_.bind(this, id, marker));
+                markerElement.addEventListener('mousemove',
+                    this.markerMouseEvent_.bind(this, id, marker));
+                markerElement.addEventListener('mouseleave',
+                    this.markerMouseEvent_.bind(this, id, marker));
                 this._markers.push(marker);
             }
         }
@@ -583,6 +590,25 @@ export class UserInteractions
         }
     }
 
+    tooltipHtml_(properties, labelSuffix='')
+    //======================================
+    {
+        if (this._infoControl && this._infoControl.active) {
+            const htmlList = [];
+            htmlList.push(`<span class="info-name">Id:</span>`);
+            htmlList.push(`<span class="info-value">${properties.id}</span>`);
+            for (const prop of indexedProperties) {
+                if (prop in properties) {
+                    htmlList.push(`<span class="info-name">${prop}:</span>`);
+                    htmlList.push(`<span class="info-value">${properties[prop]}</span>`);
+                }
+            }
+            return `<div id="info-control-info">${htmlList.join('\n')}</div>`;
+        } else if (!('labelled' in properties)) {
+            return `<div class='flatmap-feature-label'>${properties.label}${labelSuffix}</div>`;
+        }
+    }
+
     mouseMoveEvent_(event)
     //====================
     {
@@ -690,6 +716,51 @@ export class UserInteractions
         }
     }
 
+    markerMouseEvent_(featureId, marker, event)
+    //=========================================
+    {
+        // No tooltip when context menu is open
+        if (this._modal) {
+            return;
+        }
+
+        if (['mouseenter', 'mouseleave'].indexOf(event.type) >= 0) {
+            // Remove any existing tooltips
+            this.removeTooltip_();
+            marker.setPopup(null);
+
+            // Reset cursor
+            marker.getElement().style.cursor = 'default';
+
+            if (event.type === 'mouseenter') {
+                const ann = this._flatmap.annotation(featureId);
+                if (ann !== null) {
+                    // Show pointer cursor
+                    marker.getElement().style.cursor = 'pointer';
+
+                    const html = this.tooltipHtml_(ann, ' datasets');
+                    this._tooltip = new mapboxgl.Popup({
+                        closeButton: false,
+                        closeOnClick: false,
+                        maxWidth: 'none',
+                        className: 'flatmap-tooltip-popup'
+                    });
+
+                    this._tooltip
+                        .setLngLat(ann.centroid)
+                        .setHTML(html);
+
+                    // Set the new tooltip and show it
+                    marker.setPopup(this._tooltip);
+                    marker.togglePopup();
+                }
+            }
+        } else if (event.type === 'mousemove') {
+            // Stop event from propagating...
+            event.stopPropagation();
+        }
+    }
+
     clickEvent_(event)
     //================
     {
@@ -712,9 +783,11 @@ export class UserInteractions
         }
     }
 
-    markerClickEvent_(featureId, event)
-    //=================================
+    markerClickEvent_(featureId, marker, event)
+    //=========================================
     {
+        // Remove tooltip
+        marker.setPopup(null);
         this._flatmap.annotationEvent('click', featureId);
     }
 
