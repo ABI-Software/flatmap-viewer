@@ -22,52 +22,89 @@ limitations under the License.
 
 //==============================================================================
 
+function reverseMap(mapping)
+//==========================
+{
+    const reverse = {};
+    for (const [key, values] of Object.entries(mapping)) {
+        for (const value of values) {
+            if (value in reverse) {
+                reverse[value].add(key);
+            } else {
+                reverse[value] = new Set([key]);
+            }
+        }
+    }
+    return reverse;
+}
+
+//==============================================================================
+
 export class Pathways
 {
     constructor(flatmap)
     {
-        this._pathFeatures = flatmap.pathways['path-features'];
+        this._pathLines = flatmap.pathways['path-lines'];    // pathId: [lineIds]
+        this._pathNerves = flatmap.pathways['path-nerves'];  // pathId: [nerveIds]
+
+        this._linePaths = reverseMap(this._pathLines);
+        this._nervePaths = reverseMap(this._pathNerves);
 
         const nodePaths = flatmap.pathways['node-paths'];
         this._nodeStartPaths = nodePaths['start-paths'];
         this._nodeThroughPaths = nodePaths['through-paths'];
         this._nodeEndPaths = nodePaths['end-paths'];
 
-        const lines = new Set();
+        const featureIds = new Set();
         for (const paths of Object.values(this._nodeStartPaths)) {
-            for (const path of paths) {
-                if (path in this._pathFeatures) {
-                    for (const line of this._pathFeatures[path]) {
-                        lines.add(line);
-                    }
-                }
-            }
+            this.addFeatures_(featureIds, paths);
         }
         for (const paths of Object.values(this._nodeThroughPaths)) {
-            for (const path of paths) {
-                if (path in this._pathFeatures) {
-                    for (const line of this._pathFeatures[path]) {
-                        lines.add(line);
-                    }
-                }
-            }
+            this.addFeatures_(featureIds, paths);
         }
         for (const paths of Object.values(this._nodeEndPaths)) {
-            for (const path of paths) {
-                if (path in this._pathFeatures) {
-                    for (const line of this._pathFeatures[path]) {
-                        lines.add(line);
-                    }
-                }
-            }
+            this.addFeatures_(featureIds, paths);
         }
-        this._allLines = lines;
+        this._allFeatureIds = featureIds;
     }
 
-    allLines()
-    //========
+    addFeatures_(featureSet, paths)
+    //=============================
     {
-        return this._allLines;
+        for (const path of paths) {
+            if (path in this._pathLines) {
+                this._pathLines[path].forEach(lineId => featureSet.add(lineId));
+                this._pathNerves[path].forEach(nerveId => featureSet.add(nerveId));
+            }
+        }
+    }
+
+    allFeatureIds()
+    //=============
+    {
+        return this._allFeatureIds;
+    }
+
+    featuresIdsForLines(lineIds)
+    //==========================
+    {
+        const featureIds = new Set();
+        for (const lineId of lineIds) {
+            if (lineId in this._linePaths) {
+                this.addFeatures_(featureIds, this._linePaths[lineId]);
+            }
+        }
+        return featureIds;
+    }
+
+    featuresIdsForNerve(nerveId)
+    //==========================
+    {
+        const featureIds = new Set();
+        if (nerveId in this._nervePaths) {
+            this.addFeatures_(featureIds, this._nervePaths[nerveId]);
+        }
+        return featureIds;
     }
 
     isNode(id)
@@ -78,38 +115,20 @@ export class Pathways
             || id in this._nodeEndPaths;
     }
 
-    pathFeatures(nodeId)
-    //==================
+    pathFeatureIds(nodeId)
+    //====================
     {
-        const lines = new Set();
+        const featureIds = new Set();
         if (nodeId in this._nodeStartPaths) {
-            for (const path of this._nodeStartPaths[nodeId]) {
-                if (path in this._pathFeatures) {
-                    for (const line of this._pathFeatures[path]) {
-                        lines.add(line);
-                    }
-                }
-            }
+            this.addFeatures_(featureIds, this._nodeStartPaths[nodeId]);
         }
         if (nodeId in this._nodeThroughPaths) {
-            for (const path of this._nodeThroughPaths[nodeId]) {
-                if (path in this._pathFeatures) {
-                    for (const line of this._pathFeatures[path]) {
-                        lines.add(line);
-                    }
-                }
-            }
+            this.addFeatures_(featureIds, this._nodeThroughPaths[nodeId]);
         }
         if (nodeId in this._nodeEndPaths) {
-            for (const path of this._nodeEndPaths[nodeId]) {
-                if (path in this._pathFeatures) {
-                    for (const line of this._pathFeatures[path]) {
-                        lines.add(line);
-                    }
-                }
-            }
+            this.addFeatures_(featureIds, this._nodeEndPaths[nodeId]);
         }
-        return lines;
+        return featureIds;
     }
 }
 
