@@ -40,11 +40,20 @@ window.onload = async function() {
                                 .map(o => o.option).join('');
 
     let currentMap = null;
+
+    function callback(event, options)
+    {
+        console.log('Callback:', event, options);
+        if (currentMap !== null) {
+            currentMap.showPopup(options.id, event);
+        }
+    }
+
     const loadMap = (id) => {
         if (currentMap !== null) {
             currentMap.close();
         }
-        mapManager.loadMap(id, 'map-canvas', (...args) => console.log(...args), {
+        const map = mapManager.loadMap(id, 'map-canvas', (event, options) => callback(event, options), {
             tooltips: true,
             //debug: true,
             navigationControl: 'top-right',
