@@ -130,58 +130,23 @@ export class FeatureLineLayer
                     0.9
                 ],
                 'line-width': [
-                    'interpolate',
-                    ['exponential', 2],
-                    ['zoom'],
-                     2, ["*", 0.2, ["^", 2, -1]],
-                    10, ["*", 0.2, ["^", 2,  7]]
+                    'let', 'width', ['case',
+                        ['boolean', ['feature-state', 'active'], false], 0.8,
+                        ['boolean', ['feature-state', 'highlighted'], false], 0.6,
+                        0.3],
+                    [ 'interpolate',
+                        ['exponential', 2],
+                        ['zoom'],
+                         2, ["*", ['var', 'width'], ["^", 2, -1]],
+                        10, ["*", ['var', 'width'], ["^", 2,  6]]
+                    ]
                 ]
             }
         };
     }
 }
 
-export class FeatureNerveLayer
-{
-    static style(sourceLayer)
-    {
-        return {
-            'id': `${sourceLayer}-nerve`,
-            'source': VECTOR_TILES_SOURCE,
-            'source-layer': sourceLayer,
-            'type': 'line',
-            'filter': [
-                 'all',
-                 ['==', '$type', 'LineString'],
-                 ['==', 'type', 'nerve']
-            ],
-            'paint': {
-                'line-color': [
-                    'case',
-                    ['boolean', ['feature-state', 'hidden'], false], '#CCC',
-                    '#888'
-                ],
-                'line-opacity': [
-                    'case',
-                    ['boolean', ['feature-state', 'active'], false], 0.9,
-                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
-                    ['boolean', ['feature-state', 'hidden'], false], 0.3,
-                    ['boolean', ['get', 'invisible'], false], 0.001,
-                    0.9
-                ],
-                'line-dasharray': [2, 1],
-                'line-width': [
-                    'interpolate',
-                    ['exponential', 2],
-                    ['zoom'],
-                     2, ["*", 0.6, ["^", 2, -1]],
-                    10, ["*", 0.6, ["^", 2,  7]]
-                ]
-            }
-        };
-    }
-}
-
+//==============================================================================
 
 export class FeatureLineDashLayer
 {
@@ -215,11 +180,66 @@ export class FeatureLineDashLayer
                 ],
                 'line-dasharray': [3, 2],
                 'line-width': [
-                    'interpolate',
-                    ['exponential', 2],
-                    ['zoom'],
-                     2, ["*", 0.2, ["^", 2, -1]],
-                    10, ["*", 0.2, ["^", 2,  7]]
+                    'let', 'width', ['case',
+                        ['boolean', ['feature-state', 'active'], false], 0.8,
+                        ['boolean', ['feature-state', 'highlighted'], false], 0.6,
+                        0.3],
+                    [ 'interpolate',
+                        ['exponential', 2],
+                        ['zoom'],
+                         2, ["*", ['var', 'width'], ["^", 2, -1]],
+                        10, ["*", ['var', 'width'], ["^", 2,  6]]
+                    ]
+                ]
+            }
+        };
+    }
+}
+
+//==============================================================================
+
+export class FeatureNerveLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-nerve`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'line',
+            'filter': [
+                 'all',
+                 ['==', '$type', 'LineString'],
+                 ['==', 'type', 'nerve']
+            ],
+            'paint': {
+                'line-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], '#222',
+                    ['boolean', ['feature-state', 'highlighted'], false], '#222',
+                    ['boolean', ['feature-state', 'hidden'], false], '#CCC',
+                    '#888'
+                ],
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    ['boolean', ['feature-state', 'hidden'], false], 0.3,
+                    ['boolean', ['get', 'invisible'], false], 0.001,
+                    0.9
+                ],
+                'line-dasharray': [2, 1],
+                'line-width': [
+                    'let', 'width', ['case',
+                        ['boolean', ['feature-state', 'active'], false], 0.8,
+                        ['boolean', ['feature-state', 'highlighted'], false], 0.7,
+                        0.6],
+                    [ 'interpolate',
+                        ['exponential', 2],
+                        ['zoom'],
+                         2, ["*", ['var', 'width'], ["^", 2, -1]],
+                        10, ["*", ['var', 'width'], ["^", 2,  6]]
+                    ]
                 ]
             }
         };
