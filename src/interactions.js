@@ -792,6 +792,7 @@ export class UserInteractions
         // Remove tooltip
         marker.setPopup(null);
         this._flatmap.annotationEvent('click', featureId);
+        event.stopPropagation();
     }
 
 }
