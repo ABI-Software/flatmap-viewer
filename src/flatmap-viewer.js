@@ -432,8 +432,9 @@ class FlatMap
                 id: featureId,
                 label: ann.label,
                 models: ann.models,
-                dataset: ann.dataset,
-                scaffold: ann.scaffold
+                datasets: ann.datasets,
+                scaffolds: ann.scaffolds,
+                simulations: ann.simulations
             });
         }
     }
