@@ -94,18 +94,29 @@ export class NerveKey
         this._map = map;
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl flatmap-nerve-key';
-        this._container.innerHTML = `<div class="flatmap-nerve-grid" id="nerve-key-text" style="visibility: hidden">
-    <div>CNS</div><div class="nerve-line nerve-cns"></div>
-    <div>Local circuit neuron</div><div class="nerve-line nerve-lcn"></div>
-    <div>Parasympathetic pre-ganglionic</div><div class="nerve-line nerve-para-pre"></div>
-    <div>Parasympathetic post-ganglionic</div><div class="nerve-line nerve-para-post"></div>
-    <div>Sensory (afferent) neuron</div><div class="nerve-line nerve-sensory"></div>
-    <div>Somatic lower motor</div><div class="nerve-line nerve-somatic"></div>
-    <div>Sympathetic pre-ganglionic</div><div class="nerve-line nerve-symp-pre"></div>
-    <div>Sympathetic post-ganglionic</div><div class="nerve-line nerve-symp-post"></div>
-</div>
-<button class="control-button" id="nerve-key-button" type="button" title="Show/hide paths" aria-label="Show/hide paths">KEY</button>`;
-        this._container.onclick = this.onClick_.bind(this);
+
+        this._legend = document.createElement('div');
+        this._legend.id = 'nerve-key-text';
+        this._legend.className = 'flatmap-nerve-grid';
+        this._legend.innerHTML = `<div>CNS</div><div class="nerve-line nerve-cns"></div>
+<div>Local circuit neuron</div><div class="nerve-line nerve-lcn"></div>
+<div>Parasympathetic pre-ganglionic</div><div class="nerve-line nerve-para-pre"></div>
+<div>Parasympathetic post-ganglionic</div><div class="nerve-line nerve-para-post"></div>
+<div>Sensory (afferent) neuron</div><div class="nerve-line nerve-sensory"></div>
+<div>Somatic lower motor</div><div class="nerve-line nerve-somatic"></div>
+<div>Sympathetic pre-ganglionic</div><div class="nerve-line nerve-symp-pre"></div>
+<div>Sympathetic post-ganglionic</div><div class="nerve-line nerve-symp-post"></div>`;
+
+        this._button = document.createElement('button');
+        this._button.id = 'nerve-key-button';
+        this._button.className = 'control-button';
+        this._button.title = 'Nerve paths legend';
+        this._button.setAttribute('type', 'button');
+        this._button.setAttribute('aria-label', 'Nerve paths legend');
+        this._button.textContent = 'LGD';
+        this._container.appendChild(this._button);
+
+        this._container.addEventListener('click', this.onClick_.bind(this));
         return this._container;
     }
 
@@ -120,15 +131,13 @@ export class NerveKey
     //=============
     {
         if (event.target.id === 'nerve-key-button') {
-            const nerveText = document.getElementById('nerve-key-text');
-            nerveText.style.visibility = 'visible';
-            event.target.style.display = 'none';
+            this._button = this._container.removeChild(this._button)
+            this._container.appendChild(this._legend);
         } else {
-            const nerveButton = document.getElementById('nerve-key-button');
-            const nerveText = document.getElementById('nerve-key-text');
-            nerveButton.style.display = 'inline';
-            nerveText.style.visibility = 'hidden';
+            this._legend = this._container.removeChild(this._legend);
+            this._container.appendChild(this._button);
         }
+        event.stopPropagation();
     }
 }
 
