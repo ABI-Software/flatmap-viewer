@@ -167,8 +167,8 @@ export class UserInteractions
         // Mapbox dynamically sets a transform on marker elements so in
         // order to apply a scale transform we need to create marker icons
         // inside the marker container <div>.
-        const defaultMarker = new mapboxgl.Marker().getElement().innerHTML;
-        const simulationMarker = new mapboxgl.Marker({color: '#F731D7'}).getElement().innerHTML;
+        const defaultMarkerHTML = new mapboxgl.Marker().getElement().innerHTML;
+        const simulationMarkerHTML = new mapboxgl.Marker({color: '#005974'}).getElement().innerHTML;
 
         // Flag features that have annotations
         // Also flag those features that are models of something
@@ -184,7 +184,11 @@ export class UserInteractions
             if ('marker' in ann) {
                 const markerElement = document.createElement('div');
                 const markerIcon = document.createElement('div');
-                markerIcon.innerHTML = ('simulation' in ann) ? simulationMarker : defaultMarker;
+                if (ann.kind === 'simulation') {
+                    markerIcon.innerHTML = simulationMarkerHTML;
+                } else {
+                    markerIcon.innerHTML = defaultMarkerHTML;
+                }
                 markerIcon.className = 'flatmap-marker';
                 markerElement.appendChild(markerIcon);
                 const marker = new mapboxgl.Marker(markerElement)
