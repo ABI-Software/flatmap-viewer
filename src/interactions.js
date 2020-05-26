@@ -609,7 +609,13 @@ export class UserInteractions
             }
             return `<div id="info-control-info">${htmlList.join('\n')}</div>`;
         } else if (!('labelled' in properties)) {
-            return `<div class='flatmap-feature-label'>${properties.label}${labelSuffix}</div>`;
+            const label = properties.label;
+            const capitalisedLabel = label.substr(0, 1).toUpperCase() + label.substr(1).toLowerCase();
+            if (labelSuffix === '') {
+                return `<div class='flatmap-feature-label'>${capitalisedLabel}</div>`;
+            } else {
+                return `<div class='flatmap-feature-label'>${capitalisedLabel} ${labelSuffix}</div>`;
+            }
         }
     }
 
@@ -752,7 +758,8 @@ export class UserInteractions
                     // Show pointer cursor
                     marker.getElement().style.cursor = 'pointer';
 
-                    const html = this.tooltipHtml_(ann, ' datasets');
+                    const html = this.tooltipHtml_(ann, (ann.kind === 'simulation')
+                                                        ? 'simulations' : 'datasets');
                     this._tooltip = new mapboxgl.Popup({
                         closeButton: false,
                         closeOnClick: false,
