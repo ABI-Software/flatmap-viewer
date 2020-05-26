@@ -59,6 +59,7 @@ class FlatMap
         this._mapNumber = mapDescription.number;
         this._callback = mapDescription.callback;
         this._layers = mapDescription.layers;
+        this._markers = mapDescription.markers;
         this._options = mapDescription.options;
         this._pathways = mapDescription.pathways;
         this._resolve = resolve;
@@ -374,6 +375,12 @@ class FlatMap
     //=======
     {
         return this._map;
+    }
+
+    get markers()
+    //===========
+    {
+        return this._markers;
     }
 
     get options()
@@ -741,6 +748,10 @@ export class MapManager
 
                 const metadata = await loadJSON(`flatmap/${map.id}/metadata`);
 
+                // Get additional marker details for the map
+
+                const mapMarkers = await loadJSON(`flatmap/${map.id}/markers`);
+
                 // Display the map
 
                 this._mapNumber += 1;
@@ -752,6 +763,7 @@ export class MapManager
                         style: mapStyle,
                         options: mapOptions,
                         layers: mapLayers,
+                        markers: mapMarkers,
                         metadata: metadata,
                         number: this._mapNumber,
                         pathways: pathways,
