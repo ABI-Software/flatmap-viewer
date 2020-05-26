@@ -164,7 +164,7 @@ export class PathControl
         this._container = document.createElement('div');
         this._container.className = 'mapboxgl-ctrl flatmap-path-control';
         this._container.innerHTML = `<button class="control-button" id="path-control-button"
-                                      type="button" title="Nerve paths legend" aria-label="Nerve paths legend">PTH</button>`;
+                                      type="button" title="Show/hide paths" aria-label="Show/hide paths">PTH</button>`;
         this._container.onclick = this.onClick_.bind(this);
         return this._container;
     }
