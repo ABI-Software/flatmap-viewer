@@ -200,8 +200,8 @@ export class FeatureLineLayer
                     [ 'interpolate',
                         ['exponential', 2],
                         ['zoom'],
-                         2, ["*", ['var', 'width'], ["^", 2, -1]],
-                        10, ["*", ['var', 'width'], ["^", 2,  6]]
+                         2, ["*", ['var', 'width'], ["^", 2, 0]],
+                        10, ["*", ['var', 'width'], ["^", 2, 6]]
                     ]
                 ]
             }
@@ -235,7 +235,7 @@ export class FeatureLineDashLayer
                 ],
                 'line-opacity': [
                     'case',
-                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'active'], false], 1.0,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['feature-state', 'hidden'], false], 0.3,
                     ['boolean', ['get', 'invisible'], false], 0.001,
@@ -250,8 +250,8 @@ export class FeatureLineDashLayer
                     [ 'interpolate',
                         ['exponential', 2],
                         ['zoom'],
-                         2, ["*", ['var', 'width'], ["^", 2, -1]],
-                        10, ["*", ['var', 'width'], ["^", 2,  6]]
+                         2, ["*", ['var', 'width'], ["^", 2, 0]],
+                        10, ["*", ['var', 'width'], ["^", 2, 6]]
                     ]
                 ]
             }
