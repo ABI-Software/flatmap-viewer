@@ -77,8 +77,9 @@ export class NavigationControl
 
 export class NerveKey
 {
-    constructor()
+    constructor(ui)
     {
+        this._ui = ui;
         this._map = undefined;
     }
 
@@ -98,14 +99,14 @@ export class NerveKey
         this._legend = document.createElement('div');
         this._legend.id = 'nerve-key-text';
         this._legend.className = 'flatmap-nerve-grid';
-        this._legend.innerHTML = `<div>CNS</div><div class="nerve-line nerve-cns"></div>
-<div>Local circuit neuron</div><div class="nerve-line nerve-lcn"></div>
-<div>Parasympathetic pre-ganglionic</div><div class="nerve-line nerve-para-pre"></div>
-<div>Parasympathetic post-ganglionic</div><div class="nerve-line nerve-para-post"></div>
-<div>Sensory (afferent) neuron</div><div class="nerve-line nerve-sensory"></div>
-<div>Somatic lower motor</div><div class="nerve-line nerve-somatic"></div>
-<div>Sympathetic pre-ganglionic</div><div class="nerve-line nerve-symp-pre"></div>
-<div>Sympathetic post-ganglionic</div><div class="nerve-line nerve-symp-post"></div>`;
+        this._legend.innerHTML = `<div kind="cns">CNS</div><div kind="cns" class="nerve-line nerve-cns"></div>
+<div kind="lcn">Local circuit neuron</div><div kind="lcn" class="nerve-line nerve-lcn"></div>
+<div kind="para-pre">Parasympathetic pre-ganglionic</div><div kind="para-pre" class="nerve-line nerve-para-pre"></div>
+<div kind="para-post">Parasympathetic post-ganglionic</div><div kind="para-post" class="nerve-line nerve-para-post"></div>
+<div kind="sensory">Sensory (afferent) neuron</div><div kind="sensory" class="nerve-line nerve-sensory"></div>
+<div kind="somatic">Somatic lower motor</div><div kind="somatic" class="nerve-line nerve-somatic"></div>
+<div kind="symp-pre">Sympathetic pre-ganglionic</div><div kind="symp-pre" class="nerve-line nerve-symp-pre"></div>
+<div kind="symp-post">Sympathetic post-ganglionic</div><div kind="symp-post" class="nerve-line nerve-symp-post"></div>`;
 
         this._button = document.createElement('button');
         this._button.id = 'nerve-key-button';
@@ -113,6 +114,7 @@ export class NerveKey
         this._button.title = 'Nerve paths legend';
         this._button.setAttribute('type', 'button');
         this._button.setAttribute('aria-label', 'Nerve paths legend');
+        this._button.setAttribute('legend-visible', 'false');
         this._button.textContent = 'LGD';
         this._container.appendChild(this._button);
 
@@ -131,11 +133,19 @@ export class NerveKey
     //=============
     {
         if (event.target.id === 'nerve-key-button') {
-            this._button = this._container.removeChild(this._button)
-            this._container.appendChild(this._legend);
+            if (this._button.getAttribute('legend-visible') === 'false') {
+                this._container.appendChild(this._legend);
+                this._button.setAttribute('legend-visible', 'true');
+                this._legend.focus();
+            } else {
+                this._legend = this._container.removeChild(this._legend);
+                this._button.setAttribute('legend-visible', 'false');
+            }
         } else {
-            this._legend = this._container.removeChild(this._legend);
-            this._container.appendChild(this._button);
+            const pathType = event.target.getAttribute('kind');
+            if (pathType) {
+                this._ui.showPaths(pathType);
+            }
         }
         event.stopPropagation();
     }

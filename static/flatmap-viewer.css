@@ -143,13 +143,19 @@ li.flatmap-contextmenu-item:hover {
 
 /* Nerve key */
 
+.flatmap-nerve-key {
+    text-align: right;
+}
 .flatmap-nerve-grid {
-    display: inline-grid;
+    margin-top: 6px;
+    display: grid;
     grid-template-columns: 4fr 1.1fr;
     column-gap: 10px;
     row-gap: 0.2em;
     width: 300px;
     font-size: 10pt;
+    cursor: pointer;
+    text-align: left;
 }
 .nerve-line {
     margin: 5px 0;

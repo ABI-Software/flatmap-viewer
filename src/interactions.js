@@ -130,7 +130,7 @@ export class UserInteractions
 
         // Add a key showing nerve types
 
-        this._map.addControl(new NerveKey());
+        this._map.addControl(new NerveKey(this));
 
         // Manage our layers
 
@@ -795,6 +795,16 @@ export class UserInteractions
                 }
             }
         }
+    }
+
+    showPaths(pathType)
+    //=================
+    {
+        // Disable all paths except those of `pathType`
+
+        this.enablePathFeatures_(false, this._pathways.allFeatureIds());
+        this.enablePathFeatures_(true, this._pathways.typeFeatureIds(pathType));
+        this._disabledPathFeatures = true;
     }
 
     markerClickEvent_(featureId, marker, event)

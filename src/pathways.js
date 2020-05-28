@@ -54,6 +54,7 @@ export class Pathways
         this._nodeStartPaths = nodePaths['start-paths'];
         this._nodeThroughPaths = nodePaths['through-paths'];
         this._nodeEndPaths = nodePaths['end-paths'];
+        this._typePaths = flatmap.pathways['type-paths'];     // nerve-type: [pathIds]
 
         const featureIds = new Set();
         for (const paths of Object.values(this._nodeStartPaths)) {
@@ -127,6 +128,16 @@ export class Pathways
         }
         if (nodeId in this._nodeEndPaths) {
             this.addFeatures_(featureIds, this._nodeEndPaths[nodeId]);
+        }
+        return featureIds;
+    }
+
+    typeFeatureIds(pathType)
+    //======================
+    {
+        const featureIds = new Set();
+        if (pathType in this._typePaths) {
+            this.addFeatures_(featureIds, this._typePaths[pathType]);
         }
         return featureIds;
     }
