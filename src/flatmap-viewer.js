@@ -710,6 +710,12 @@ export class MapManager
                     mapOptions['bounds'] = mapIndex['bounds'];
                 }
 
+                // Default is to show path controls
+
+                if (!('pathControls' in mapOptions)) {
+                    mapOptions['pathControls'] = true;
+                }
+
                 // Get details about the map's layers
 
                 let mapLayers = [];
