@@ -662,7 +662,7 @@ export class UserInteractions
             const lineFeatures = features.filter(feature => ('type' in feature.properties
                                                          && feature.properties.type.startsWith('line')));
             if (lineFeatures.length > 0) {
-                for (const featureId of this._pathways.featuresIdsForLines(
+                for (const featureId of this._pathways.featureIdsForLines(
                                                         lineFeatures.map(f => f.properties.id))) {
                     const feature = this.mapFeature_(featureId);
                     this._map.setFeatureState(feature, { active: true });
@@ -708,7 +708,7 @@ export class UserInteractions
                         this._activeFeatures.push(feature);
                         if ('type' in feature.properties
                           && feature.properties.type === 'nerve') {
-                            for (const featureId of this._pathways.featuresIdsForNerve(
+                            for (const featureId of this._pathways.featureIdsForNerve(
                                                                     feature.properties.id)) {
                                 const feature = this.mapFeature_(featureId);
                                 this._map.setFeatureState(feature, { active: true });

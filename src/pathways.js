@@ -86,8 +86,8 @@ export class Pathways
         return this._allFeatureIds;
     }
 
-    featuresIdsForLines(lineIds)
-    //==========================
+    featureIdsForLines(lineIds)
+    //=========================
     {
         const featureIds = new Set();
         for (const lineId of lineIds) {
@@ -98,8 +98,8 @@ export class Pathways
         return featureIds;
     }
 
-    featuresIdsForNerve(nerveId)
-    //==========================
+    featureIdsForNerve(nerveId)
+    //=========================
     {
         const featureIds = new Set();
         if (nerveId in this._nervePaths) {
