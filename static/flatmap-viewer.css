@@ -141,13 +141,20 @@ li.flatmap-contextmenu-item:hover {
     font-size: 12pt;
 }
 
+/* Additional control buttons */
+
+#flatmap-nerve-key,
+#flatmap-path-control {
+    margin-top: 20px;
+}
+
 /* Nerve key */
 
-.flatmap-nerve-key {
+#flatmap-nerve-key {
     text-align: right;
 }
 .flatmap-nerve-grid {
-    margin-top: 6px;
+    margin-top: 10px;
     display: grid;
     grid-template-columns: 4fr 1.1fr;
     column-gap: 10px;

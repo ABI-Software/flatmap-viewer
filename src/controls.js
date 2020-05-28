@@ -94,7 +94,8 @@ export class NerveKey
     {
         this._map = map;
         this._container = document.createElement('div');
-        this._container.className = 'mapboxgl-ctrl flatmap-nerve-key';
+        this._container.className = 'mapboxgl-ctrl';
+        this._container.id = 'flatmap-nerve-key';
 
         this._legend = document.createElement('div');
         this._legend.id = 'nerve-key-text';
@@ -172,7 +173,8 @@ export class PathControl
     {
         this._map = map;
         this._container = document.createElement('div');
-        this._container.className = 'mapboxgl-ctrl flatmap-path-control';
+        this._container.className = 'mapboxgl-ctrl';
+        this._container.id = 'flatmap-path-control';
         this._container.innerHTML = `<button class="control-button" id="path-control-button"
                                       type="button" title="Show/hide paths" aria-label="Show/hide paths">PTH</button>`;
         this._container.onclick = this.onClick_.bind(this);
