@@ -47,13 +47,14 @@ export class Pathways
         this._pathLines = flatmap.pathways['path-lines'];    // pathId: [lineIds]
         this._pathNerves = flatmap.pathways['path-nerves'];  // pathId: [nerveIds]
 
-        this._linePaths = reverseMap(this._pathLines);
-        this._nervePaths = reverseMap(this._pathNerves);
+        this._linePaths = reverseMap(this._pathLines);       // lineId: [pathIds]
+        this._nervePaths = reverseMap(this._pathNerves);     // nerveId: [pathIds]
 
         const nodePaths = flatmap.pathways['node-paths'];
-        this._nodeStartPaths = nodePaths['start-paths'];
-        this._nodeThroughPaths = nodePaths['through-paths'];
-        this._nodeEndPaths = nodePaths['end-paths'];
+        this._nodeStartPaths = nodePaths['start-paths'];      // nodeId: [pathIds]
+        this._nodeThroughPaths = nodePaths['through-paths'];  // nodeId: [pathIds]
+        this._nodeEndPaths = nodePaths['end-paths'];          // nodeId: [pathIds]
+
         this._typePaths = flatmap.pathways['type-paths'];     // nerve-type: [pathIds]
 
         const featureIds = new Set();
