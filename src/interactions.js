@@ -790,7 +790,6 @@ export class UserInteractions
             const feature = this._activeFeatures[0];
             if (this._pathways.isNode(feature.properties.id)) {
                 for (const featureId of this._pathways.pathFeatureIds(feature.properties.id)) {
-                    const feature = this.mapFeature_(featureId);
                     this.highlightFeature_(this.mapFeature_(featureId));
                 }
             }
