@@ -55,8 +55,16 @@ export class FeatureFillLayer
                 'fill-sort-key': ['get', 'scale']
             },
             'paint': {
-                'fill-color': PAINT_STYLES['fill-color'],
-                'fill-opacity': 0.01
+                'fill-color': [
+                    'case',
+                    ['==', ['get', 'models'], 'UBERON:0013702'], '#CCC',
+                    'white'
+                ],
+                'fill-opacity': [
+                    'case',
+                    ['==', ['get', 'models'], 'UBERON:0013702'], 0.2,
+                    0.01
+                ]
             }
         };
     }
@@ -79,7 +87,12 @@ export class FeatureBorderLayer
                 'Polygon'
             ],
             'paint': {
-                'line-color': 'blue',
+                'line-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 'blue',
+                    ['boolean', ['feature-state', 'highlighted'], false], 'blue',
+                    '#444'
+                ],
                 'line-opacity': [
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 0.9,
