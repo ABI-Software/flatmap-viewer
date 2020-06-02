@@ -733,7 +733,7 @@ export class UserInteractions
         this.unhighlightFeatures_();
         if (this._activeFeatures.length > 0) {
             const feature = this._activeFeatures[0];
-            if (this._pathways.isNode(feature.properties.id)) {
+            if ('properties' in feature && this._pathways.isNode(feature.properties.id)) {
                 for (const featureId of this._pathways.pathFeatureIds(feature.properties.id)) {
                     this.highlightFeature_(this.mapFeature_(featureId));
                 }
