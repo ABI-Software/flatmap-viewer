@@ -41,11 +41,40 @@ window.onload = async function() {
 
     let currentMap = null;
 
+    function markerPopupContent()
+    {
+        const element = document.createElement('div');
+
+        element.innerHTML = `<div data-v-6e7795b6="" class="block">
+    <span data-v-6e7795b6="" class="display">The distribution of neurons in the intrinsic cardiac<br/>
+    nervous system (ICN) were mapped and visualized in<br/>a 3D reconstruction of a male rat heart.</span>
+</div>
+<button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round">
+    <span>View 3D scaffold</span>
+</button>
+<br/>
+<button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round">
+    <span>View 3D scaffold with ICN data</span>
+</button>
+<br/>
+<button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round" id="popover-button-1">
+    <span>Search for dataset</span>
+</button>`;
+
+        return element;
+    }
+
+
+
     function callback(event, options)
     {
         console.log('Callback:', event, options);
         if (currentMap !== null) {
-            currentMap.showPopup(options.id, event);
+            if (options.type === 'marker') {
+                if (event === 'mouseenter') {
+                    currentMap.showMarkerPopup(options.id, markerPopupContent());
+                }
+            }
         }
     }
 
