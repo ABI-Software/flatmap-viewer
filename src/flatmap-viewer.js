@@ -70,7 +70,7 @@ class FlatMap
         }
 
         this._idToAnnotation = new Map();
-        this._modelToFeatures = new Map();
+        this._modelToFeatureIds = new Map();
         for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
             this.addAnnotation_(featureId, metadata);
             if (this.options.searchable) {
@@ -341,21 +341,21 @@ class FlatMap
         if ('models' in ann) {
             const modelId = ann.models;
             if (modelId) {
-                const features = this._modelToFeatures.get(modelId);
-                if (features) {
-                    features.push(featureId);
+                const featureIds = this._modelToFeatureIds.get(modelId);
+                if (featureIds) {
+                    featureIds.push(featureId);
                 } else {
-                    this._modelToFeatures.set(modelId, [featureId]);
+                    this._modelToFeatureIds.set(modelId, [featureId]);
                 }
             }
         }
     }
 
-    featuresForModel(modelId)
-    //=======================
+    featureIdsForModel(anatomicalId)
+    //==============================
     {
-        const features = this._modelToFeatures.get(modelId);
-        return features ? features : [];
+        const featureIds = this._modelToFeatureIds.get(anatomicalId);
+        return featureIds ? featureIds : [];
     }
 
     modelForFeature(featureId)
