@@ -98,11 +98,23 @@ export class UserInteractions
         this._currentPopup = null;
         this._infoControl = null;
         this._tooltip = null;
-        this._markers = [];
+
         this._disabledPathFeatures = false;
 
         this._inQuery = false;
         this._modal = false;
+
+        // Marker placement and interaction
+
+        this._activeMarker = null;
+        this._lastMarkerId = 900000;
+        this._markerIdByMarker = new Map();
+
+        // Mapbox dynamically sets a transform on marker elements so in
+        // order to apply a scale transform we need to create marker icons
+        // inside the marker container <div>.
+        this._defaultMarkerHTML = new mapboxgl.Marker().getElement().innerHTML;
+        this._simulationMarkerHTML = new mapboxgl.Marker({color: '#005974'}).getElement().innerHTML;
 
         // Fit the map to its initial position
 
@@ -166,12 +178,6 @@ export class UserInteractions
             }
         }
 
-        // Mapbox dynamically sets a transform on marker elements so in
-        // order to apply a scale transform we need to create marker icons
-        // inside the marker container <div>.
-        const defaultMarkerHTML = new mapboxgl.Marker().getElement().innerHTML;
-        const simulationMarkerHTML = new mapboxgl.Marker({color: '#005974'}).getElement().innerHTML;
-
         // Flag features that have annotations
         // Also flag those features that are models of something
 
@@ -183,28 +189,8 @@ export class UserInteractions
                 console.log(`Annotation error, ${ann.layer}: ${ann.error} (${ann.text})`);
             }
             // Add markers to the map
-            if ('marker' in ann) {
-                const markerElement = document.createElement('div');
-                const markerIcon = document.createElement('div');
-                if (ann.kind === 'simulation') {
-                    markerIcon.innerHTML = simulationMarkerHTML;
-                } else {
-                    markerIcon.innerHTML = defaultMarkerHTML;
-                }
-                markerIcon.className = 'flatmap-marker';
-                markerElement.appendChild(markerIcon);
-                const marker = new mapboxgl.Marker(markerElement)
-                                           .setLngLat(ann.centroid)
-                                           .addTo(this._map);
-                markerElement.addEventListener('click',
-                    this.markerClickEvent_.bind(this, id, marker));
-                markerElement.addEventListener('mouseenter',
-                    this.markerMouseEvent_.bind(this, id, marker));
-                markerElement.addEventListener('mousemove',
-                    this.markerMouseEvent_.bind(this, id, marker));
-                markerElement.addEventListener('mouseleave',
-                    this.markerMouseEvent_.bind(this, id, marker));
-                this._markers.push(marker);
+            if ('models' in ann && 'marker' in ann) {   // TEMP *****************************
+                this.addMarker(ann.models, ann.kind);
             }
         }
 
@@ -738,55 +724,12 @@ export class UserInteractions
         }
     }
 
-    markerMouseEvent_(featureId, marker, event)
-    //=========================================
-    {
-        // No tooltip when context menu is open
-        if (this._modal) {
-            return;
-        }
 
-        if (['mouseenter', 'mouseleave'].indexOf(event.type) >= 0) {
-            // Remove any existing tooltips
-            this.removeTooltip_();
-            marker.setPopup(null);
-
-            // Reset cursor
-            marker.getElement().style.cursor = 'default';
-
-            if (event.type === 'mouseenter') {
-                const ann = this._flatmap.annotation(featureId);
-                if (ann !== null) {
-                    // Show pointer cursor
-                    marker.getElement().style.cursor = 'pointer';
-
-                    const html = this.tooltipHtml_(ann, (ann.kind === 'simulation')
-                                                        ? 'simulations' : 'datasets');
-                    this._tooltip = new mapboxgl.Popup({
-                        closeButton: false,
-                        closeOnClick: false,
-                        maxWidth: 'none',
-                        className: 'flatmap-tooltip-popup'
-                    });
-
-                    this._tooltip
-                        .setLngLat(ann.centroid)
-                        .setHTML(html);
-
-                    // Set the new tooltip and show it
-                    marker.setPopup(this._tooltip);
-                    marker.togglePopup();
-                }
-            }
-        } else if (event.type === 'mousemove') {
-            // Stop event from propagating...
-            event.stopPropagation();
-        }
-    }
 
     clickEvent_(event)
     //================
     {
+        this.clearActiveMarker_();
         this.unhighlightFeatures_();
         if (this._activeFeatures.length > 0) {
             const feature = this._activeFeatures[0];
@@ -808,15 +751,127 @@ export class UserInteractions
         this._disabledPathFeatures = true;
     }
 
-    markerClickEvent_(featureId, marker, event)
-    //=========================================
+    //==============================================================================
+
+    // Marker handling
+
+    addMarker(anatomicalId, markerKind='')
+    //====================================
     {
-        // Remove tooltip
-        marker.setPopup(null);
-        this._flatmap.annotationEvent('click', featureId);
+        const featureIds = this._flatmap.featureIdsForModel(anatomicalId);
+        let markerId = -1;
+
+        for (const featureId of featureIds) {
+            const ann = this._flatmap.annotation(featureId);
+            if (!('marker' in ann)) {
+                if (markerId === -1) {
+                    this._lastMarkerId += 1;
+                    markerId = this._lastMarkerId;
+                }
+
+                const markerElement = document.createElement('div');
+                const markerIcon = document.createElement('div');
+                if (markerKind === 'simulation') {
+                    markerIcon.innerHTML = this._simulationMarkerHTML;
+                } else {
+                    markerIcon.innerHTML = this._defaultMarkerHTML;
+                }
+                markerIcon.className = 'flatmap-marker';
+                markerElement.appendChild(markerIcon);
+
+                const marker = new mapboxgl.Marker(markerElement)
+                                           .setLngLat(ann.centroid)
+                                           .addTo(this._map);
+                markerElement.addEventListener('mouseenter',
+                    this.markerMouseEvent_.bind(this, marker));
+                markerElement.addEventListener('mousemove',
+                    this.markerMouseEvent_.bind(this, marker));
+                markerElement.addEventListener('mouseleave',
+                    this.markerMouseEvent_.bind(this, marker));
+
+                this._markerIdByMarker.set(marker, markerId);
+            }
+        }
+        return markerId;
+    }
+
+    markerMouseEvent_(marker, event)
+    //==============================
+    {
+        // No tooltip when context menu is open
+        if (this._modal
+         || (this._activeMarker !== null && event.type === 'mouseleave')) {
+            return;
+        }
+
+        if (['mouseenter', 'mouseleave'].indexOf(event.type) >= 0) {
+            this._activeMarker = marker;
+
+            // Remove any existing tooltips
+            this.removeTooltip_();
+            marker.setPopup(null);
+
+            // Reset cursor
+            marker.getElement().style.cursor = 'default';
+
+            if (event.type === 'mouseenter') {
+                this._flatmap.markerEvent('mouseenter', this._markerIdByMarker.get(marker));
+            }
+        }
         event.stopPropagation();
     }
 
+    clearActiveMarker_()
+    //==================
+    {
+        if (this._activeMarker !== null) {
+            this._activeMarker.setPopup(null);
+            this._activeMarker = null;
+        }
+    }
+
+    showMarkerPopup(markerId, content, options)
+    //=========================================
+    {
+        const marker = this._activeMarker;
+        if (markerId !== this._markerIdByMarker.get(marker)) {
+            this.clearActiveMarker_();
+            return;
+        }
+
+        const location = marker.getLngLat();
+
+        // Make sure the marker is on screen
+
+        if (!this._map.getBounds().contains(location)) {
+            this._map.panTo(location);
+        }
+
+        const element = document.createElement('div');
+        if (typeof content === 'object') {
+            element.appendChild(content);
+        } else {
+            element.innerHTML = content;
+        }
+
+        element.addEventListener('click', e => this.clearActiveMarker_());
+
+
+        this._tooltip = new mapboxgl.Popup({
+            closeButton: false,
+            closeOnClick: false,
+            maxWidth: 'none',
+            className: 'flatmap-tooltip-popup'
+        });
+
+        this._tooltip
+            .setLngLat(location)
+            .setDOMContent(element);
+
+        // Set the merker tooltip and show it
+        marker.setPopup(this._tooltip);
+        marker.togglePopup();
+    }
 }
 
 //==============================================================================

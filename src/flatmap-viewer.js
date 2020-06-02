@@ -436,6 +436,7 @@ class FlatMap
         const ann = this._idToAnnotation.get(featureId);
         if (ann) {
             this.callback(eventType, {
+                type: 'feature',
                 id: featureId,
                 label: ann.label,
                 models: ann.models,
@@ -446,16 +447,12 @@ class FlatMap
         }
     }
 
-    featureEvent(eventType, feature)
+    markerEvent(eventType, markerId)
     //==============================
     {
-        const properties = feature.properties;
         this.callback(eventType, {
-            id: properties.id,
-            models: properties.models,
-            label: properties.label,
-            dataset: properties.dataset,
-            scaffold: properties.scaffold
+            type: 'marker',
+            id: markerId
         });
     }
 
@@ -512,6 +509,23 @@ class FlatMap
     {
         if (this._userInteractions !== null) {
             this._userInteractions.showPopup(featureId, content, options);
+        }
+    }
+
+    addMarker(anatomicalId, markerKind='')
+    //====================================
+    {
+        if (this._userInteractions !== null) {
+            return this._userInteractions.addMarker(anatomicalId, markerKind);
+        }
+        return -1;
+    }
+
+    showMarkerPopup(markerId, content, options)
+    //=========================================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.showMarkerPopup(markerId, content, options);
         }
     }
 
