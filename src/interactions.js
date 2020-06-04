@@ -445,6 +445,11 @@ export class UserInteractions
     reset()
     //=====
     {
+        this.clearModal_();
+        this.clearActiveMarker_();
+        this.unhighlightFeatures_();
+        this.enablePathFeatures_(true, this._pathways.allFeatureIds());
+        this._disabledPathFeatures = false;
     }
 
     clearSearchResults(reset=true)
