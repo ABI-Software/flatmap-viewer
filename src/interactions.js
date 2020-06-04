@@ -94,7 +94,6 @@ export class UserInteractions
         this._activeFeatures = [];
         this._selectedFeature = null;
         this._highlightedFeatures = [];
-        this._searchResultFeatures = [];
         this._currentPopup = null;
         this._infoControl = null;
         this._tooltip = null;
@@ -472,11 +471,6 @@ export class UserInteractions
     //============================
     {
         this.unhighlightFeatures_();
-
-        for (const feature of this._searchResultFeatures) {
-            this._map.removeFeatureState(feature, 'searchresult');
-        }
-        this._searchResultFeatures = [];
     }
 
     showSearchResults(featureIds, padding=100)
@@ -487,12 +481,8 @@ export class UserInteractions
             for (const featureId of featureIds) {
                 const annotation = this._flatmap.annotation(featureId);
                 if (annotation) {
-                    // Indicate which features are the result of the search
                     const feature = this.mapFeature_(featureId);
                     this.highlightFeature_(feature);
-                    this._map.setFeatureState(feature, { 'searchresult': true });
-                    this._searchResultFeatures.push(feature);
-
                     const bounds = annotation.bounds;
                     bbox = (bbox === null) ? bounds
                                            : expandBounds(bbox, bounds);
@@ -689,9 +679,7 @@ export class UserInteractions
                         html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
                     } else {
                         const feature = labelledFeatures[0];
-                        if (this._flatmap.options.tooltips) {
-                            html = this.tooltipHtml_(feature.properties);
-                        }
+                        html = this.tooltipHtml_(feature.properties);
                         this._map.setFeatureState(feature, { active: true });
                         this._activeFeatures.push(feature);
                         if ('type' in feature.properties
