@@ -580,12 +580,24 @@ class FlatMap
         return -1;
     }
 
-    showMarkerPopup(markerId, content, options)
-    //=========================================
+    /**
+     * Shows a popup at a marker.
+     *
+     * This method should only be called in response to a ``mouseenter`` event
+     * passed to the map's ``callback`` function as a popup won't be shown.
+     *
+     * @param      {integer}  markerId  The identifier of the marker
+     * @param      {string | DOMElement}  content  The popup's content
+     * @param      {Object}  options
+     * @returns    {boolean} Return true if the popup is shown
+     */
+    showMarkerPopup(markerId, content, options={})
+    //============================================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.showMarkerPopup(markerId, content, options);
+            return this._userInteractions.showMarkerPopup(markerId, content, options);
         }
+        return false;
     }
 
     clearSearchResults()

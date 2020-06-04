@@ -824,7 +824,7 @@ export class UserInteractions
         const marker = this._activeMarker;
         if (markerId !== this._markerIdByMarker.get(marker)) {
             this.clearActiveMarker_();
-            return;
+            return false;
         }
 
         const location = marker.getLngLat();
@@ -844,7 +844,6 @@ export class UserInteractions
 
         element.addEventListener('click', e => this.clearActiveMarker_());
 
-
         this._tooltip = new mapboxgl.Popup({
             closeButton: false,
             closeOnClick: false,
@@ -859,6 +858,8 @@ export class UserInteractions
         // Set the merker tooltip and show it
         marker.setPopup(this._tooltip);
         marker.togglePopup();
+
+        return true;
     }
 }
 
