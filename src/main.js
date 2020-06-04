@@ -88,7 +88,10 @@ window.onload = async function() {
             navigationControl: 'top-right',
             searchable: true,
             featureInfo: true
-        }).then(map => { currentMap = map; });
+        }).then(map => {
+           currentMap = map;
+           map.addMarker('UBERON:0001155'); // Colon
+        });
     };
 
     selector.onchange = (e) => loadMap(e.target.value);
