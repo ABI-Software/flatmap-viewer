@@ -1,0 +1,8 @@
+{
+  "name": "@dbrnz/flatmap-viewer/docs",
+  "author": "David Brooks",
+  "license": "MIT",
+  "devDependencies": {
+    "jsdoc": "^3.5.5"
+  }
+}

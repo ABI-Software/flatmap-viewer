@@ -16,5 +16,11 @@ help:
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
-%: Makefile
+html: .npm_installed Makefile
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# .npm_installed is an empty file we touch whenever we run npm install. This
+# target redoes the install if package.json is newer than that file:
+.npm_installed: package.json
+	npm install
+	touch $@
