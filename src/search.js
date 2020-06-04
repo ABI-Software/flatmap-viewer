@@ -75,10 +75,13 @@ export class SearchControl
         this._map = undefined;
     }
 
-    searchMap_(text)
-    //==============
+    searchMap_(search=true)
+    //=====================
     {
-        if (text !== '') {
+        this._input = this._container.removeChild(this._input);
+        this._input.setAttribute('visible', 'false');
+        const text = this._input.value;
+        if (search && text !== '') {
             this._index.search(text);
         }
     }
@@ -87,8 +90,9 @@ export class SearchControl
     //===========
     {
         if (e.key === 'Enter') {
-            e.target.style.visibility = 'hidden';
-            this.searchMap_(e.target.value);
+            this.searchMap_();
+        } else if (e.key === 'Escape') {
+            this.searchMap_(false);
         }
     }
 
@@ -106,10 +110,7 @@ export class SearchControl
                 this._index.clearResults();
                 this._input.focus();
             } else {
-                const searchText = this._input.value;
-                this._input = this._container.removeChild(this._input);
-                this._input.setAttribute('visible', 'false');
-                this.searchMap_(searchText);
+                this.searchMap_();
             }
         }
     }
