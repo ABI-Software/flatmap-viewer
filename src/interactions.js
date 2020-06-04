@@ -187,10 +187,6 @@ export class UserInteractions
                 this._map.setFeatureState(feature, { 'annotation-error': true });
                 console.log(`Annotation error, ${ann.layer}: ${ann.error} (${ann.text})`);
             }
-            // Add markers to the map
-            if ('models' in ann && 'marker' in ann) {   // TEMP *****************************
-                this.addMarker(ann.models, ann.kind);
-            }
         }
 
         // Display a context menu on right-click
