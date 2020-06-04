@@ -447,26 +447,6 @@ export class UserInteractions
     {
     }
 
-    zoomTo_(feature)
-    //==============
-    {
-        // Hide context menu if it's open
-
-        this._contextMenu.hide();
-
-        // Highlight the feature
-
-        this.unhighlightFeatures_();
-        this.highlightFeature_(feature);
-
-        // Zoom map to feature
-
-        this._map.fitBounds(bounds(feature), {
-            padding: 100,
-            animate: false
-        });
-    }
-
     clearSearchResults(reset=true)
     //============================
     {
