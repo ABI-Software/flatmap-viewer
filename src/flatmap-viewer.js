@@ -571,13 +571,35 @@ class FlatMap
         }
     }
 
-    addMarker(anatomicalId, markerKind='')
+    /**
+     * Add a marker to the map.
+     *
+     * @param      {string}  anatomicalId     The anatomical identifier of the feature on which
+     *                                        to place the marker
+     * @param      {string}  [markerType='']  An optional parameter giving the type of marker
+     *                                        to use. Apart from the default, the only marker
+     *                                        type recognised is ``simulation``
+     * @return     {integer}  The identifier for the resulting marker. -1 is returned if the
+     *                        map doesn't contain a feature with the given anatomical identifier
+     */
+    addMarker(anatomicalId, markerType='')
     //====================================
     {
         if (this._userInteractions !== null) {
-            return this._userInteractions.addMarker(anatomicalId, markerKind);
+            return this._userInteractions.addMarker(anatomicalId, markerType);
         }
         return -1;
+    }
+
+    /**
+     * Remove all markers from the map.
+     */
+    clearMarkers()
+    //============
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.clearMarkers();
+        }
     }
 
     /**

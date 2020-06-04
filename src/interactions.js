@@ -743,7 +743,7 @@ export class UserInteractions
 
     // Marker handling
 
-    addMarker(anatomicalId, markerKind='')
+    addMarker(anatomicalId, markerType='')
     //====================================
     {
         const featureIds = this._flatmap.featureIdsForModel(anatomicalId);
@@ -759,7 +759,7 @@ export class UserInteractions
 
                 const markerElement = document.createElement('div');
                 const markerIcon = document.createElement('div');
-                if (markerKind === 'simulation') {
+                if (markerType === 'simulation') {
                     markerIcon.innerHTML = this._simulationMarkerHTML;
                 } else {
                     markerIcon.innerHTML = this._defaultMarkerHTML;
@@ -781,6 +781,15 @@ export class UserInteractions
             }
         }
         return markerId;
+    }
+
+    clearMarkers()
+    //============
+    {
+        for (const marker of this._markerIdByMarker.keys()) {
+            marker.remove();
+        }
+        this._markerIdByMarker.clear();
     }
 
     markerMouseEvent_(marker, event)
