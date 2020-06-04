@@ -44,12 +44,12 @@ import * as utils from './utils.js';
 
 //==============================================================================
 
-class FlatMap
+/**
+* Maps are not created directly but instead are created and loaded by
+* :meth:`MapManager.LoadMap`.
+*/
+export class FlatMap
 {
-   /**
-    * Maps are not created directly but instead are created and loaded by
-    * :meth:`MapManager.LoadMap`.
-    */
     constructor(container, mapDescription, resolve)
     {
         this._id = mapDescription.id;
@@ -274,6 +274,9 @@ class FlatMap
         }
     }
 
+    /**
+     * @private
+     *
      * Load images and patterns/textures referenced in style rules.
      */
     loadImage_(url)
@@ -353,7 +356,7 @@ class FlatMap
     }
 
     /**
-     * Full details about the map as returned from the map server
+     * The map's ``index.json`` as returned from the map server.
      *
      * @type Object
      */
@@ -788,6 +791,7 @@ export class MapManager
     *                                    on highlighted features and, for non-highlighted features, when the
     *                                    ``info`` control is enabled. More details are shown in debug mode.
     * @arg options.navigationControl {boolean} Add navigation controls (zoom buttons) to the map.
+    * @arg options.pathControl {boolean} Add buttons to control pathways including via a color-coded legend.
     * @arg options.searchable {boolean} Add a control to search for features on a map.
     * @example
     * const humanMap1 = mapManager.loadMap('humanV1', 'div-1');

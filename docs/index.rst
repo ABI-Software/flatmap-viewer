@@ -10,10 +10,11 @@ Welcome to Flatmap Viewer's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   UserInterface
-   STYLE
    API
-   KB_QUERY
+
+..   UserInterface
+..   STYLE
+..   KB_QUERY
 
 ..  Overview
 

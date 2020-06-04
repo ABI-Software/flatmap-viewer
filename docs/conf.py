@@ -68,9 +68,7 @@ latex_docclass = {
 
 # -- Options for JSDoc ------------------------------------------------
 
-js_source_path = 'src'
-##jsdoc_config_path = '../jsdoc.json'
-
 primary_domain = 'js'
+js_source_path = '../src'
 
 # -- End of File -------------------------------------------------------------
