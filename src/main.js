@@ -45,20 +45,12 @@ window.onload = async function() {
     {
         const element = document.createElement('div');
 
-        element.innerHTML = `<div data-v-6e7795b6="" class="block">
-    <span data-v-6e7795b6="" class="display">The distribution of neurons in the intrinsic cardiac<br/>
-    nervous system (ICN) were mapped and visualized in<br/>a 3D reconstruction of a male rat heart.</span>
-</div>
-<button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round">
+        element.innerHTML = `<button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round">
     <span>View 3D scaffold</span>
 </button>
 <br/>
-<button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round">
-    <span>View 3D scaffold with ICN data</span>
-</button>
-<br/>
 <button data-v-6e7795b6="" type="button" class="el-button button el-button--default is-round" id="popover-button-1">
-    <span>Search for dataset</span>
+    <span>Search for datasets</span>
 </button>`;
 
         return element;
