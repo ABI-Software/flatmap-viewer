@@ -64,9 +64,9 @@ export class NavigationControl
     //=========
     {
         if        (e.target.id === 'flatmap-zoom-in') {
-            this._map.zoomIn();
+            this._flatmap.zoomIn();
         } else if (e.target.id === 'flatmap-zoom-out') {
-            this._map.zoomOut();
+            this._flatmap.zoomOut();
         } else if (e.target.id === 'flatmap-reset') {
             this._flatmap.resetMap();
         }
@@ -77,9 +77,9 @@ export class NavigationControl
 
 export class NerveKey
 {
-    constructor(ui)
+    constructor(flatmap)
     {
-        this._ui = ui;
+        this._flatmap = flatmap;
         this._map = undefined;
     }
 
@@ -145,7 +145,7 @@ export class NerveKey
         } else {
             const pathType = event.target.getAttribute('kind');
             if (pathType) {
-                this._ui.showPaths(pathType);
+                this._flatmap.showPaths(pathType);
             }
         }
         event.stopPropagation();
@@ -156,9 +156,9 @@ export class NerveKey
 
 export class PathControl
 {
-    constructor(ui)
+    constructor(flatmap)
     {
-        this._ui = ui;
+        this._flatmap = flatmap;
         this._map = undefined;
     }
 
@@ -191,7 +191,7 @@ export class PathControl
     onClick_(event)
     //=============
     {
-        this._ui.togglePaths();
+        this._flatmap.togglePaths();
     }
 }
 

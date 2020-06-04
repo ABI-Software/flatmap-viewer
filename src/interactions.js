@@ -139,11 +139,11 @@ export class UserInteractions
             // Manage our pathways
 
             this._pathways = new Pathways(flatmap);
-            this._map.addControl(new PathControl(this));
+            this._map.addControl(new PathControl(flatmap));
 
             // Add a key showing nerve types
 
-            this._map.addControl(new NerveKey(this));
+            this._map.addControl(new NerveKey(flatmap));
         }
 
         // Manage our layers

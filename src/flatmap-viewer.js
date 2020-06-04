@@ -203,6 +203,11 @@ class FlatMap
         });
     }
 
+    // Map control methods
+
+    /**
+     * Reset a map to its initial state.
+     */
     resetMap()
     //========
     {
@@ -215,6 +220,50 @@ class FlatMap
     }
 
     /**
+     * Zoom the map in.
+     */
+    zoomIn()
+    //======
+    {
+        this._map.zoomIn();
+    }
+
+    /**
+     * Zoom the map out.
+     */
+    zoomOut()
+    //=======
+    {
+        this._map.zoomOut();
+    }
+
+    /**
+     * Toggle the visibility of paths on the map.zoomIn
+     *
+     * * If some paths are hidden then all paths are made visible.
+     * * If all paths are visible then they are all hidden.
+     */
+    togglePaths()
+    //===========
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.togglePaths();
+        }
+    }
+
+    /**
+     * Hide all paths except those of the given type.
+     *
+     * @param      {string}  pathType  The path type
+     */
+    showPaths(pathType)
+    //=================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.showPaths(pathType);
+        }
+    }
+
      * Load images and patterns/textures referenced in style rules.
      */
     loadImage_(url)
