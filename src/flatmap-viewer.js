@@ -39,6 +39,7 @@ import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
 
 import * as images from './images.js';
+import * as pathways from './pathways.js';
 import * as utils from './utils.js';
 
 //==============================================================================
@@ -249,6 +250,15 @@ class FlatMap
         if (this._userInteractions !== null) {
             this._userInteractions.togglePaths();
         }
+    }
+
+    /**
+     * @returns {Array.<{type: string, label: string}>} an array of objects giving path types and labels
+     */
+    pathTypes()
+    //=========
+    {
+        return pathways.PATH_TYPES;
     }
 
     /**

@@ -26,6 +26,10 @@ import mapboxgl from 'mapbox-gl';
 
 //==============================================================================
 
+import * as pathways from './pathways.js';
+
+//==============================================================================
+
 export class NavigationControl
 {
     constructor(flatmap)
@@ -100,14 +104,12 @@ export class NerveKey
         this._legend = document.createElement('div');
         this._legend.id = 'nerve-key-text';
         this._legend.className = 'flatmap-nerve-grid';
-        this._legend.innerHTML = `<div kind="cns">CNS</div><div kind="cns" class="nerve-line nerve-cns"></div>
-<div kind="lcn">Local circuit neuron</div><div kind="lcn" class="nerve-line nerve-lcn"></div>
-<div kind="para-pre">Parasympathetic pre-ganglionic</div><div kind="para-pre" class="nerve-line nerve-para-pre"></div>
-<div kind="para-post">Parasympathetic post-ganglionic</div><div kind="para-post" class="nerve-line nerve-para-post"></div>
-<div kind="sensory">Sensory (afferent) neuron</div><div kind="sensory" class="nerve-line nerve-sensory"></div>
-<div kind="somatic">Somatic lower motor</div><div kind="somatic" class="nerve-line nerve-somatic"></div>
-<div kind="symp-pre">Sympathetic pre-ganglionic</div><div kind="symp-pre" class="nerve-line nerve-symp-pre"></div>
-<div kind="symp-post">Sympathetic post-ganglionic</div><div kind="symp-post" class="nerve-line nerve-symp-post"></div>`;
+
+        const innerHTML = [];
+        for (const path of pathways.PATH_TYPES) {
+            innerHTML.push(`<div type="${path.type}">${path.label}</div><div type="${path.type}" class="nerve-line nerve-${path.type}"></div>`);
+        }
+        this._legend.innerHTML = innerHTML.join('\n');
 
         this._button = document.createElement('button');
         this._button.id = 'nerve-key-button';
@@ -143,7 +145,7 @@ export class NerveKey
                 this._button.setAttribute('legend-visible', 'false');
             }
         } else {
-            const pathType = event.target.getAttribute('kind');
+            const pathType = event.target.getAttribute('type');
             if (pathType) {
                 this._flatmap.showPaths(pathType);
             }
