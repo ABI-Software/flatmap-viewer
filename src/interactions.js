@@ -473,10 +473,17 @@ export class UserInteractions
         this.unhighlightFeatures_();
     }
 
-    showSearchResults(featureIds, padding=100)
-    //========================================
+    /**
+     * Zoom map to features.
+     *
+     * @param      {Array.<string>}  featureIds   An array of feature identifiers
+     * @param      {number}  [padding=100]  Padding around the composite bounding box
+     */
+    zoomToFeatures(featureIds, padding=100)
+    //=====================================
     {
         if (featureIds.length) {
+            this.unhighlightFeatures_();
             let bbox = null;
             for (const featureId of featureIds) {
                 const annotation = this._flatmap.annotation(featureId);
@@ -488,9 +495,6 @@ export class UserInteractions
                                            : expandBounds(bbox, bounds);
                 }
             }
-
-            // Zoom map to features
-
             this._map.fitBounds(bbox, {
                 padding: padding,
                 animate: false

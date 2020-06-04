@@ -634,7 +634,15 @@ class FlatMap
     //========================================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.showSearchResults(featureIds, padding);
+            this._userInteractions.zoomToFeatures(featureIds, padding);
+        }
+    }
+
+    zoomTo(anatomicalId)
+    //==================
+    {
+        if (this._userInteractions !== null) {
+            this._userInteractions.zoomToFeatures(this.featureIdsForModel(anatomicalId))
         }
     }
 }
