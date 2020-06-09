@@ -60,7 +60,6 @@ window.onload = async function() {
 
     function callback(event, options)
     {
-        console.log('Callback:', event, options);
         if (currentMap !== null) {
             if (options.type === 'marker') {
                 if (event === 'mouseenter') {
