@@ -789,7 +789,7 @@ export class UserInteractions
         this._markerIdByMarker.clear();
     }
 
-    markerMouseEvent_(marker, event, anatomicalId)
+    markerMouseEvent_(marker, anatomicalId, event)
     //============================================
     {
         // No tooltip when context menu is open
