@@ -760,11 +760,11 @@ export class UserInteractions
                                            .setLngLat(ann.centroid)
                                            .addTo(this._map);
                 markerElement.addEventListener('mouseenter',
-                    this.markerMouseEvent_.bind(this, marker));
+                    this.markerMouseEvent_.bind(this, marker, anatomicalId));
                 markerElement.addEventListener('mousemove',
-                    this.markerMouseEvent_.bind(this, marker));
+                    this.markerMouseEvent_.bind(this, marker, anatomicalId));
                 markerElement.addEventListener('mouseleave',
-                    this.markerMouseEvent_.bind(this, marker));
+                    this.markerMouseEvent_.bind(this, marker, anatomicalId));
 
                 this._markerIdByMarker.set(marker, markerId);
             }
@@ -781,8 +781,8 @@ export class UserInteractions
         this._markerIdByMarker.clear();
     }
 
-    markerMouseEvent_(marker, event)
-    //==============================
+    markerMouseEvent_(marker, event, anatomicalId)
+    //============================================
     {
         // No tooltip when context menu is open
         if (this._modal
@@ -801,7 +801,7 @@ export class UserInteractions
             marker.getElement().style.cursor = 'default';
 
             if (event.type === 'mouseenter') {
-                this._flatmap.markerEvent('mouseenter', this._markerIdByMarker.get(marker));
+                this._flatmap.markerEvent('mouseenter', this._markerIdByMarker.get(marker), anatomicalId);
             }
         }
         event.stopPropagation();

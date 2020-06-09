@@ -510,15 +510,6 @@ export class FlatMap
         }
     }
 
-    markerEvent(eventType, markerId)
-    //==============================
-    {
-        this.callback(eventType, {
-            type: 'marker',
-            id: markerId
-        });
-    }
-
     close()
     //=====
     {
@@ -575,6 +566,8 @@ export class FlatMap
         }
     }
 
+    //==========================================================================
+
     /**
      * Add a marker to the map.
      *
@@ -627,6 +620,25 @@ export class FlatMap
         }
         return false;
     }
+
+    /**
+     * Generate a callback as a result of some event with a marker.
+     *
+     * @param      {string}  eventType     The event type
+     * @param      {integer}  markerId      The marker identifier
+     * @param      {string}  anatomicalId  The anatomical identifier for the marker
+     */
+    markerEvent(eventType, markerId, anatomicalId)
+    //============================================
+    {
+        this.callback(eventType, {
+            type: 'marker',
+            id: markerId,
+            models: anatomicalId
+        });
+    }
+
+    //==========================================================================
 
     clearSearchResults()
     //==================
