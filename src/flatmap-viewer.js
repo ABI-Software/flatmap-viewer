@@ -46,7 +46,7 @@ import * as utils from './utils.js';
 
 /**
 * Maps are not created directly but instead are created and loaded by
-* :meth:`MapManager.LoadMap`.
+* :meth:`LoadMap` of :class:`MapManager`.
 */
 export class FlatMap
 {
@@ -253,7 +253,8 @@ export class FlatMap
     }
 
     /**
-     * @returns {Array.<{type: string, label: string}>} an array of objects giving path types and labels
+     * @returns {Array.<{type: string, label: string, colour: string}>} an array of objects giving path types
+     *                                                                  with their descriptions and colours
      */
     pathTypes()
     //=========
@@ -275,9 +276,9 @@ export class FlatMap
     }
 
     /**
-     * @private
-     *
      * Load images and patterns/textures referenced in style rules.
+     *
+     * @private
      */
     loadImage_(url)
     //=============
@@ -615,6 +616,8 @@ export class FlatMap
      * @param      {string | DOMElement}  content  The popup's content
      * @param      {Object}  options
      * @returns    {boolean} Return true if the popup is shown
+     *
+     * The resulting Mapbox-gl popup is given a class name of ``flatmap-tooltip-popup``.
      */
     showMarkerPopup(markerId, content, options={})
     //============================================
