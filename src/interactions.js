@@ -134,10 +134,14 @@ export class UserInteractions
             }
         }
 
-        if (flatmap.options.pathControls) {
-            // Manage our pathways
+        // Neural pathways which are either controlled externally
+        // or by our local controls
 
-            this._pathways = new Pathways(flatmap);
+        this._pathways = new Pathways(flatmap);
+
+        if (flatmap.options.pathControls) {
+            // Add controls to manage our pathways
+
             this._map.addControl(new PathControl(flatmap));
 
             // Add a key showing nerve types
