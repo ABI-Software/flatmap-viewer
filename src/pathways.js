@@ -23,14 +23,14 @@ limitations under the License.
 //==============================================================================
 
 export const PATH_TYPES = [
-    { type: "cns", label: "CNS"},
-    { type: "lcn", label: "Local circuit neuron"},
-    { type: "para-pre", label: "Parasympathetic pre-ganglionic"},
-    { type: "para-post", label: "Parasympathetic post-ganglionic"},
-    { type: "sensory", label: "Sensory (afferent) neuron"},
-    { type: "somatic", label: "Somatic lower motor"},
-    { type: "symp-pre", label: "Sympathetic pre-ganglionic"},
-    { type: "symp-post", label: "Sympathetic post-ganglionic"}
+    { type: "cns", label: "CNS", colour: "#9B1FC1"},
+    { type: "lcn", label: "Local circuit neuron", colour: "#F19E38"},
+    { type: "para-pre", label: "Parasympathetic pre-ganglionic", colour: "#3F8F4A"},
+    { type: "para-post", label: "Parasympathetic post-ganglionic", colour: "#3F8F4A"},
+    { type: "sensory", label: "Sensory (afferent) neuron", colour: "#2A62F6"},
+    { type: "somatic", label: "Somatic lower motor", colour: "#98561D"},
+    { type: "symp-pre", label: "Sympathetic pre-ganglionic", colour: "#EA3423"},
+    { type: "symp-post", label: "Sympathetic post-ganglionic", colour: "#EA3423"}
 ];
 
 //==============================================================================
