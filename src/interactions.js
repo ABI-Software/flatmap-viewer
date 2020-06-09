@@ -718,13 +718,21 @@ export class UserInteractions
         }
     }
 
-    showPaths(pathType)
-    //=================
+    showPaths(pathTypes, enable=true)
+    //===============================
     {
-        // Disable all paths except those of `pathType`
+        // Disable/enable all paths except those with `pathTypes`
 
-        this.enablePathFeatures_(false, this._pathways.allFeatureIds());
-        this.enablePathFeatures_(true, this._pathways.typeFeatureIds(pathType));
+        this.enablePathFeatures_(!enable, this._pathways.allFeatureIds());
+
+        if (Array.isArray(pathTypes)) {
+            for (const pathType of pathTypes) {
+                this.enablePathFeatures_(enable, this._pathways.typeFeatureIds(pathType));
+            }
+        } else {
+            this.enablePathFeatures_(enable, this._pathways.typeFeatureIds(pathTypes));
+        }
+
         this._disabledPathFeatures = true;
     }
 

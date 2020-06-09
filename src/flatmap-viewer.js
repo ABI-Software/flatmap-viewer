@@ -263,15 +263,17 @@ export class FlatMap
     }
 
     /**
-     * Hide all paths except those of the given type.
+     * Hide or show all paths except those of the given type.
      *
-     * @param      {string}  pathType  The path type
+     * @param      {string|Array.<string>}   pathTypes The path type(s)
+     * @param      {boolean}  [enable=true]  If ``true`` then only show the path
+     *                                       type(s) otherwise only hide the type(s)
      */
-    showPaths(pathType)
-    //=================
+    showPaths(pathTypes, enable=true)
+    //===============================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.showPaths(pathType);
+            this._userInteractions.showPaths(pathTypes, enable);
         }
     }
 
