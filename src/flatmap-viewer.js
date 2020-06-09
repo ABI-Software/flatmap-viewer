@@ -120,11 +120,11 @@ export class FlatMap
             attributionControl: false
         };
 
-        if ('max-zoom' in mapDescription.options) {
-            mapboxOptions.maxZoom = mapDescription.options['max-zoom'];
+        if ('maxZoom' in mapDescription.options) {
+            mapboxOptions.maxZoom = mapDescription.options.maxZoom;
         }
-        if ('min-zoom' in mapDescription.options) {
-            mapboxOptions.minZoom = mapDescription.options['min-zoom'];
+        if ('minZoom' in mapDescription.options) {
+            mapboxOptions.minZoom = mapDescription.options.minZoom;
         }
 
         // Only show location in address bar when debugging
@@ -790,6 +790,8 @@ export class MapManager
     * @arg options.featureInfo {boolean} Show information about features as a tooltip. The tooltip is active
     *                                    on highlighted features and, for non-highlighted features, when the
     *                                    ``info`` control is enabled. More details are shown in debug mode.
+    * @arg options.maxZoom {number} The maximum zoom level of the map.
+    * @arg options.minZoom {number} The minimum zoom level of the map.
     * @arg options.navigationControl {boolean} Add navigation controls (zoom buttons) to the map.
     * @arg options.pathControl {boolean} Add buttons to control pathways including via a color-coded legend.
     * @arg options.searchable {boolean} Add a control to search for features on a map.
