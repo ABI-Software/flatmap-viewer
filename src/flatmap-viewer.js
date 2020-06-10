@@ -33,7 +33,7 @@ import '../static/flatmap-viewer.css';
 
 //==============================================================================
 
-import {loadJSON, mapEndpoint} from './endpoints.js';
+import {MapServer} from './mapserver.js';
 import {NavigationControl} from './controls.js';
 import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
@@ -50,8 +50,9 @@ import * as utils from './utils.js';
 */
 export class FlatMap
 {
-    constructor(container, mapDescription, resolve)
+    constructor(container, mapBaseUrl, mapDescription, resolve)
     {
+        this._baseUrl = mapBaseUrl;
         this._id = mapDescription.id;
         this._details = mapDescription.details;
         this._source = mapDescription.source;
@@ -83,12 +84,12 @@ export class FlatMap
 
         for (const [id, source] of Object.entries(mapDescription.style.sources)) {
             if (source.url) {
-                source.url = this.addUrlBase_(source.url);
+                source.url = this.addBaseUrl_(source.url);
             }
             if (source.tiles) {
                 const tiles = [];
                 for (const tileUrl of source.tiles) {
-                    tiles.push(this.addUrlBase_(tileUrl));
+                    tiles.push(this.addBaseUrl_(tileUrl));
                 }
                 source.tiles = tiles;
             }
@@ -308,17 +309,17 @@ export class FlatMap
     {
         if (!this._map.hasImage(id)) {
             const image = await (path.startsWith('data:image') ? this.loadEncodedImage_(path)
-                                                               : this.loadImage_(path.startsWith('/') ? this.addUrlBase_(path)
+                                                               : this.loadImage_(path.startsWith('/') ? this.addBaseUrl_(path)
                                                                                                       : new URL(path, baseUrl)));
             this._map.addImage(id, image, options);
         }
     }
 
-    addUrlBase_(url)
+    addBaseUrl_(url)
     //==============
     {
         if (url.startsWith('/')) {
-            return `${mapEndpoint()}flatmap/${this._id}${url}`; // We don't want embedded `{` and `}` characters escaped
+            return `${this._baseUrl}flatmap/${this._id}${url}`; // We don't want embedded `{` and `}` characters escaped
         } else if (!url.startsWith('http://') && !url.startsWith('https://')) {
             console.log(`Invalid URL (${url}) in map's sources`);
         }
@@ -672,13 +673,14 @@ export class FlatMap
 /**
  * A manager for FlatMaps.
  * @example
- * const mapManager = new MapManger();
+ * const mapManager = new MapManger('https://mapcore-demo.org/flatmaps/');
  */
 export class MapManager
 {
     /* Create a MapManager */
-    constructor(options={})
+    constructor(mapServerUrl, options={})
     {
+        this._mapServer = new MapServer(mapServerUrl);
         this._options = options;
 
         this._mapList = [];
@@ -693,7 +695,7 @@ export class MapManager
     {
         return await this._initialisingMutex.dispatch(async () => {
             if (!this._initialised) {
-                this._mapList = await loadJSON('');
+                this._mapList = await this._mapServer.loadJSON('');
                 this._initialised = true;
             }
         });
@@ -835,7 +837,7 @@ export class MapManager
 
                 // Load the maps index file
 
-                const mapIndex = await loadJSON(`flatmap/${map.id}/`);
+                const mapIndex = await this._mapServer.loadJSON(`flatmap/${map.id}/`);
                 if (map.id !== mapIndex.id) {
                     throw new Error(`Map '${map.id}' has wrong ID in index`);
                 }
@@ -871,12 +873,12 @@ export class MapManager
                         }
                     }
                 } else {
-                    mapLayers = await loadJSON(`flatmap/${map.id}/layers`);
+                    mapLayers = await this._mapServer.loadJSON(`flatmap/${map.id}/layers`);
                 }
 
                 // Get the map's style file
 
-                const mapStyle = await loadJSON(`flatmap/${map.id}/style`);
+                const mapStyle = await this._mapServer.loadJSON(`flatmap/${map.id}/style`);
 
                 // Make sure the style has glyphs defined
 
@@ -886,20 +888,21 @@ export class MapManager
 
                 // Get the map's pathways
 
-                const pathways = await loadJSON(`flatmap/${map.id}/pathways`);
+                const pathways = await this._mapServer.loadJSON(`flatmap/${map.id}/pathways`);
 
                 // Get the map's metadata
 
-                const metadata = await loadJSON(`flatmap/${map.id}/metadata`);
+                const metadata = await this._mapServer.loadJSON(`flatmap/${map.id}/metadata`);
 
                 // Get additional marker details for the map
 
-                const mapMarkers = await loadJSON(`flatmap/${map.id}/markers`);
+                const mapMarkers = await this._mapServer.loadJSON(`flatmap/${map.id}/markers`);
 
                 // Display the map
 
                 this._mapNumber += 1;
-                const flatmap = new FlatMap(container, {
+                const flatmap = new FlatMap(container, this._mapServer.url(),
+                    {
                         id: map.id,
                         details: mapIndex,
                         source: map.source,

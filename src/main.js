@@ -1,7 +1,13 @@
 import { MapManager } from './flatmap-viewer';
 
+
+//const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
+const MAP_ENDPOINT = 'http:localhost:4328/';
+
+//==============================================================================
+
 window.onload = async function() {
-    const mapManager = new MapManager({
+    const mapManager = new MapManager(MAP_ENDPOINT, {
         images: [
             {
                 id: 'label-background',

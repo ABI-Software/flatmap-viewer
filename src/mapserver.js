@@ -22,34 +22,36 @@ limitations under the License.
 
 //==============================================================================
 
-const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
-
-//==============================================================================
-
-export function mapEndpoint(relativePath='')
-//==========================================
+export class MapServer
 {
-    const url = new URL(relativePath, MAP_ENDPOINT);
-    return url.href;
-}
-
-//==============================================================================
-
-export async function loadJSON(relativePath)
-//==========================================
-{
-    const url = mapEndpoint(relativePath);
-    const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-            "Accept": "application/json; charset=utf-8",
-            "Cache-Control": "no-store"
-        }
-    });
-    if (!response.ok) {
-        throw new Error(`Cannot access ${url}`);
+    constructor(url)
+    {
+        this._url = url;
     }
-    return response.json();
+
+    url(relativePath='')
+    //==================
+    {
+        const url = new URL(relativePath, this._url);
+        return url.href;
+    }
+
+    async loadJSON(relativePath)
+    //==========================
+    {
+        const url = this.url(relativePath);
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                "Accept": "application/json; charset=utf-8",
+                "Cache-Control": "no-store"
+            }
+        });
+        if (!response.ok) {
+            throw new Error(`Cannot access ${url}`);
+        }
+        return response.json();
+    }
 }
 
 //==============================================================================
