@@ -854,7 +854,7 @@ export class UserInteractions
             closeButton: false,
             closeOnClick: false,
             maxWidth: 'none',
-            className: 'flatmap-tooltip-popup'
+            className: 'flatmap-marker-popup'
         });
 
         this._tooltip
