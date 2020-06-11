@@ -122,7 +122,8 @@ li.flatmap-contextmenu-item:hover {
 
 /* Tooltips */
 
-.flatmap-tooltip-popup .mapboxgl-popup-content {
+.flatmap-tooltip-popup .mapboxgl-popup-content,
+.flatmap-marker-popup .mapboxgl-popup-content {
     background: #eee;
     padding-top: 5px;
     padding-bottom: 5px;
