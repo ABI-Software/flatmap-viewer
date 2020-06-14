@@ -324,6 +324,30 @@ export class FeatureNerveLayer
 
 //==============================================================================
 
+export class NervePolygonLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-nerve-polygon`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'fill',
+            'filter': [
+                 'all',
+                 ['==', '$type', 'Polygon'],
+                 ['==', 'type', 'nerve']
+            ],
+            'paint': {
+                'fill-color': 'white',
+                'fill-opacity': 0.01
+            }
+        };
+    }
+}
+
+//==============================================================================
+
 export class FeatureLargeSymbolLayer
 {
     static style(sourceLayer)

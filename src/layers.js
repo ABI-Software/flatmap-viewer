@@ -47,6 +47,7 @@ class MapFeatureLayer
         this.addStyleLayer_(style.FeatureLineLayer.style);
         this.addStyleLayer_(style.FeatureLineLayer.style, 'pathways');
         this.addStyleLayer_(style.FeatureLineDashLayer.style, 'pathways');
+        this.addStyleLayer_(style.NervePolygonLayer.style, 'pathways');
         this.addStyleLayer_(style.FeatureNerveLayer.style, 'pathways');
 
         this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);

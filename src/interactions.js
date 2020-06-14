@@ -673,11 +673,10 @@ export class UserInteractions
                         this._activeFeatures.push(feature);
                         if ('type' in feature.properties
                           && feature.properties.type === 'nerve') {
-                            for (const featureId of this._pathways.featureIdsForNerve(
-                                                                    feature.properties.id)) {
-                                const feature = this.mapFeature_(featureId);
-                                this._map.setFeatureState(feature, { active: true });
-                                this._activeFeatures.push(feature);
+                            if ('nerve-id' in feature.properties){
+                                this.activateNerveFeatures_(feature.properties['nerve-id']);
+                            } else {
+                                this.activateNerveFeatures_(feature.properties.id);
                             }
                         }
                     }
@@ -701,8 +700,6 @@ export class UserInteractions
         }
     }
 
-
-
     clickEvent_(event)
     //================
     {
@@ -715,6 +712,16 @@ export class UserInteractions
                     this.highlightFeature_(this.mapFeature_(featureId));
                 }
             }
+        }
+    }
+
+    activateNerveFeatures_(nerveId)
+    //=============================
+    {
+        for (const featureId of this._pathways.featureIdsForNerve(nerveId)) {
+            const feature = this.mapFeature_(featureId);
+            this._map.setFeatureState(feature, { active: true });
+            this._activeFeatures.push(feature);
         }
     }
 
