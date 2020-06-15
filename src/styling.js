@@ -26,6 +26,20 @@ export const VECTOR_TILES_SOURCE = 'vector-tiles';
 
 //==============================================================================
 
+export class BackgroundLayer
+{
+    static style(backgroundColour)
+    {
+        return {
+            'id': 'background',
+            'type': 'background',
+            'paint': {
+                'background-color': backgroundColour
+            }
+        };
+    }
+}
+
 //==============================================================================
 
 export class BodyLayer

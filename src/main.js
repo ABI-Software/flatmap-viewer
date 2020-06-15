@@ -81,6 +81,7 @@ window.onload = async function() {
         }
         mapManager.loadMap(id, 'map-canvas', (event, options) => callback(event, options), {
             tooltips: true,
+            //background: '#EFE',
             //debug: true,
             navigationControl: 'top-right',
             searchable: true,

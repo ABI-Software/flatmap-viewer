@@ -35,6 +35,10 @@ class MapFeatureLayer
         this._id = layer.id;
         this._styleLayerIds = [];
 
+        if ('background' in flatmap.options) {
+            this._map.addLayer(style.BackgroundLayer.style(flatmap.options.background));
+        }
+
         this.addStyleLayer_(style.BodyLayer.style);
 
         if (flatmap.details['image_layer']) {

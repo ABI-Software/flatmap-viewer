@@ -804,6 +804,7 @@ export class MapManager
     *                                          first parameter gives the type of event, the second provides
     *                                          details about the feature(s) the event is for.
     * @arg options {Object} Configurable options for the map.
+    * @arg options.background {string} Background colour of flatmap. Defaults to ``white``.
     * @arg options.debug {boolean} Enable debugging mode.
     * @arg options.fullscreenControl {boolean} Add a ``Show full screen`` button to the map.
     * @arg options.featureInfo {boolean} Show information about features as a tooltip. The tooltip is active
