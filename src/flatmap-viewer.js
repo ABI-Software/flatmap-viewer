@@ -572,6 +572,52 @@ export class FlatMap
     //==========================================================================
 
     /**
+     * Get the map's current background colour.
+     *
+     * @return     {string}  The background colour.
+     */
+    getBackgroundColour()
+    //===================
+    {
+        return this._map.getPaintProperty('background', 'background-color');
+    }
+
+    /**
+     * Get the map's current background opacity.
+     *
+     * @return     {number}  The background opacity.
+     */
+    getBackgroundOpacity()
+    //====================
+    {
+        return this._map.getPaintProperty('background', 'background-opacity');
+    }
+
+    /**
+     * Sets the map's background colour.
+     *
+     * @param      {string}  colour  The colour
+     */
+    setBackgroundColour(colour)
+    //=========================
+    {
+        this._map.setPaintProperty('background', 'background-color', colour);
+    }
+
+    /**
+     * Sets the map's background opacity.
+     *
+     * @param      {number}  opacity  The opacity
+     */
+    setBackgroundOpacity(opacity)
+    //===========================
+    {
+        this._map.setPaintProperty('background', 'background-opacity', opacity);
+    }
+
+    //==========================================================================
+
+    /**
      * Add a marker to the map.
      *
      * @param      {string}  anatomicalId     The anatomical identifier of the feature on which

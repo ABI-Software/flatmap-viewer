@@ -37,6 +37,8 @@ class MapFeatureLayer
 
         if ('background' in flatmap.options) {
             this._map.addLayer(style.BackgroundLayer.style(flatmap.options.background));
+        } else {
+            this._map.addLayer(style.BackgroundLayer.style('white'));
         }
 
         this.addStyleLayer_(style.BodyLayer.style);

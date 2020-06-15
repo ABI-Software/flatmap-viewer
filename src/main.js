@@ -62,7 +62,7 @@ window.onload = async function() {
         return element;
     }
 
-
+    let nextColour = '#FF0';
 
     function callback(event, options)
     {
@@ -70,6 +70,10 @@ window.onload = async function() {
             if (options.type === 'marker') {
                 if (event === 'mouseenter') {
                     currentMap.showMarkerPopup(options.id, markerPopupContent());
+                    const colour = nextColour;
+                    nextColour = currentMap.getBackgroundColour();
+                    currentMap.setBackgroundColour(colour);
+                    currentMap.setBackgroundOpacity(0.5);
                 }
             }
         }
@@ -81,7 +85,7 @@ window.onload = async function() {
         }
         mapManager.loadMap(id, 'map-canvas', (event, options) => callback(event, options), {
             tooltips: true,
-            //background: '#EFE',
+            //background: '#0FF',
             //debug: true,
             navigationControl: 'top-right',
             searchable: true,
