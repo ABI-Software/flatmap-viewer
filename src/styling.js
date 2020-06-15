@@ -26,14 +26,6 @@ export const VECTOR_TILES_SOURCE = 'vector-tiles';
 
 //==============================================================================
 
-export const PAINT_STYLES = {
-    'background-opacity': 0.8,
-    'layer-background-opacity': 1.0,
-    'fill-color': '#fff',
-    'border-stroke-width': 0.5,
-    'line-stroke-opacity': 0.7,
-    'line-stroke-width': 0.5
-};
 
 //==============================================================================
 
@@ -431,15 +423,12 @@ export class FeatureSmallSymbolLayer
 
 export class ImageLayer
 {
-    static style(sourceLayer, opacity=0.8)
+    static style(sourceLayer)
     {
         return {
             'id': `${sourceLayer}-image`,
             'source': `${sourceLayer}-image`,
-            'type': 'raster',
-            'paint': {
-                'raster-opacity': opacity
-            }
+            'type': 'raster'
         };
     }
 }

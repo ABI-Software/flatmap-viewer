@@ -65,7 +65,7 @@ class MapFeatureLayer
     addImageLayer_()
     //==============
     {
-        const styleLayer = style.ImageLayer.style(this._id, style.PAINT_STYLES['layer-background-opacity']);
+        const styleLayer = style.ImageLayer.style(this._id);
         if (styleLayer) {
             this._map.addLayer(styleLayer);
             this._styleLayerIds.push(styleLayer.id);
