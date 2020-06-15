@@ -26,6 +26,29 @@ export const VECTOR_TILES_SOURCE = 'vector-tiles';
 
 //==============================================================================
 
+//==============================================================================
+
+export class BodyLayer
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}-body`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'fill',
+            'filter': [
+                'all',
+                ['==', '$type', 'Polygon'],
+                ['==', 'models', 'UBERON:0013702']
+            ],
+            'paint': {
+                'fill-color': '#F0F0F0',
+                'fill-opacity': 1
+            }
+        };
+    }
+}
 
 //==============================================================================
 
@@ -39,24 +62,16 @@ export class FeatureFillLayer
             'source-layer': sourceLayer,
             'type': 'fill',
             'filter': [
-                '==',
-                '$type',
-                'Polygon'
+                'all',
+                ['==', '$type', 'Polygon'],
+                ['!=', 'models', 'UBERON:0013702']
             ],
             'layout': {
                 'fill-sort-key': ['get', 'scale']
             },
             'paint': {
-                'fill-color': [
-                    'case',
-                    ['==', ['get', 'models'], 'UBERON:0013702'], '#CCC',
-                    'white'
-                ],
-                'fill-opacity': [
-                    'case',
-                    ['==', ['get', 'models'], 'UBERON:0013702'], 0.2,
-                    0.01
-                ]
+                'fill-color': 'white',
+                'fill-opacity': 0.01
             }
         };
     }
