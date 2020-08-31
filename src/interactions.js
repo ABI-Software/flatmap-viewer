@@ -336,6 +336,21 @@ export class UserInteractions
         );
     }
 
+    activateFeature_(feature)
+    //=======================
+    {
+        this._map.setFeatureState(feature, { active: true });
+        this._activeFeatures.push(feature);
+    }
+
+    resetActiveFeatures_()
+    //====================
+    {
+        while (this._activeFeatures.length > 0) {
+            this._map.removeFeatureState(this._activeFeatures.pop(), 'active');
+        }
+    }
+
     smallestAnnotatedPolygonFeature_(features)
     //========================================
     {
@@ -605,9 +620,7 @@ export class UserInteractions
 
         // Reset any active features
 
-        while (this._activeFeatures.length > 0) {
-            this._map.removeFeatureState(this._activeFeatures.pop(), 'active');
-        }
+        this.resetActiveFeatures_();
 
         // Get all the features at the current point
 
@@ -620,8 +633,7 @@ export class UserInteractions
         if (this._flatmap.options.debug && this._infoControl && this._infoControl.active) {
 
             for (const feature of features) {
-                this._map.setFeatureState(feature, { active: true });
-                this._activeFeatures.push(feature);
+                this.activateFeature_(feature);
             }
 
             html = this._infoControl.featureInformation(features, event.lngLat);
@@ -631,9 +643,7 @@ export class UserInteractions
             if (lineFeatures.length > 0) {
                 for (const featureId of this._pathways.featureIdsForLines(
                                                         lineFeatures.map(f => f.properties.id))) {
-                    const feature = this.mapFeature_(featureId);
-                    this._map.setFeatureState(feature, { active: true });
-                    this._activeFeatures.push(feature);
+                    this.activateFeature_(this.mapFeature_(featureId));
                 }
             } else {
                 let labelledFeatures = features.filter(feature => ('label' in feature.properties
@@ -652,8 +662,7 @@ export class UserInteractions
                     if (this._flatmap.options.debug) {
                         const htmlList = [];
                         for (const feature of labelledFeatures) {
-                            this._map.setFeatureState(feature, { active: true });
-                            this._activeFeatures.push(feature);
+                            this.activateFeature_(feature);
                             for (const prop of indexedProperties) {
                                 if (prop in feature.properties) {
                                     htmlList.push(`<span class="info-name">${prop}:</span>`);
@@ -669,8 +678,7 @@ export class UserInteractions
                     } else {
                         const feature = labelledFeatures[0];
                         html = this.tooltipHtml_(feature.properties);
-                        this._map.setFeatureState(feature, { active: true });
-                        this._activeFeatures.push(feature);
+                        this.activateFeature_(feature);
                         if ('type' in feature.properties
                           && feature.properties.type === 'nerve') {
                             if ('nerve-id' in feature.properties){
@@ -719,9 +727,7 @@ export class UserInteractions
     //=============================
     {
         for (const featureId of this._pathways.featureIdsForNerve(nerveId)) {
-            const feature = this.mapFeature_(featureId);
-            this._map.setFeatureState(feature, { active: true });
-            this._activeFeatures.push(feature);
+            this.activateFeature_(this.mapFeature_(featureId));
         }
     }
 

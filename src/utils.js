@@ -42,9 +42,7 @@ export class List extends Array {
         if (this === other) {
             throw new Error('Cannot extend a list with itself...');
         } else {
-            for (let element of other) {
-                super.push(element);
-            }
+            super.push(...other);
         }
         return this;
     }
