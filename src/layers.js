@@ -51,12 +51,9 @@ class MapFeatureLayer
         this.addStyleLayer_(style.FeatureFillLayer.style);
         this.addStyleLayer_(style.FeatureDividerBorderLayer.style);
         this.addStyleLayer_(style.FeatureBorderLayer.style);
-
         this.addStyleLayer_(style.FeatureLineLayer.style);
-        this.addStyleLayer_(style.FeatureLineLayer.style, 'pathways');
-        this.addStyleLayer_(style.FeatureLineDashLayer.style, 'pathways');
-        this.addStyleLayer_(style.NervePolygonLayer.style, 'pathways');
-        this.addStyleLayer_(style.FeatureNerveLayer.style, 'pathways');
+
+        this.addPathwayStyleLayers_();
 
         this.addStyleLayer_(style.FeatureLargeSymbolLayer.style);
         if (!flatmap.options.tooltips) {
@@ -80,6 +77,19 @@ class MapFeatureLayer
             return styleLayer.id;
         }
         return null;
+    }
+
+    addPathwayStyleLayers_()
+    //======================
+    {
+        if (this._map.getSource('vector-tiles')
+                     .vectorLayerIds
+                     .indexOf(`${this._id}-pathways`) >= 0) {
+            this.addStyleLayer_(style.FeatureLineLayer.style, 'pathways');
+            this.addStyleLayer_(style.FeatureLineDashLayer.style, 'pathways');
+            this.addStyleLayer_(style.NervePolygonLayer.style, 'pathways');
+            this.addStyleLayer_(style.FeatureNerveLayer.style, 'pathways');
+        }
     }
 
     addStyleLayer_(styleFunction, source='features', ...args)
