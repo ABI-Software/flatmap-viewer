@@ -865,7 +865,6 @@ export class MapManager
     *                                    ``info`` control is enabled. More details are shown in debug mode.
     * @arg options.fullscreenControl {boolean} Add a ``Show full screen`` button to the map.
     * @arg options.minimap {boolean|Object} Display a MiniMap of the flatmap.
-    * @arg options.minimap.background {string} Background colour of minimap. Defaults to flatmap's background colour.
     * @arg options.minimap.position {string} The minimap's position: ``bottom-left`` (default), ``bottom-right``,
     *                                        ``top-left`` or ``top-right``.
     * @arg options.minimap.width {number|string} The width of the minimap. Defaults to ``320px``. Can also

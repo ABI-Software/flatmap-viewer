@@ -83,12 +83,17 @@ export class MinimapControl
     {
         this._map = undefined;
         this._container = null;
-        this._options = Object.assign({}, DEFAULTS);
 
+        // In case parent map background is changed before minimap loads
+
+        this._background = null;
+        this._opacity = null;
+        this._loaded = false;
+
+        // Check user configurable settings
+
+        this._options = Object.assign({}, DEFAULTS);
         if (typeof options === 'object') {
-            if ('background' in options) {
-                this._options.background = options.background;
-            }
             if ('position' in options) {
                 this._options.position = options.position;
             }
@@ -182,10 +187,16 @@ export class MinimapControl
         ];
         interactions.forEach(i => miniMap[i].disable());
 
-        // Set background colour if specified (defaults is the parent map's)
-        if ('background' in opts) {
-            miniMap.setPaintProperty('background', 'background-color', opts.background);
+        // Set background if specified (defaults is the parent map's)
+
+        if (this._background !== null) {
+            miniMap.setPaintProperty('background', 'background-color', this._background);
         }
+        if (this._opacity !== null) {
+            miniMap.setPaintProperty('background', 'background-opacity', this._opacity);
+        }
+
+        // Fit minimap to its container
 
         miniMap.resize();
         miniMap.fitBounds(parentMap.getBounds());
@@ -397,7 +408,11 @@ export class MinimapControl
     setBackgroundColour(colour)
     //=========================
     {
-        this._miniMap.setPaintProperty('background', 'background-color', colour);
+        if (this._loaded) {
+            this._miniMap.setPaintProperty('background', 'background-color', colour);
+        } else {
+            this._background = colour;
+        }
     }
 
     /**
@@ -408,6 +423,10 @@ export class MinimapControl
     setBackgroundOpacity(opacity)
     //===========================
     {
-        this._miniMap.setPaintProperty('background', 'background-opacity', opacity);
+        if (this._loaded) {
+            this._miniMap.setPaintProperty('background', 'background-opacity', opacity);
+        } else {
+            this._opacity = opacity;
+        }
     }
 }
