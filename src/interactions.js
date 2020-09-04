@@ -36,6 +36,7 @@ import {LayerManager} from './layers.js';
 import {Pathways} from './pathways.js';
 //import {QueryInterface} from './query.js';
 import {NerveKey, PathControl} from './controls.js';
+import {MinimapControl} from './minimap.js';
 import {indexedProperties} from './search.js';
 import {SearchControl} from './search.js';
 import {VECTOR_TILES_SOURCE} from './styling.js';
@@ -214,6 +215,17 @@ export class UserInteractions
         this._map.on('click', this.clickEvent_.bind(this));
         this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
 
+        // Add a minimap if option set
+
+        // NB. This has to be done **after** the flatmap's layers have been added
+
+        if (flatmap.options.minimap) {
+            this._minimap = new MinimapControl(flatmap.options.minimap);
+            this._map.addControl(this._minimap);
+        }
+
+        // Call the `UI loaded` callback if there is one
+
         if (this._userInterfaceLoadedCallback !== null) {
             this._userInterfaceLoadedCallback(this);
             this._userInterfaceLoadedCallback = null;
@@ -262,6 +274,12 @@ export class UserInteractions
     //====================
     {
         return this._layerManager.activeLayerNames;
+    }
+
+    get minimap()
+    //===========
+    {
+        return this._minimap;
     }
 
     mapFeature_(featureId)

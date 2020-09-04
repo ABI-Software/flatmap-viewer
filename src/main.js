@@ -87,6 +87,7 @@ window.onload = async function() {
             tooltips: true,
             //background: '#0FF',
             //debug: true,
+            minimap: { width: '10%', background: '#FCC' },
             navigationControl: 'top-right',
             searchable: true,
             featureInfo: true

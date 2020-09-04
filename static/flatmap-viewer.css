@@ -4,6 +4,13 @@
     position: absolute;
 }
 
+.mapboxgl-map.mapboxgl-ctrl-minimap {
+    position: relative;
+}
+.mapboxgl-ctrl-minimap {
+    border: 1px solid #444;
+}
+
 /* Context menu */
 
 .flatmap-contextmenu-popup .mapboxgl-popup-content {
