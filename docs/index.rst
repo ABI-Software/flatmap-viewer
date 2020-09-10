@@ -22,3 +22,6 @@ Welcome to Flatmap Viewer's documentation!
 
 ..  MapMaking
     * How to automate? (source --> AWS server)
+
+* :ref:`genindex`
+
