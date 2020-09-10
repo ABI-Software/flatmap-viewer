@@ -864,13 +864,13 @@ export class MapManager
     *                                    on highlighted features and, for non-highlighted features, when the
     *                                    ``info`` control is enabled. More details are shown in debug mode.
     * @arg options.fullscreenControl {boolean} Add a ``Show full screen`` button to the map.
-    * @arg options.minimap {boolean|Object} Display a MiniMap of the flatmap.
+    * @arg options.minimap {boolean|Object} Display a MiniMap of the flatmap. Defaults to ``False``.
     * @arg options.minimap.position {string} The minimap's position: ``bottom-left`` (default), ``bottom-right``,
     *                                        ``top-left`` or ``top-right``.
     * @arg options.minimap.width {number|string} The width of the minimap. Defaults to ``320px``. Can also
     *                                            be given as a percentage of the flatmap's width, e.g. ``10%``.
-    *                                            ``height`` is determined from ``width``, using the flatmap's
-    *                                            aspect ratio.
+    *                                            The minimap's ``height`` is determined from its width using
+    *                                            the flatmap's aspect ratio.
     * @arg options.maxZoom {number} The maximum zoom level of the map.
     * @arg options.minZoom {number} The minimum zoom level of the map.
     * @arg options.navigationControl {boolean} Add navigation controls (zoom buttons) to the map.
