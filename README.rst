@@ -28,6 +28,8 @@ Running
 
     $ npm start
 
+Maps can then be viewed at http://localhost:3000
+
 Configuration
 ~~~~~~~~~~~~~
 
