@@ -35,12 +35,6 @@ class MapFeatureLayer
         this._id = layer.id;
         this._styleLayerIds = [];
 
-        if ('background' in flatmap.options) {
-            this._map.addLayer(style.BackgroundLayer.style(flatmap.options.background));
-        } else {
-            this._map.addLayer(style.BackgroundLayer.style('white'));
-        }
-
         this.addStyleLayer_(style.BodyLayer.style);
 
         if (flatmap.details['image_layer']) {
@@ -128,6 +122,11 @@ export class LayerManager
         this._activeLayerNames = [];
         this._selectableLayerId = '';
         this._selectableLayerCount = 0;
+        if ('background' in flatmap.options) {
+            this._map.addLayer(style.BackgroundLayer.style(flatmap.options.background));
+        } else {
+            this._map.addLayer(style.BackgroundLayer.style('white'));
+        }
     }
 
     get activeLayerNames()
