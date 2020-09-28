@@ -83,9 +83,9 @@ window.onload = async function() {
         if (currentMap !== null) {
             currentMap.close();
         }
-        mapManager.loadMap(id, 'map-canvas', (event, options) => callback(event, options), {
+        mapManager.loadMap(id, 'map-canvas', null, { // (event, options) => callback(event, options), {
             tooltips: true,
-            //background: '#0FF',
+            background: '#EEF',
             //debug: true,
             minimap: { width: '10%', background: '#FCC' },
             navigationControl: 'top-right',
