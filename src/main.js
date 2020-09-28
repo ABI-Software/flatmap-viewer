@@ -2,7 +2,7 @@ import { MapManager } from './flatmap-viewer';
 
 
 //const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
-const MAP_ENDPOINT = 'http:localhost:4328/';
+const MAP_ENDPOINT = 'http:localhost:4329/';
 
 //==============================================================================
 
