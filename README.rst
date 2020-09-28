@@ -31,7 +31,7 @@ Running
 Configuration
 ~~~~~~~~~~~~~
 
-The map server endpoint is specified as ``MAP_ENDPOINT`` in ``src/main.js``. It defaults to ``http:localhost:4329/`` to match the default endpoint provided by a local flatmap server.
+The map server endpoint is specified as ``MAP_ENDPOINT`` in ``src/main.js``. It defaults to ``http:localhost:4329/``, which matches the default endpoint of a local flatmap server.
 
 Package Installation
 ====================
