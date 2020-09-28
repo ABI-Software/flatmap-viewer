@@ -380,7 +380,7 @@ export class MinimapControl
         const parentMap = this._map;
         const miniZoom = parseInt(miniMap.getZoom(), 10);
         const parentZoom = parseInt(parentMap.getZoom(), 10);
-        const found = false;
+        let found = false;
 
         ZOOMLEVELS.forEach(function(zoom) {
             if (!found && parentZoom >= zoom[0]) {
