@@ -119,7 +119,7 @@ export class FeatureBorderLayer
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['get', 'invisible'], false], 0.05,
-                    0.01
+                    0.3
                 ],
                 'line-width': 2
             }
