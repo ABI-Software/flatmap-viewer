@@ -230,12 +230,12 @@ export class FeatureLineLayer
                     'let', 'width', ['case',
                         ['boolean', ['feature-state', 'active'], false], 0.8,
                         ['boolean', ['feature-state', 'highlighted'], false], 0.6,
-                        0.3],
+                        0.4],
                     [ 'interpolate',
                         ['exponential', 2],
                         ['zoom'],
-                         2, ["*", ['var', 'width'], ["^", 2, 0]],
-                        10, ["*", ['var', 'width'], ["^", 2, 6]]
+                         2, ["*", ['var', 'width'], ["^", 2, 1]],
+                        10, ["*", ['var', 'width'], ["^", 2, 4]]
                     ]
                 ]
             }
@@ -280,12 +280,12 @@ export class FeatureLineDashLayer
                     'let', 'width', ['case',
                         ['boolean', ['feature-state', 'active'], false], 0.8,
                         ['boolean', ['feature-state', 'highlighted'], false], 0.6,
-                        0.3],
+                        0.4],
                     [ 'interpolate',
                         ['exponential', 2],
                         ['zoom'],
-                         2, ["*", ['var', 'width'], ["^", 2, 0]],
-                        10, ["*", ['var', 'width'], ["^", 2, 6]]
+                         2, ["*", ['var', 'width'], ["^", 2, 1]],
+                        10, ["*", ['var', 'width'], ["^", 2, 4]]
                     ]
                 ]
             }
