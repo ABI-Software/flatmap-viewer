@@ -85,7 +85,12 @@ export class FeatureFillLayer
             },
             'paint': {
                 'fill-color': 'white',
-                'fill-opacity': 0.01
+                'fill-opacity': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 0.2,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.3,
+                    0.01
+                ]
             }
         };
     }
@@ -111,7 +116,7 @@ export class FeatureBorderLayer
                 'line-color': [
                     'case',
                     ['boolean', ['feature-state', 'active'], false], 'blue',
-                    ['boolean', ['feature-state', 'highlighted'], false], 'blue',
+                    ['boolean', ['feature-state', 'highlighted'], false], 'red',
                     '#444'
                 ],
                 'line-opacity': [
@@ -123,6 +128,7 @@ export class FeatureBorderLayer
                 ],
                 'line-width': [
                     'case',
+                    ['boolean', ['feature-state', 'highlighted'], false], 6,
                     ['boolean', ['get', 'invisible'], false], 0.5,
                     2
                 ]
