@@ -329,7 +329,7 @@ export class UserInteractions
     highlightFeature_(feature)
     //========================
     {
-    console.log('Highlighting', feature);
+    console.log('Highlighting', feature.id);
         this._map.setFeatureState(feature, { 'highlighted': true });
         this._highlightedFeatures.push(feature);
     }
@@ -696,6 +696,7 @@ export class UserInteractions
                         html = `<div id="info-control-info">${htmlList.join('\n')}</div>`;
                     } else {
                         const feature = labelledFeatures[0];
+console.log(feature.properties.id, this._map.getFeatureState(feature));
                         html = this.tooltipHtml_(feature.properties);
                         this.activateFeature_(feature);
                         if ('type' in feature.properties
