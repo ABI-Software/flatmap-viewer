@@ -329,6 +329,7 @@ export class UserInteractions
     highlightFeature_(feature)
     //========================
     {
+    console.log('Highlighting', feature);
         this._map.setFeatureState(feature, { 'highlighted': true });
         this._highlightedFeatures.push(feature);
     }
