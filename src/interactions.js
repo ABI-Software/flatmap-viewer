@@ -287,7 +287,8 @@ export class UserInteractions
     {
         const ann = this._flatmap.annotation(featureId);
         return {
-            id: featureId.split('#')[1],
+            id: (typeof featureId === 'string' && featureId.indexOf('#') >= 0)
+                 ? featureId.split('#')[1] : featureId,
             source: VECTOR_TILES_SOURCE,
             sourceLayer: `${ann.layer}-${ann['tile-layer']}`
         };
@@ -349,7 +350,7 @@ export class UserInteractions
 
         return this._map.queryRenderedFeatures(event.point).filter(f => {
             return (this.activeLayerNames.indexOf(f.sourceLayer) >= 0)
-                && ('id' in f.properties);
+                && ('featureId' in f.properties);
             }
         );
     }
@@ -409,16 +410,16 @@ export class UserInteractions
             // Remove any tooltip
             this.removeTooltip_();
 
-            const id = feature.properties.id;
+            const featureId = feature.properties.featureId;
             if (this._pathways.isNode(id)) {
                 const items = [
                     {
-                        id: id,
+                        featureId: featureId,
                         prompt: 'Show paths',
                         action: this.enablePaths_.bind(this, true)
                     },
                     {
-                        id: id,
+                        featureId: featureId,
                         prompt: 'Hide paths',
                         action: this.enablePaths_.bind(this, false)
                     }
@@ -445,7 +446,7 @@ export class UserInteractions
     //=========================
     {
         this._contextMenu.hide();
-        const nodeId = event.target.getAttribute('id');
+        const nodeId = event.target.getAttribute('featureId');
         this.enablePathFeatures_(enable, this._pathways.pathFeatureIds(nodeId));
         this.clearModal_();
     }
@@ -535,7 +536,7 @@ export class UserInteractions
     {
         this.unhighlightFeatures_();
         this._contextMenu.hide();
-        const featureId = event.target.getAttribute('id');
+        const featureId = event.target.getAttribute('featureId');
         if (type === 'data') {
             this.queryData_(this._flatmap.modelForFeature(featureId));
         } else {
@@ -660,7 +661,7 @@ export class UserInteractions
                                                          && feature.properties.type.startsWith('line')));
             if (lineFeatures.length > 0) {
                 for (const featureId of this._pathways.featureIdsForLines(
-                                                        lineFeatures.map(f => f.properties.id))) {
+                                                        lineFeatures.map(f => f.properties.featureId))) {
                     this.activateFeature_(this.mapFeature_(featureId));
                 }
             } else {
@@ -699,10 +700,10 @@ export class UserInteractions
                         this.activateFeature_(feature);
                         if ('type' in feature.properties
                           && feature.properties.type === 'nerve') {
-                            if ('nerve-id' in feature.properties){
-                                this.activateNerveFeatures_(feature.properties['nerve-id']);
+                            if ('nerveId' in feature.properties){
+                                this.activateNerveFeatures_(feature.properties.nerveId);
                             } else {
-                                this.activateNerveFeatures_(feature.properties.id);
+                                this.activateNerveFeatures_(feature.properties.featureId);
                             }
                         }
                     }
@@ -733,8 +734,8 @@ export class UserInteractions
         this.unhighlightFeatures_();
         if (this._activeFeatures.length > 0) {
             const feature = this._activeFeatures[0];
-            if ('properties' in feature && this._pathways.isNode(feature.properties.id)) {
-                for (const featureId of this._pathways.pathFeatureIds(feature.properties.id)) {
+            if ('properties' in feature && this._pathways.isNode(feature.properties.featureId)) {
+                for (const featureId of this._pathways.pathFeatureIds(feature.properties.featureId)) {
                     this.highlightFeature_(this.mapFeature_(featureId));
                 }
             }

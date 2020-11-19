@@ -396,7 +396,7 @@ export class FlatMap
     annotation(featureId)
     //===================
     {
-        return this._idToAnnotation.get(featureId);
+        return this._idToAnnotation.get(featureId.toString());
     }
 
     addAnnotation_(featureId, ann)
