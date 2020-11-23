@@ -47,7 +47,7 @@ export class BodyLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-body`,
+            'id': `${sourceLayer}_body`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'fill',
@@ -71,7 +71,7 @@ export class FeatureFillLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-fill`,
+            'id': `${sourceLayer}_fill`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'fill',
@@ -103,7 +103,7 @@ export class FeatureBorderLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-border`,
+            'id': `${sourceLayer}_border`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
@@ -144,7 +144,7 @@ export class FeatureDividerBorderLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-divider-border`,
+            'id': `${sourceLayer}_divider-border`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
@@ -175,7 +175,7 @@ export class FeatureDividerLineLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-divider-line`,
+            'id': `${sourceLayer}_divider-line`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
@@ -207,7 +207,7 @@ export class FeatureLineLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-line`,
+            'id': `${sourceLayer}_line`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
@@ -260,7 +260,7 @@ export class FeatureLineDashLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-line-dash`,
+            'id': `${sourceLayer}_line-dash`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
@@ -310,7 +310,7 @@ export class FeatureNerveLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-nerve`,
+            'id': `${sourceLayer}_nerve-path`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'line',
@@ -360,7 +360,7 @@ export class NervePolygonLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-nerve-polygon`,
+            'id': `${sourceLayer}_nerve-fill`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'fill',
@@ -384,7 +384,7 @@ export class FeatureLargeSymbolLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-large-symbol`,
+            'id': `${sourceLayer}_large-symbol`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'symbol',
@@ -425,7 +425,7 @@ export class FeatureSmallSymbolLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-small-symbol`,
+            'id': `${sourceLayer}_small-symbol`,
             'source': VECTOR_TILES_SOURCE,
             'source-layer': sourceLayer,
             'type': 'symbol',
@@ -465,8 +465,8 @@ export class ImageLayer
     static style(sourceLayer)
     {
         return {
-            'id': `${sourceLayer}-image`,
-            'source': `${sourceLayer}-image`,
+            'id': `${sourceLayer}_image`,
+            'source': `${sourceLayer}_image`,
             'type': 'raster'
         };
     }
