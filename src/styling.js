@@ -108,9 +108,7 @@ export class FeatureBorderLayer
             'source-layer': sourceLayer,
             'type': 'line',
             'filter': [
-                '==',
-                '$type',
-                'Polygon'
+                '==', '$type', 'Polygon'
             ],
             'paint': {
                 'line-color': [
