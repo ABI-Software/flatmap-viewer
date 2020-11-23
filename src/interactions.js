@@ -290,7 +290,7 @@ export class UserInteractions
             id: (typeof featureId === 'string' && featureId.indexOf('#') >= 0)
                  ? featureId.split('#')[1] : featureId,
             source: VECTOR_TILES_SOURCE,
-            sourceLayer: `${ann.layer}-${ann['tile-layer']}`
+            sourceLayer: `${ann.layer}_${ann['tile-layer']}`
         };
     }
 
@@ -698,13 +698,8 @@ export class UserInteractions
                         const feature = labelledFeatures[0];
                         html = this.tooltipHtml_(feature.properties);
                         this.activateFeature_(feature);
-                        if ('type' in feature.properties
-                          && feature.properties.type === 'nerve') {
-                            if ('nerveId' in feature.properties){
-                                this.activateNerveFeatures_(feature.properties.nerveId);
-                            } else {
-                                this.activateNerveFeatures_(feature.properties.featureId);
-                            }
+                        if ('nerveId' in feature.properties) {
+                            this.activateNerveFeatures_(feature.properties.nerveId);
                         }
                     }
                 }

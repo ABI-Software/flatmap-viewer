@@ -172,14 +172,14 @@ export class InfoControl
         } else {
             const displayValues = new Map();
             for (const feature of featureList) {
-                if (!displayValues.has(feature.properties.id)) {
+                if (!displayValues.has(feature.properties.featureId)) {
                     const values = {};
                     indexedProperties.forEach(prop => {
                         if (prop in feature.properties) {
                             values[prop] = feature.properties[prop];
                         }
                     });
-                    displayValues.set(feature.properties.id, values);
+                    displayValues.set(feature.properties.featureId, values);
                 }
             }
 
