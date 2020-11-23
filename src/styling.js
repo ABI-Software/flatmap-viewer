@@ -357,7 +357,46 @@ export class FeatureNerveLayer
 
 //==============================================================================
 
-export class NervePolygonLayer
+export class NervePolygonBorder
+{
+    static style(sourceLayer)
+    {
+        return {
+            'id': `${sourceLayer}_nerve-border`,
+            'source': VECTOR_TILES_SOURCE,
+            'source-layer': sourceLayer,
+            'type': 'line',
+            'filter': [
+                'all',
+                ['==', '$type', 'Polygon'],
+                ['==', 'type', 'nerve-section']
+            ],
+            'paint': {
+                'line-color': [
+                    'case',
+                    ['boolean', ['feature-state', 'active'], false], 'blue',
+                    ['boolean', ['feature-state', 'highlighted'], false], 'red',
+                    '#444'
+                ],
+                'line-opacity': [
+                    'case',
+                    ['boolean', ['get', 'invisible'], false], 0.05,
+                    ['boolean', ['feature-state', 'active'], false], 0.9,
+                    ['boolean', ['feature-state', 'highlighted'], false], 0.9,
+                    0.3
+                ],
+                'line-width': [
+                    'case',
+                    ['boolean', ['get', 'invisible'], false], 0.5,
+                    ['boolean', ['feature-state', 'highlighted'], false], 6,
+                    2
+                ]
+            }
+        };
+    }
+}
+
+export class NervePolygonFill
 {
     static style(sourceLayer)
     {
@@ -367,9 +406,12 @@ export class NervePolygonLayer
             'source-layer': sourceLayer,
             'type': 'fill',
             'filter': [
-                 'all',
-                 ['==', '$type', 'Polygon'],
-                 ['==', 'type', 'nerve']
+                'all',
+                ['==', '$type', 'Polygon'],
+                ['any',
+                    ['==', 'type', 'nerve'],
+                    ['==', 'type', 'nerve-section']
+                ]
             ],
             'paint': {
                 'fill-color': 'white',

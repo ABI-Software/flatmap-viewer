@@ -81,7 +81,8 @@ class MapFeatureLayer
                      .indexOf(`${this._id}_pathways`) >= 0) {
             this.addStyleLayer_(style.FeatureLineLayer.style, 'pathways');
             this.addStyleLayer_(style.FeatureLineDashLayer.style, 'pathways');
-            this.addStyleLayer_(style.NervePolygonLayer.style, 'pathways');
+            this.addStyleLayer_(style.NervePolygonBorder.style, 'pathways');
+            this.addStyleLayer_(style.NervePolygonFill.style, 'pathways');
             this.addStyleLayer_(style.FeatureNerveLayer.style, 'pathways');
         }
     }
