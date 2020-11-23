@@ -121,15 +121,15 @@ export class FeatureBorderLayer
                 ],
                 'line-opacity': [
                     'case',
+                    ['boolean', ['get', 'invisible'], false], 0.05,
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
-                    ['boolean', ['get', 'invisible'], false], 0.05,
                     0.3
                 ],
                 'line-width': [
                     'case',
-                    ['boolean', ['feature-state', 'highlighted'], false], 6,
                     ['boolean', ['get', 'invisible'], false], 0.5,
+                    ['boolean', ['feature-state', 'highlighted'], false], 6,
                     2
                 ]
             }
@@ -230,14 +230,15 @@ export class FeatureLineLayer
                 ],
                 'line-opacity': [
                     'case',
+                    ['boolean', ['get', 'invisible'], false], 0.001,
                     ['boolean', ['feature-state', 'active'], false], 0.9,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['feature-state', 'hidden'], false], 0.3,
-                    ['boolean', ['get', 'invisible'], false], 0.001,
                     0.9
                 ],
                 'line-width': [
                     'let', 'width', ['case',
+                        ['boolean', ['get', 'invisible'], false], 0.1,
                         ['boolean', ['feature-state', 'active'], false], 0.8,
                         ['boolean', ['feature-state', 'highlighted'], false], 0.6,
                         0.4],
@@ -279,15 +280,16 @@ export class FeatureLineDashLayer
                 ],
                 'line-opacity': [
                     'case',
+                    ['boolean', ['get', 'invisible'], false], 0.001,
                     ['boolean', ['feature-state', 'active'], false], 1.0,
                     ['boolean', ['feature-state', 'highlighted'], false], 0.9,
                     ['boolean', ['feature-state', 'hidden'], false], 0.3,
-                    ['boolean', ['get', 'invisible'], false], 0.001,
                     0.9
                 ],
                 'line-dasharray': [3, 2],
                 'line-width': [
                     'let', 'width', ['case',
+                        ['boolean', ['get', 'invisible'], false], 0.1,
                         ['boolean', ['feature-state', 'active'], false], 0.8,
                         ['boolean', ['feature-state', 'highlighted'], false], 0.6,
                         0.4],
