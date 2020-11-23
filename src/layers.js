@@ -78,7 +78,7 @@ class MapFeatureLayer
     {
         if (this._map.getSource('vector-tiles')
                      .vectorLayerIds
-                     .indexOf(`${this._id}_pathways`) >= 0) {
+                     .indexOf('pathways') >= 0) {
             this.addStyleLayer_(style.FeatureLineLayer.style, 'pathways');
             this.addStyleLayer_(style.FeatureLineDashLayer.style, 'pathways');
             this.addStyleLayer_(style.NervePolygonBorder.style, 'pathways');
@@ -87,10 +87,10 @@ class MapFeatureLayer
         }
     }
 
-    addStyleLayer_(styleFunction, source='features', ...args)
-    //=======================================================
+    addStyleLayer_(styleFunction, sourceLayer='features', ...args)
+    //============================================================
     {
-        const styleLayer = styleFunction(`${this._id}_${source}`, ...args);
+        const styleLayer = styleFunction(this._id, sourceLayer, ...args);
         if (styleLayer) {
             this._map.addLayer(styleLayer);
             this._styleLayerIds.push(styleLayer.id);

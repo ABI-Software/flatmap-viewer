@@ -290,7 +290,7 @@ export class UserInteractions
             id: (typeof featureId === 'string' && featureId.indexOf('#') >= 0)
                  ? featureId.split('#')[1] : featureId,
             source: VECTOR_TILES_SOURCE,
-            sourceLayer: `${ann.layer}_${ann['tile-layer']}`
+            sourceLayer: ann['tile-layer']
         };
     }
 
