@@ -679,6 +679,21 @@ export class FlatMap
     }
 
     /**
+     * Generate a callback as a result of some event with a flatmap feature.
+     *
+     * @param      {string}  eventType     The event type
+     * @param      {string}  anatomicalId  The anatomical identifier of the feature
+     */
+    featureEvent(eventType, anatomicalId)
+    //===================================
+    {
+        this.callback(eventType, {
+            type: 'feature',
+            models: anatomicalId
+        });
+    }
+
+    /**
      * Generate a callback as a result of some event with a marker.
      *
      * @param      {string}  eventType     The event type

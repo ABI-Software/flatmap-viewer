@@ -733,9 +733,14 @@ export class UserInteractions
         this.unhighlightFeatures_();
         if (this._activeFeatures.length > 0) {
             const feature = this._activeFeatures[0];
-            if ('properties' in feature && this._pathways.isNode(feature.properties.id)) {
-                for (const featureId of this._pathways.pathFeatureIds(feature.properties.id)) {
-                    this.highlightFeature_(this.mapFeature_(featureId));
+            if ('properties' in feature) {
+                if ('models' in feature.properties) {
+                    this._flatmap.featureEvent('click', feature.properties.models);
+                }
+                if (this._pathways.isNode(feature.properties.featureId)) {
+                    for (const featureId of this._pathways.pathFeatureIds(feature.properties.featureId)) {
+                        this.highlightFeature_(this.mapFeature_(featureId));
+                    }
                 }
             }
         }
@@ -804,6 +809,8 @@ export class UserInteractions
                     this.markerMouseEvent_.bind(this, marker, anatomicalId));
                 markerElement.addEventListener('mouseleave',
                     this.markerMouseEvent_.bind(this, marker, anatomicalId));
+                markerElement.addEventListener('click',
+                    this.markerMouseEvent_.bind(this, marker, anatomicalId));
 
                 this._markerIdByMarker.set(marker, markerId);
             }
@@ -829,7 +836,7 @@ export class UserInteractions
             return;
         }
 
-        if (['mouseenter', 'mouseleave'].indexOf(event.type) >= 0) {
+        if (['mouseenter', 'mouseleave', 'click'].indexOf(event.type) >= 0) {
             this._activeMarker = marker;
 
             // Remove any existing tooltips
@@ -839,8 +846,8 @@ export class UserInteractions
             // Reset cursor
             marker.getElement().style.cursor = 'default';
 
-            if (event.type === 'mouseenter') {
-                this._flatmap.markerEvent('mouseenter', this._markerIdByMarker.get(marker), anatomicalId);
+            if (['mouseenter', 'click'].indexOf(event.type) >= 0) {
+                this._flatmap.markerEvent(event.type, this._markerIdByMarker.get(marker), anatomicalId);
             }
         }
         event.stopPropagation();
