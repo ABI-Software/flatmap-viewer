@@ -411,7 +411,7 @@ export class UserInteractions
             this.removeTooltip_();
 
             const featureId = feature.properties.featureId;
-            if (this._pathways.isNode(id)) {
+            if (this._pathways.isNode(featureId)) {
                 const items = [
                     {
                         featureId: featureId,
