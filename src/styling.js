@@ -57,8 +57,8 @@ export class BodyLayer
                 ['==', 'models', 'UBERON:0013702']
             ],
             'paint': {
-                'fill-color': '#F0F0F0',
-                'fill-opacity': 1
+                'fill-color': '#ECC',
+                'fill-opacity': 0.1
             }
         };
     }
