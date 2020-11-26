@@ -502,13 +502,13 @@ export class FeatureSmallSymbolLayer
 
 //==============================================================================
 
-export class ImageLayer
+export class RasterLayer
 {
-    static style(mapLayerId)
+    static style(rasterLayerId)
     {
         return {
-            'id': `${mapLayerId}_image`,
-            'source': `${mapLayerId}_image`,
+            'id': rasterLayerId,
+            'source': rasterLayerId,
             'type': 'raster'
         };
     }

@@ -38,7 +38,9 @@ class MapFeatureLayer
         this.addStyleLayer_(style.BodyLayer.style);
 
         if (flatmap.details['image_layer']) {
-            this.addImageLayer_();
+            for (const raster_layer_id of layer['image-layers']) {
+                this.addRasterLayer_(raster_layer_id);
+            }
         }
 
         this.addStyleLayer_(style.FeatureDividerLineLayer.style);
@@ -61,10 +63,10 @@ class MapFeatureLayer
         return this._id;
     }
 
-    addImageLayer_()
-    //==============
+    addRasterLayer_(raster_layer_id)
+    //==============================
     {
-        const styleLayer = style.ImageLayer.style(this._id);
+        const styleLayer = style.RasterLayer.style(raster_layer_id);
         if (styleLayer) {
             this._map.addLayer(styleLayer);
             this._styleLayerIds.push(styleLayer.id);
