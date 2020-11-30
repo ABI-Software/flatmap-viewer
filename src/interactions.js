@@ -214,7 +214,7 @@ export class UserInteractions
 
         this._map.on('click', this.clickEvent_.bind(this));
         this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
-        self._lastModelMouseEntered = null;
+        this._lastModelMouseEntered = null;
 
         // Add a minimap if option set
 
@@ -652,12 +652,12 @@ export class UserInteractions
 
         const feature = features[0];
         if ('properties' in feature && 'models' in feature.properties) {
-            if (self._lastModelMouseEntered !== feature.properties.models) {
+            if (this._lastModelMouseEntered !== feature.properties.models) {
                 this._flatmap.featureEvent('mouseenter', feature.properties.models);
-                self._lastModelMouseEntered = feature.properties.models
+                this._lastModelMouseEntered = feature.properties.models
             }
         } else {
-            self._lastModelMouseEntered = null;
+            this._lastModelMouseEntered = null;
         }
 
         let html = '';
