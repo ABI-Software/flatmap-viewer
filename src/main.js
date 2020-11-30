@@ -66,24 +66,15 @@ window.onload = async function() {
 
     function callback(event, options)
     {
-        if (currentMap !== null) {
-            if (options.type === 'marker') {
-                if (event === 'mouseenter') {
-                    currentMap.showMarkerPopup(options.id, markerPopupContent());
-                    const colour = nextColour;
-                    nextColour = currentMap.getBackgroundColour();
-                    currentMap.setBackgroundColour(colour);
-                    currentMap.setBackgroundOpacity(0.5);
-                }
-            }
-        }
+        console.log(event, options);
+        return;
     }
 
     const loadMap = (id) => {
         if (currentMap !== null) {
             currentMap.close();
         }
-        mapManager.loadMap(id, 'map-canvas', null, { // (event, options) => callback(event, options), {
+        mapManager.loadMap(id, 'map-canvas', (event, options) => callback(event, options), {
             tooltips: true,
             background: '#EEF',
             //debug: true,
