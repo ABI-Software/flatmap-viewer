@@ -34,7 +34,8 @@ export class BackgroundLayer
             'id': 'background',
             'type': 'background',
             'paint': {
-                'background-color': backgroundColour
+                'background-color': backgroundColour,
+                'background-opacity': 0.1
             }
         };
     }
@@ -57,8 +58,8 @@ export class BodyLayer
                 ['==', 'models', 'UBERON:0013702']
             ],
             'paint': {
-                'fill-color': '#F0F0F0',
-                'fill-opacity': 1
+                'fill-color': '#CCC',
+                'fill-opacity': 0.1
             }
         };
     }
