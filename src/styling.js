@@ -127,9 +127,10 @@ export class FeatureBorderLayer
                 ],
                 'line-width': [
                     'case',
-                    ['boolean', ['get', 'invisible'], false], 0.5,
-                    ['boolean', ['feature-state', 'highlighted'], false], 6,
-                    2
+                    ['boolean', ['get', 'invisible'], false], 0.2,
+                    ['boolean', ['feature-state', 'active'], false], 2,
+                    ['boolean', ['feature-state', 'highlighted'], false], 4,
+                    0.5
                 ]
             }
         };
@@ -137,37 +138,6 @@ export class FeatureBorderLayer
 }
 
 //==============================================================================
-
-export class FeatureDividerBorderLayer
-{
-    static style(mapLayerId, sourceLayer)
-    {
-        return {
-            'id': `${mapLayerId}_${sourceLayer}_divider-border`,
-            'source': VECTOR_TILES_SOURCE,
-            'source-layer': sourceLayer,
-            'type': 'line',
-            'filter': [
-                 'all',
-                 ['!has', 'label'],
-                 ['==', '$type', 'Polygon']
-            ],
-            'paint': {
-                'line-color': '#444',
-                'line-opacity': 0.8,
-                'line-width': [
-                    'let', 'width', 0.1,
-                    [ 'interpolate',
-                        ['exponential', 2],
-                        ['zoom'],
-                         2, ["*", ['var', 'width'], ["^", 2, -1]],
-                        10, ["*", ['var', 'width'], ["^", 2,  5]]
-                    ]
-                ]
-            }
-        };
-    }
-}
 
 export class FeatureDividerLineLayer
 {
@@ -184,16 +154,8 @@ export class FeatureDividerLineLayer
             ],
             'paint': {
                 'line-color': '#444',
-                'line-opacity': 0.8,
-                'line-width': [
-                    'let', 'width', 0.1,
-                    [ 'interpolate',
-                        ['exponential', 2],
-                        ['zoom'],
-                         2, ["*", ['var', 'width'], ["^", 2, -1]],
-                        10, ["*", ['var', 'width'], ["^", 2,  5]]
-                    ]
-                ]
+                'line-opacity': 0.3,
+                'line-width': 0.5
             }
         };
     }
