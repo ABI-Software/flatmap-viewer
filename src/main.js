@@ -1,8 +1,11 @@
 import { MapManager } from './flatmap-viewer';
 
+const DEBUG = true;
+const MINIMAP = false; // { width: '10%', background: '#FCC' };
 
 //const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
 const MAP_ENDPOINT = 'http:localhost:4329/';
+//const MAP_ENDPOINT = 'https://mapcore-demo.org/devel/flatmap/v1/';
 
 //==============================================================================
 
@@ -77,8 +80,8 @@ window.onload = async function() {
         mapManager.loadMap(id, 'map-canvas', (event, options) => callback(event, options), {
             tooltips: true,
             background: '#EEF',
-            //debug: true,
-            minimap: { width: '10%', background: '#FCC' },
+            debug: DEBUG,
+            minimap: MINIMAP,
             navigationControl: 'top-right',
             searchable: true,
             featureInfo: true
