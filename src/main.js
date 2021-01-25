@@ -1,11 +1,20 @@
 import { MapManager } from './flatmap-viewer';
 
-const DEBUG = true;
-const MINIMAP = false; // { width: '10%', background: '#FCC' };
+const DEBUG = false;
+const MINIMAP = true; // { width: '10%', background: '#FCC' };
 
 //const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
 const MAP_ENDPOINT = 'http:localhost:8000/';
 //const MAP_ENDPOINT = 'https://mapcore-demo.org/devel/flatmap/v1/';
+
+
+const RAT_STATE = {
+    center: [
+        -7.242321307849636,
+         1.2996755426731852
+    ],
+    zoom: 6.962151361047079
+};
 
 //==============================================================================
 
@@ -86,12 +95,15 @@ window.onload = async function() {
             searchable: true,
             featureInfo: true
         }).then(map => {
-            currentMap = map;
             map.addMarker('UBERON:0000948'); // Heart
             map.addMarker('UBERON:0002048'); // Lung
             map.addMarker('UBERON:0000945'); // Stomach
             map.addMarker('UBERON:0001155'); // Colon
             map.addMarker('UBERON:0001255'); // Bladder
+            if (id == 'whole-rat') {
+                map.setState(RAT_STATE);
+            }
+            currentMap = map;
         });
     };
 
