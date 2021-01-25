@@ -4,7 +4,7 @@ const DEBUG = true;
 const MINIMAP = false; // { width: '10%', background: '#FCC' };
 
 //const MAP_ENDPOINT = 'https://mapcore-demo.org/flatmaps/';
-const MAP_ENDPOINT = 'http:localhost:4329/';
+const MAP_ENDPOINT = 'http:localhost:8000/';
 //const MAP_ENDPOINT = 'https://mapcore-demo.org/devel/flatmap/v1/';
 
 //==============================================================================
