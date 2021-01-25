@@ -84,11 +84,10 @@ function expandBounds(bbox1, bbox2)
 
 export class UserInteractions
 {
-    constructor(flatmap, userInterfaceLoadedCallback=null)
+    constructor(flatmap)
     {
         this._flatmap = flatmap;
         this._map = flatmap.map;
-        this._userInterfaceLoadedCallback =  userInterfaceLoadedCallback;
 //        this._queryInterface = new QueryInterface(flatmap.id);
 
         this._activeFeatures = [];
@@ -214,22 +213,6 @@ export class UserInteractions
         this._map.on('click', this.clickEvent_.bind(this));
         this._map.on('mousemove', this.mouseMoveEvent_.bind(this));
         this._lastModelMouseEntered = null;
-
-        // Call the `UI loaded` callback if there is one
-
-        if (this._userInterfaceLoadedCallback !== null) {
-            this._userInterfaceLoadedCallback(this);
-            this._userInterfaceLoadedCallback = null;
-        }
-    }
-
-    layerSwitcherActiveCallback_(layerSwitcher)
-    //=========================================
-    {
-        if (this._userInterfaceLoadedCallback !== null) {
-            this._userInterfaceLoadedCallback(this);
-            this._userInterfaceLoadedCallback = null;
-        }
     }
 
     getState()
