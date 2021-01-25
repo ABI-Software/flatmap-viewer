@@ -237,7 +237,11 @@ export class UserInteractions
         }
         if ('zoom' in state) {
             options['zoom'] = state.zoom;
-            options['around'] = [0, 0];
+            if ('center' in state) {
+                options['around'] = state.center;
+            } else {
+                options['around'] = [0, 0];
+            }
         }
         if (Object.keys(options).length > 0) {
             this._map.jumpTo(options);
