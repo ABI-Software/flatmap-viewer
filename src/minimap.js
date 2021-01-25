@@ -79,8 +79,9 @@ const ZOOMLEVELS = [
 
 export class MinimapControl
 {
-    constructor(options)
+    constructor(flatmap, options)
     {
+        this._flatmap = flatmap;
         this._map = undefined;
         this._container = null;
 
@@ -199,7 +200,7 @@ export class MinimapControl
         // Fit minimap to its container
 
         miniMap.resize();
-        miniMap.fitBounds(parentMap.getBounds());
+        miniMap.fitBounds(this._flatmap.bounds);
 
         const bounds = miniMap.getBounds();
         this.convertBoundsToPoints_(bounds);

@@ -34,6 +34,7 @@ import '../static/flatmap-viewer.css';
 //==============================================================================
 
 import {MapServer} from './mapserver.js';
+import {MinimapControl} from './minimap.js';
 import {NavigationControl} from './controls.js';
 import {SearchIndex} from './search.js';
 import {UserInteractions} from './interactions.js';
@@ -168,20 +169,37 @@ export class FlatMap
         }
 
         // Finish initialisation when all sources have loaded
+        // and map has rendered
 
         this._userInteractions = null;
-        this._map.on('load', this.finalise_.bind(this));
-
         this._initialState = null;
+        this._minimap = null;
+
         this._map.on('idle', () => {
-            if (this._initialState === null) {
+            if (this._userInteractions === null) {
+                this.setupUserInteractions_();
+            } else if (this._initialState === null) {
+                this._bounds = this._map.getBounds();
+
+                if ('state' in this._options) {
+                    this._userInteractions.setState(this._options.state);
+                }
                 this._initialState = this.getState();
+
+                // Add a minimap if option set
+
+                if (this.options.minimap) {
+                    this._minimap = new MinimapControl(this, this.options.minimap);
+                        this._map.addControl(this._minimap);
+                    }
+
+                this._resolve(this);
             }
         });
     }
 
-    async finalise_()
-    //===============
+    async setupUserInteractions_()
+    //============================
     {
         // Load any images required by the map
 
@@ -191,18 +209,16 @@ export class FlatMap
 
         // Layers have now loaded so finish setting up
 
-        const flatmap = this;
-        this._userInteractions = new UserInteractions(this, ui => {
-            if ('state' in flatmap._options) {
-                // This is to ensure the layer switcher has been fully initialised...
-                setTimeout(() => {
-                    ui.setState(flatmap._options.state);
-                    flatmap._resolve(flatmap);
-                }, 200);
-            } else {
-                flatmap._resolve(flatmap);
-            }
-        });
+        this._userInteractions = new UserInteractions(this);
+    }
+
+    /**
+     * The flatmap's bounds.
+     */
+    get bounds()
+    //==========
+    {
+        return this._bounds;
     }
 
     // Map control methods
@@ -603,8 +619,8 @@ export class FlatMap
     {
         this._map.setPaintProperty('background', 'background-color', colour);
 
-        if (this._userInteractions && this._userInteractions.minimap) {
-            this._userInteractions.minimap.setBackgroundColour(colour);
+        if (this._minimap) {
+            this._minimap.setBackgroundColour(colour);
         }
     }
 
@@ -618,8 +634,8 @@ export class FlatMap
     {
         this._map.setPaintProperty('background', 'background-opacity', opacity);
 
-        if (this._userInteractions && this._userInteractions.minimap) {
-            this._userInteractions.minimap.setBackgroundOpacity(opacity);
+        if (this._minimap) {
+            this._minimap.setBackgroundOpacity(opacity);
         }
     }
 
