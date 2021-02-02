@@ -489,6 +489,21 @@ export class FlatMap
         return this._userInteractions.selectedFeatureLayerName;
     }
 
+    /**
+     * Get the map's zoom settings.
+     *
+     * @return {Object.<{minZoom: number, zoom: number, maxZoom: number}>}  The map's minimum, current, and maximum zoom levels.
+     */
+    getZoom()
+    //=======
+    {
+        return {
+            'minZoom': this._map.getMinZoom(),
+            'zoom':    this._map.getZoom(),
+            'maxZoom': this._map.getMaxZoom()
+        }
+    }
+
     callback(type, features, ...args)
     //===============================
     {
