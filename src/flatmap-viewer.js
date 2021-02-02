@@ -991,6 +991,15 @@ export class MapManager
 
                 const mapMarkers = await this._mapServer.loadJSON(`flatmap/${map.id}/markers`);
 
+                // Set zoom range if not specified as an option
+
+                if (!('minZoom' in mapOptions)) {
+                    mapOptions['minZoom'] = mapStyle.sources['vector-tiles'].minzoom;
+                }
+                if (!('maxZoom' in mapOptions)) {
+                    mapOptions['maxZoom'] = mapStyle.sources['vector-tiles'].maxzoom;
+                }
+
                 // Display the map
 
                 this._mapNumber += 1;
