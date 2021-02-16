@@ -486,10 +486,12 @@ export class UserInteractions
                                            : expandBounds(bbox, bounds);
                 }
             }
-            this._map.fitBounds(bbox, {
-                padding: padding,
-                animate: false
-            });
+            if (bbox !== null) {
+                this._map.fitBounds(bbox, {
+                    padding: padding,
+                    animate: false
+                });
+            }
         }
     }
 
