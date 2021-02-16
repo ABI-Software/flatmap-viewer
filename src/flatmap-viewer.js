@@ -759,11 +759,19 @@ export class FlatMap
         }
     }
 
-    zoomTo(anatomicalId)
-    //==================
+    zoomTo(anatomicalIds, padding=100)
+    //================================
     {
         if (this._userInteractions !== null) {
-            this._userInteractions.zoomToFeatures(this.featureIdsForModel(anatomicalId))
+            const featureIds = new utils.List();
+            if (Array.isArray(anatomicalIds)) {
+                for (const id of anatomicalIds) {
+                    featureIds.extend(this.featureIdsForModel(id));
+                }
+            } else {
+                featureIds.extend(this.featureIdsForModel(anatomicalIds));
+            }
+            this._userInteractions.zoomToFeatures(featureIds, padding);
         }
     }
 }
