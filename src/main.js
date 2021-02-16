@@ -101,7 +101,8 @@ window.onload = async function() {
             map.addMarker('UBERON:0001155'); // Colon
             map.addMarker('UBERON:0001255'); // Bladder
             if (id == 'whole-rat') {
-                map.setState(RAT_STATE);
+                //map.setState(RAT_STATE);
+                map.zoomTo(['UBERON:945', 'UBERON:1255'])
             }
             currentMap = map;
         });
