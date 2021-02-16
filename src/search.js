@@ -121,7 +121,6 @@ export class SearchControl
 // The properties of a feature we index and show
 
 export const indexedProperties = [
-    'class',
     'label',
     'models'
 ];
@@ -145,7 +144,6 @@ export class SearchIndex
     //================================
     {
         const textSeen = [];
-
         for (const prop of indexedProperties) {
             if (prop in metadata) {
                 const text = metadata[prop];
@@ -180,7 +178,6 @@ export class SearchIndex
         const results = this._searchEngine.search(text, {
             prefix: true
         });
-
         this._flatmap.showSearchResults(results.map(result => this._featureIds[result.id]));
     }
 }

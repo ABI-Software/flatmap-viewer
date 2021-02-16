@@ -576,6 +576,8 @@ export class UserInteractions
             const htmlList = [];
             htmlList.push(`<span class="info-name">Id:</span>`);
             htmlList.push(`<span class="info-value">${properties.id}</span>`);
+            htmlList.push(`<span class="info-name">Class:</span>`);
+            htmlList.push(`<span class="info-value">${properties.class}</span>`);
             for (const prop of indexedProperties) {
                 if (prop in properties) {
                     htmlList.push(`<span class="info-name">${prop}:</span>`);
