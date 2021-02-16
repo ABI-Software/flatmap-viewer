@@ -74,10 +74,10 @@ export class FlatMap
 
         this._idToAnnotation = new Map();
         this._modelToFeatureIds = new Map();
-        for (const [featureId, metadata] of Object.entries(mapDescription.metadata)) {
-            this.addAnnotation_(featureId, metadata);
+        for (const [featureId, annotation] of Object.entries(mapDescription.annotations)) {
+            this.addAnnotation_(featureId, annotation);
             if (this.options.searchable) {
-                this._searchIndex.indexMetadata(featureId, metadata);
+                this._searchIndex.indexMetadata(featureId, annotation);
             }
         }
 
@@ -1006,9 +1006,9 @@ export class MapManager
 
                 const pathways = await this._mapServer.loadJSON(`flatmap/${map.id}/pathways`);
 
-                // Get the map's metadata
+                // Get the map's annotations
 
-                const metadata = await this._mapServer.loadJSON(`flatmap/${map.id}/metadata`);
+                const annotations = await this._mapServer.loadJSON(`flatmap/${map.id}/annotations`);
 
                 // Get additional marker details for the map
 
@@ -1036,7 +1036,7 @@ export class MapManager
                         options: mapOptions,
                         layers: mapLayers,
                         markers: mapMarkers,
-                        metadata: metadata,
+                        annotations: annotations,
                         number: this._mapNumber,
                         pathways: pathways,
                         callback: callback
