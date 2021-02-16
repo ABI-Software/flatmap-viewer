@@ -93,3 +93,19 @@ export class Mutex
 }
 
 //==============================================================================
+
+export function normaliseId(id)
+{
+    if (id.indexOf(':') < 0) {
+        return id;
+    }
+    const parts = id.split(':')
+    const lastPart = parts[parts.length - 1]
+    if ('0123456789'.indexOf(lastPart[0]) < 0) {
+        return id;
+    }
+    parts[parts.length - 1] = lastPart.padStart(8, '0');
+    return parts.join(':');
+}
+
+//==============================================================================

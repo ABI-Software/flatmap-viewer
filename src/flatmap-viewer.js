@@ -421,7 +421,7 @@ export class FlatMap
         ann.featureId = featureId;
         this._idToAnnotation.set(featureId, ann);
         if ('models' in ann) {
-            const modelId = ann.models;
+            const modelId = utils.normaliseId(ann.models);
             if (modelId) {
                 const featureIds = this._modelToFeatureIds.get(modelId);
                 if (featureIds) {
@@ -436,7 +436,7 @@ export class FlatMap
     featureIdsForModel(anatomicalId)
     //==============================
     {
-        const featureIds = this._modelToFeatureIds.get(anatomicalId);
+        const featureIds = this._modelToFeatureIds.get(utils.normaliseId(anatomicalId));
         return featureIds ? featureIds : [];
     }
 
@@ -444,7 +444,7 @@ export class FlatMap
     //========================
     {
         const ann = this._idToAnnotation.get(featureId);
-        return (ann && 'models' in ann) ? ann.models : null;
+        return (ann && 'models' in ann) ? utils.normaliseId(ann.models) : null;
     }
 
     get layers()
