@@ -286,7 +286,7 @@ export class FeatureNerveLayer
                 'line-color': [
                     'case',
                     ['boolean', ['feature-state', 'active'], false], '#222',
-                    ['boolean', ['feature-state', 'highlighted'], false], '#222',
+                    ['boolean', ['feature-state', 'highlighted'], false], 'red',
                     ['boolean', ['feature-state', 'hidden'], false], '#CCC',
                     '#888'
                 ],
@@ -302,7 +302,7 @@ export class FeatureNerveLayer
                 'line-width': [
                     'let', 'width', ['case',
                         ['boolean', ['feature-state', 'active'], false], 0.8,
-                        ['boolean', ['feature-state', 'highlighted'], false], 0.7,
+                        ['boolean', ['feature-state', 'highlighted'], false], 1.2,
                         0.6],
                     [ 'interpolate',
                         ['exponential', 2],
