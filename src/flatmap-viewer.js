@@ -1019,7 +1019,7 @@ export class MapManager
 
                 // Get the map's annotations
 
-                const annotations = await this._mapServer.loadJSON(`flatmap/${map.id}/annotations`);
+                const annotations = await this._mapServer.loadJSON(`flatmap/${map.id}/metadata`);
 
                 // Get additional marker details for the map
 
