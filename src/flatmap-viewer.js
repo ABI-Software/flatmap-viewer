@@ -465,6 +465,17 @@ export class FlatMap
         return this._markers;
     }
 
+    /**
+     * The anatomical identifiers of features in the map.
+     *
+     * @type {string|Array.<string>}
+     */
+    get anatomicalIdentifiers()
+    //=========================
+    {
+        return [...this._modelToFeatureIds.keys()]
+    }
+
     get options()
     //===========
     {
