@@ -1,6 +1,6 @@
 {
   "name": "@abi-software/flatmap-viewer",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "Flatmap viewer using Mapbox GL",
   "repository": "https://github.com/ABI-Software/flatmap-viewer.git",
   "main": "src/flatmap-viewer.js",
